@@ -38,10 +38,12 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
 .tbox-val{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;color:#1a6fa8}
 .tbox.end .tbox-val{color:#d32f2f}
 .arrow{font-size:22px;color:#8e8e93;text-align:center}
-.res-prices{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:7px}
-.rp{background:#fff;border-radius:8px;padding:7px 4px;text-align:center}
-.rp-lbl{font-size:11px;color:#8e8e93;margin-bottom:3px}
-.rp-val{font-size:16px;font-weight:700}
+/* 4列表示に変更 */
+.res-prices{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:7px}
+.rp{background:#fff;border-radius:8px;padding:7px 2px;text-align:center}
+.rp-lbl{font-size:10px;color:#8e8e93;margin-bottom:3px;font-weight:600}
+.rp-val{font-size:14px;font-weight:700}
+.rp-val.price{color:#1a6fa8}
 .rp-val.staff{color:#1c1c1e}
 .rp-val.owner{color:#d32f2f}
 .rp-val.disc{color:#c07000}
@@ -94,6 +96,7 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
       </div>
     </div>
     <div class="res-prices">
+      <div class="rp"><div class="rp-lbl">コース料金</div><div class="rp-val price" id="rP"></div></div>
       <div class="rp"><div class="rp-lbl">STAFF</div><div class="rp-val staff" id="rS"></div></div>
       <div class="rp"><div class="rp-lbl">OWNER</div><div class="rp-val owner" id="rO"></div></div>
       <div class="rp"><div class="rp-lbl">OWNER割引</div><div class="rp-val disc" id="rD"></div></div>
@@ -110,23 +113,24 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
 </div>
 </div>
 <script>
+// staffをpriceに変更し、本来のスタッフ・オーナーの取り分(50%)にデータを再配置
 var COURSES=[
-  {m:20,  name:'Topaz', staff:6000,  own:3000,  disc:null,  unit:300},
-  {m:30,  name:'Thai',  staff:5000,  own:2500,  disc:null,  unit:167},
-  {m:40,  name:'Topaz', staff:8000,  own:4000,  disc:null,  unit:200},
-  {m:60,  name:'Thai',  staff:7000,  own:3500,  disc:null,  unit:117},
-  {m:60,  name:'Oil',   staff:8000,  own:4000,  disc:null,  unit:133},
-  {m:70,  name:'Topaz', staff:11000, own:5500,  disc:4500,  unit:157},
-  {m:90,  name:'Thai',  staff:9000,  own:4500,  disc:null,  unit:100},
-  {m:90,  name:'Oil',   staff:11000, own:5500,  disc:4500,  unit:122},
-  {m:100, name:'Topaz', staff:14000, own:7000,  disc:6000,  unit:140},
-  {m:120, name:'Thai',  staff:12000, own:6000,  disc:5000,  unit:100},
-  {m:120, name:'Oil',   staff:15000, own:7500,  disc:6500,  unit:125},
-  {m:120, name:'Topaz', staff:17000, own:8500,  disc:7500,  unit:142},
-  {m:150, name:'Oil',   staff:18000, own:9000,  disc:8000,  unit:120},
-  {m:150, name:'Topaz', staff:20000, own:10000, disc:9000,  unit:133},
-  {m:180, name:'Oil',   staff:21000, own:10500, disc:9500,  unit:117},
-  {m:180, name:'Topaz', staff:23000, own:11500, disc:10500, unit:128}
+  {m:20,  name:'Topaz', price:6000,  staff:3000,  own:3000,  disc:null,  unit:300},
+  {m:30,  name:'Thai',  price:5000,  staff:2500,  own:2500,  disc:null,  unit:167},
+  {m:40,  name:'Topaz', price:8000,  staff:4000,  own:4000,  disc:null,  unit:200},
+  {m:60,  name:'Thai',  price:7000,  staff:3500,  own:3500,  disc:null,  unit:117},
+  {m:60,  name:'Oil',   price:8000,  staff:4000,  own:4000,  disc:null,  unit:133},
+  {m:70,  name:'Topaz', price:11000, staff:5500,  own:5500,  disc:4500,  unit:157},
+  {m:90,  name:'Thai',  price:9000,  staff:4500,  own:4500,  disc:null,  unit:100},
+  {m:90,  name:'Oil',   price:11000, staff:5500,  own:5500,  disc:4500,  unit:122},
+  {m:100, name:'Topaz', price:14000, staff:7000,  own:7000,  disc:6000,  unit:140},
+  {m:120, name:'Thai',  price:12000, staff:6000,  own:6000,  disc:5000,  unit:100},
+  {m:120, name:'Oil',   price:15000, staff:7500,  own:7500,  disc:6500,  unit:125},
+  {m:120, name:'Topaz', price:17000, staff:8500,  own:8500,  disc:7500,  unit:142},
+  {m:150, name:'Oil',   price:18000, staff:9000,  own:9000,  disc:8000,  unit:120},
+  {m:150, name:'Topaz', price:20000, staff:10000, own:10000, disc:9000,  unit:133},
+  {m:180, name:'Oil',   price:21000, staff:10500, own:10500, disc:9500,  unit:117},
+  {m:180, name:'Topaz', price:23000, staff:11500, own:11500, disc:10500, unit:128}
 ];
 var st=null,flt=0,hlKey=null,iv=null;
 function fmt(d){return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
@@ -148,7 +152,7 @@ function render(){
     r.innerHTML='<div class="c-min">'+c.m+'<span style="font-size:11px;font-weight:400;color:#8e8e93">分</span></div>'
       +'<span class="c-badge '+nbadge(c.name)+'">'+c.name+'</span>'
       +'<div class="c-times">'+ss+' → <b>'+es+'</b></div>'
-      +'<div class="c-pr"><div class="main">'+yen(c.staff)+'</div><div class="sub">50%:'+yen(c.own)+'</div></div>';
+      +'<div class="c-pr"><div class="main">'+yen(c.price)+'</div><div class="sub">50%:'+yen(c.staff)+'</div></div>';
     (function(cc,s,e){r.onclick=function(){showRes(cc,s,e);};})(c,ss,es);
     l.appendChild(r);
   }
@@ -157,6 +161,7 @@ function showRes(c,ss,es){
   document.getElementById('rC').textContent=c.m+'分コース｜'+c.name;
   document.getElementById('rStart').textContent=ss;
   document.getElementById('rEnd').textContent=es;
+  document.getElementById('rP').textContent=yen(c.price);
   document.getElementById('rS').textContent=yen(c.staff);
   document.getElementById('rO').textContent=yen(c.own);
   document.getElementById('rD').textContent=yen(c.disc);
