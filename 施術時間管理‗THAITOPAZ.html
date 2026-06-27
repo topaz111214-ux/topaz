@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Thai Topaz">
+<title>Thai Topaz｜時間計算</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino Sans','Noto Sans JP',sans-serif;color:#1c1c1e}
+/* PC・スマホ共通：中央に最大430px */
+.outer{display:flex;justify-content:center;align-items:flex-start;min-height:100%;background:#e8e8ed;padding:0}
+.app{width:100%;max-width:430px;min-height:100vh;background:#f2f2f7;display:flex;flex-direction:column;padding:8px;gap:7px}
+/* PC表示時は影をつけてスマホ風に */
+@media(min-width:440px){
+  .outer{align-items:flex-start;padding:20px 0}
+  .app{min-height:calc(100vh - 40px);border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.18)}
+}
+.hdr{background:#1a6fa8;border-radius:10px;padding:9px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hdr-t{font-size:17px;font-weight:700;color:#fff}
+.hdr-c{font-size:15px;color:rgba(255,255,255,.85);font-variant-numeric:tabular-nums}
+.trow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;flex-shrink:0}
+.tc{background:#fff;border-radius:8px;padding:6px 8px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.tc .lbl{font-size:11px;color:#8e8e93}
+.tc .val{font-size:19px;font-weight:600;color:#1c1c1e;font-variant-numeric:tabular-nums}
+.tc.hl .val{color:#1a6fa8}
+.btn-upd{width:100%;padding:12px;background:#1a6fa8;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.btn-upd:active{background:#145d8f;transform:scale(.98)}
+.res{background:#e9f7ee;border:1.5px solid #34c759;border-radius:12px;padding:10px 12px;flex-shrink:0;display:none}
+.res.on{display:block}
+.res-lbl{font-size:12px;color:#1e7e34;font-weight:600;margin-bottom:6px}
+.res-course{font-size:17px;font-weight:700;color:#1c1c1e;text-align:center;margin-bottom:8px}
+.time-boxes{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin-bottom:10px}
+.tbox{background:#fff;border:1.5px solid #1a6fa8;border-radius:10px;padding:8px 6px;text-align:center}
+.tbox.end{border-color:#d32f2f}
+.tbox-lbl{font-size:11px;color:#8e8e93;margin-bottom:2px}
+.tbox-val{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;color:#1a6fa8}
+.tbox.end .tbox-val{color:#d32f2f}
+.arrow{font-size:22px;color:#8e8e93;text-align:center}
+.res-prices{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:7px}
+.rp{background:#fff;border-radius:8px;padding:7px 4px;text-align:center}
+.rp-lbl{font-size:11px;color:#8e8e93;margin-bottom:3px}
+.rp-val{font-size:16px;font-weight:700}
+.rp-val.staff{color:#1c1c1e}
+.rp-val.owner{color:#d32f2f}
+.rp-val.disc{color:#c07000}
+.res-unit{font-size:13px;color:#636366;text-align:right}
+.filter-row{display:flex;gap:5px;overflow-x:auto;flex-shrink:0;padding-bottom:2px}
+.ftab{flex-shrink:0;padding:6px 13px;border:1px solid #d1d1d6;border-radius:20px;background:#fff;font-size:13px;cursor:pointer;color:#8e8e93;-webkit-tap-highlight-color:transparent}
+.ftab.on{border-color:#1a6fa8;background:#e8f2fa;color:#1a6fa8;font-weight:600}
+.clist{background:#fff;border-radius:10px;overflow-y:auto;flex:1;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.crow{display:flex;align-items:center;padding:10px 12px;border-bottom:.5px solid #f2f2f7;cursor:pointer;gap:8px;-webkit-tap-highlight-color:transparent}
+.crow:last-child{border-bottom:none}
+.crow:active{background:#f9f9f9}
+.crow.hl{background:#e9f7ee}
+.c-min{font-size:15px;font-weight:700;color:#1c1c1e;width:42px;flex-shrink:0}
+.c-badge{font-size:12px;padding:2px 7px;border-radius:4px;flex-shrink:0;font-weight:600}
+.nm-thai{background:#e3f0fd;color:#1565c0}
+.nm-oil{background:#fff3e0;color:#b76000}
+.nm-topaz{background:#fde8ec;color:#b71c1c}
+.c-times{flex:1;font-size:13px;color:#636366}
+.c-times b{color:#1c1c1e;font-size:14px}
+.c-pr{text-align:right;flex-shrink:0}
+.c-pr .main{font-size:15px;font-weight:700;color:#1c1c1e}
+.c-pr .sub{font-size:11px;color:#8e8e93}
+</style>
+</head>
+<body>
+<div class="outer">
+<div class="app">
+  <div class="hdr">
+    <span class="hdr-t">Thai Topaz</span>
+    <span class="hdr-c" id="liveTime">--:--</span>
+  </div>
+  <div class="trow">
+    <div class="tc"><div class="lbl">開始時刻</div><div class="val" id="startTime">--:--</div></div>
+    <div class="tc hl"><div class="lbl">現在時刻</div><div class="val" id="nowTime">--:--</div></div>
+    <div class="tc"><div class="lbl">経過時間</div><div class="val" id="elapsed">--分</div></div>
+  </div>
+  <button class="btn-upd" id="btnUpd">⏱ 更新（開始時刻をセット）</button>
+  <div class="res" id="res">
+    <div class="res-lbl">✅ 選択コース詳細</div>
+    <div class="res-course" id="rC"></div>
+    <div class="time-boxes">
+      <div class="tbox">
+        <div class="tbox-lbl">開始時刻</div>
+        <div class="tbox-val" id="rStart">--:--</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="tbox end">
+        <div class="tbox-lbl">終了時刻</div>
+        <div class="tbox-val" id="rEnd">--:--</div>
+      </div>
+    </div>
+    <div class="res-prices">
+      <div class="rp"><div class="rp-lbl">STAFF</div><div class="rp-val staff" id="rS"></div></div>
+      <div class="rp"><div class="rp-lbl">OWNER</div><div class="rp-val owner" id="rO"></div></div>
+      <div class="rp"><div class="rp-lbl">OWNER割引</div><div class="rp-val disc" id="rD"></div></div>
+    </div>
+    <div class="res-unit" id="rU"></div>
+  </div>
+  <div class="filter-row">
+    <div class="ftab on" onclick="sf(0)">すべて</div>
+    <div class="ftab" onclick="sf(1)">Thai</div>
+    <div class="ftab" onclick="sf(2)">Oil</div>
+    <div class="ftab" onclick="sf(3)">Topaz</div>
+  </div>
+  <div class="clist" id="clist"></div>
+</div>
+</div>
+<script>
+var COURSES=[
+  {m:20,  name:'Topaz', staff:6000,  own:3000,  disc:null,  unit:300},
+  {m:30,  name:'Thai',  staff:5000,  own:2500,  disc:null,  unit:167},
+  {m:40,  name:'Topaz', staff:8000,  own:4000,  disc:null,  unit:200},
+  {m:60,  name:'Thai',  staff:7000,  own:3500,  disc:null,  unit:117},
+  {m:60,  name:'Oil',   staff:8000,  own:4000,  disc:null,  unit:133},
+  {m:70,  name:'Topaz', staff:11000, own:5500,  disc:4500,  unit:157},
+  {m:90,  name:'Thai',  staff:9000,  own:4500,  disc:null,  unit:100},
+  {m:90,  name:'Oil',   staff:11000, own:5500,  disc:4500,  unit:122},
+  {m:100, name:'Topaz', staff:14000, own:7000,  disc:6000,  unit:140},
+  {m:120, name:'Thai',  staff:12000, own:6000,  disc:5000,  unit:100},
+  {m:120, name:'Oil',   staff:15000, own:7500,  disc:6500,  unit:125},
+  {m:120, name:'Topaz', staff:17000, own:8500,  disc:7500,  unit:142},
+  {m:150, name:'Oil',   staff:18000, own:9000,  disc:8000,  unit:120},
+  {m:150, name:'Topaz', staff:20000, own:10000, disc:9000,  unit:133},
+  {m:180, name:'Oil',   staff:21000, own:10500, disc:9500,  unit:117},
+  {m:180, name:'Topaz', staff:23000, own:11500, disc:10500, unit:128}
+];
+var st=null,flt=0,hlKey=null,iv=null;
+function fmt(d){return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
+function addM(d,m){return new Date(d.getTime()+m*60000);}
+function yen(n){return n!=null?'¥'+n.toLocaleString():'—';}
+function ckey(c){return c.m+'_'+c.name;}
+function nbadge(n){return n==='Thai'?'nm-thai':n==='Oil'?'nm-oil':'nm-topaz';}
+function render(){
+  var l=document.getElementById('clist');l.innerHTML='';
+  for(var i=0;i<COURSES.length;i++){
+    var c=COURSES[i];
+    if(flt===1&&c.name!=='Thai')continue;
+    if(flt===2&&c.name!=='Oil')continue;
+    if(flt===3&&c.name!=='Topaz')continue;
+    var r=document.createElement('div');
+    r.className='crow'+(hlKey===ckey(c)?' hl':'');
+    var ss=st?fmt(st):'--:--';
+    var es=st?fmt(addM(st,c.m)):'--:--';
+    r.innerHTML='<div class="c-min">'+c.m+'<span style="font-size:11px;font-weight:400;color:#8e8e93">分</span></div>'
+      +'<span class="c-badge '+nbadge(c.name)+'">'+c.name+'</span>'
+      +'<div class="c-times">'+ss+' → <b>'+es+'</b></div>'
+      +'<div class="c-pr"><div class="main">'+yen(c.staff)+'</div><div class="sub">50%:'+yen(c.own)+'</div></div>';
+    (function(cc,s,e){r.onclick=function(){showRes(cc,s,e);};})(c,ss,es);
+    l.appendChild(r);
+  }
+}
+function showRes(c,ss,es){
+  document.getElementById('rC').textContent=c.m+'分コース｜'+c.name;
+  document.getElementById('rStart').textContent=ss;
+  document.getElementById('rEnd').textContent=es;
+  document.getElementById('rS').textContent=yen(c.staff);
+  document.getElementById('rO').textContent=yen(c.own);
+  document.getElementById('rD').textContent=yen(c.disc);
+  document.getElementById('rU').textContent='¥'+c.unit+'/分';
+  document.getElementById('res').classList.add('on');
+}
+function sf(n){
+  flt=n;
+  var tabs=document.querySelectorAll('.ftab');
+  for(var i=0;i<tabs.length;i++)tabs[i].className='ftab'+(i===n?' on':'');
+  render();
+}
+function tick(){
+  var now=new Date();var f=fmt(now);
+  document.getElementById('liveTime').textContent=f;
+  document.getElementById('nowTime').textContent=f;
+  if(st){
+    var diff=Math.floor((now-st)/60000);
+    document.getElementById('elapsed').textContent=diff+'分';
+    var match=null;
+    for(var i=0;i<COURSES.length;i++){if(COURSES[i].m>=diff&&(!match||COURSES[i].m<match.m))match=COURSES[i];}
+    hlKey=match?ckey(match):null;render();
+  }
+}
+document.getElementById('btnUpd').onclick=function(){
+  st=new Date();
+  document.getElementById('startTime').textContent=fmt(st);
+  document.getElementById('res').classList.remove('on');
+  hlKey=null;render();
+  if(iv)clearInterval(iv);
+  iv=setInterval(tick,30000);tick();
+};
+setInterval(function(){if(!st){var f=fmt(new Date());document.getElementById('liveTime').textContent=f;document.getElementById('nowTime').textContent=f;}},10000);
+tick();render();
+</script>
+</body>
+</html>
