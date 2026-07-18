@@ -85,7 +85,7 @@
       margin: 0 12px 12px 12px;
       padding: 12px;
       border-radius: 8px;
-      font-size: 15px;
+      font-size: 16px; /* 少し大きく */
       font-weight: bold;
       cursor: pointer;
       display: flex;
@@ -103,7 +103,7 @@
       background-color: #f6ffed;
       border-radius: 8px;
       margin: 0 12px 12px 12px;
-      padding: 12px;
+      padding: 14px 12px; /* 少し広く */
       position: relative;
     }
     .course-detail-title {
@@ -114,7 +114,7 @@
     }
     .course-name {
       text-align: center;
-      font-size: 18px;
+      font-size: 20px; /* さらに拡大 */
       font-weight: bold;
       color: #333333;
       margin-bottom: 12px;
@@ -126,7 +126,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
     .time-card {
       flex: 1;
@@ -140,13 +140,13 @@
       border-color: #ff4d4f;
     }
     .time-card .time-label {
-      font-size: 12px;
-      color: #777777;
+      font-size: 13px; /* 少し拡大 */
+      color: #666666;
       margin-bottom: 4px;
       font-weight: bold;
     }
     .time-card .time-value {
-      font-size: 24px;
+      font-size: 26px; /* さらに拡大 */
       font-weight: bold;
       color: #1a6fa5;
     }
@@ -156,83 +156,87 @@
     .arrow {
       color: #888888;
       font-weight: bold;
-      font-size: 18px;
+      font-size: 20px;
     }
 
-    /* 【ズレ修正】4項目料金エリア */
+    /* 【文字・金額をさらに拡大】4項目料金エリア */
     .price-cards-container {
       display: flex;
       justify-content: space-between;
-      gap: 6px;
+      gap: 5px;
       margin-bottom: 4px;
     }
     .price-card {
       flex: 1;
       background-color: #ffffff;
-      border: 1px solid #e0e0e0;
+      border: 1px solid #ccd5db;
       border-radius: 6px;
-      padding: 10px 2px;
+      padding: 12px 2px; /* 上下をさらに広くして金額を目立たせる */
       text-align: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-      /* 上下のズレを防ぎ、中央揃えを維持する設定 */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      min-height: 62px; 
+      min-height: 70px; /* 高さを少しアップ */
     }
     .price-label {
-      font-size: 11px;
+      font-size: 12px; /* ラベル拡大 */
       font-weight: bold;
-      color: #555555;
-      margin-bottom: 4px;
-      height: 16px; /* ラベル自体の高さを固定してズレを防止 */
+      color: #444444;
+      margin-bottom: 6px;
+      height: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .price-value {
-      font-size: 15px;
+      font-size: 17px; /* 金額をさらに拡大 */
       font-weight: bold;
-      color: #222222;
-      margin-top: auto; /* 金額を下側に綺麗に揃える */
+      color: #111111;
+      margin-top: auto;
     }
     .price-value-discount {
-      font-size: 15px;
+      font-size: 17px; /* 金額をさらに拡大 */
       font-weight: bold;
-      color: #cc3300;
+      color: #d4380d; /* 割引済み料金を濃い赤で強調 */
       margin-top: auto;
     }
     
-    /* 【文字拡大＆文言変更】単価ラベルのスタイル */
+    /* 【単価もさらに拡大】 */
     .rate-label {
       text-align: right;
-      font-size: 13px; /* 少し大きく調整 */
+      font-size: 15px; /* さらに大きく */
       font-weight: bold;
-      color: #555555; /* クッキリ見えるように少し濃く */
-      margin-top: 8px;
+      color: #333333;
+      margin-top: 10px;
+      padding-right: 4px;
     }
 
-    /* タブ切り替え */
+    /* 【文字拡大＆フィルター用スタイル】タブ切り替え */
     .tab-container {
       display: flex;
       padding: 0 12px;
-      gap: 6px;
+      gap: 8px;
       margin-bottom: 12px;
     }
     .tab {
-      padding: 6px 12px;
+      flex: 1; /* 均等に広げる */
+      text-align: center;
+      padding: 8px 0; /* 少し厚みを持たせる */
       border-radius: 16px;
-      border: 1px solid #d9d9d9;
+      border: 1px solid #c0c0c0;
       background-color: #ffffff;
-      font-size: 13px;
+      font-size: 15px; /* 文字を大きく */
+      font-weight: bold;
       color: #555555;
       cursor: pointer;
+      transition: all 0.2s;
     }
     .tab.active {
-      background-color: #e6f7ff;
+      background-color: #1a6fa5;
       border-color: #1a6fa5;
-      color: #1a6fa5;
+      color: #ffffff; /* アクティブ時は白文字でハッキリ */
     }
 
     /* コース一覧リスト */
@@ -245,35 +249,41 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 8px;
+      padding: 12px 8px;
       border-bottom: 1px solid #f0f0f0;
       cursor: pointer;
     }
     .course-item:hover {
       background-color: #fafafa;
     }
+    
+    /* 非表示用のクラス（フィルターで使用） */
+    .course-item.hidden {
+      display: none !important;
+    }
+
     .course-left {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
     .course-duration {
       font-weight: bold;
-      font-size: 14px;
+      font-size: 16px; /* リストの文字も少し拡大 */
       color: #333333;
-      width: 45px;
+      width: 50px;
     }
     .course-duration span {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: normal;
       color: #666666;
     }
     .badge {
-      font-size: 11px;
-      padding: 2px 6px;
+      font-size: 12px;
+      padding: 3px 6px;
       border-radius: 4px;
-      font-weight: 500;
-      width: 50px;
+      font-weight: bold;
+      width: 55px;
       text-align: center;
     }
     .badge.thai { background-color: #e6f7ff; color: #1a6fa5; }
@@ -285,12 +295,12 @@
     }
     .course-main-price {
       font-weight: bold;
-      font-size: 14px;
-      color: #333333;
+      font-size: 15px;
+      color: #222222;
     }
     .course-staff-price {
-      font-size: 10px;
-      color: #888888;
+      font-size: 11px;
+      color: #777777;
       margin-top: 2px;
     }
   </style>
@@ -340,7 +350,7 @@
       </div>
     </div>
     
-    <!-- 位置調整された4つの項目ボックス -->
+    <!-- さらに大きくなった4つの項目ボックス（下揃え完璧版） -->
     <div class="price-cards-container">
       <div class="price-card">
         <div class="price-label">コース料金</div>
@@ -360,22 +370,22 @@
       </div>
     </div>
     
-    <!-- 【文言変更】時間単価表示エリア -->
+    <!-- 時間単価表示エリア -->
     <div id="val-rate" class="rate-label">時間単価：¥0/分</div>
   </div>
 
-  <!-- カテゴリタブ -->
+  <!-- 【修正】クリックイベント付きカテゴリタブ -->
   <div class="tab-container">
-    <div class="tab active">すべて</div>
-    <div class="tab">Thai</div>
-    <div class="tab">Oil</div>
-    <div class="tab">Topaz</div>
+    <div class="tab active" onclick="filterCategory('すべて', this)">すべて</div>
+    <div class="tab" onclick="filterCategory('Thai', this)">Thai</div>
+    <div class="tab" onclick="filterCategory('Oil', this)">Oil</div>
+    <div class="tab" onclick="filterCategory('Topaz', this)">Topaz</div>
   </div>
 
-  <!-- コース一覧リスト -->
-  <div class="course-list">
+  <!-- コース一覧リスト（データ属性 data-type を追加して絞り込み可能に） -->
+  <div class="course-list" id="course-list-container">
     <!-- 20分 -->
-    <div class="course-item" onclick="selectCourse('20分コース | Topaz', 20, 6000, 3000, 3000, 0, 300)">
+    <div class="course-item" data-type="Topaz" onclick="selectCourse('20分コース | Topaz', 20, 6000, 3000, 3000, 0, 300)">
       <div class="course-left">
         <div class="course-duration">20<span>分</span></div>
         <span class="badge topaz">Topaz</span>
@@ -387,7 +397,7 @@
     </div>
 
     <!-- 30分 -->
-    <div class="course-item" onclick="selectCourse('30分コース | Thai', 30, 5000, 2500, 2500, 0, 167)">
+    <div class="course-item" data-type="Thai" onclick="selectCourse('30分コース | Thai', 30, 5000, 2500, 2500, 0, 167)">
       <div class="course-left">
         <div class="course-duration">30<span>分</span></div>
         <span class="badge thai">Thai</span>
@@ -399,7 +409,7 @@
     </div>
 
     <!-- 40分 -->
-    <div class="course-item" onclick="selectCourse('40分コース | Topaz', 40, 8000, 4000, 4000, 0, 200)">
+    <div class="course-item" data-type="Topaz" onclick="selectCourse('40分コース | Topaz', 40, 8000, 4000, 4000, 0, 200)">
       <div class="course-left">
         <div class="course-duration">40<span>分</span></div>
         <span class="badge topaz">Topaz</span>
@@ -411,7 +421,7 @@
     </div>
 
     <!-- 60分 -->
-    <div class="course-item" onclick="selectCourse('60分コース | Thai', 60, 7000, 3500, 3500, 0, 117)">
+    <div class="course-item" data-type="Thai" onclick="selectCourse('60分コース | Thai', 60, 7000, 3500, 3500, 0, 117)">
       <div class="course-left">
         <div class="course-duration">60<span>分</span></div>
         <span class="badge thai">Thai</span>
@@ -421,7 +431,7 @@
         <div class="course-staff-price">STAFF: ¥3,500</div>
       </div>
     </div>
-    <div class="course-item" onclick="selectCourse('60分コース | Oil', 60, 9000, 4500, 4500, 0, 150)">
+    <div class="course-item" data-type="Oil" onclick="selectCourse('60分コース | Oil', 60, 9000, 4500, 4500, 0, 150)">
       <div class="course-left">
         <div class="course-duration">60<span>分</span></div>
         <span class="badge oil">Oil</span>
@@ -433,7 +443,7 @@
     </div>
 
     <!-- 70分 -->
-    <div class="course-item" onclick="selectCourse('70分コース | Topaz', 70, 11000, 5500, 5500, 4500, 157)">
+    <div class="course-item" data-type="Topaz" onclick="selectCourse('70分コース | Topaz', 70, 11000, 5500, 5500, 4500, 157)">
       <div class="course-left">
         <div class="course-duration">70<span>分</span></div>
         <span class="badge topaz">Topaz</span>
@@ -445,7 +455,7 @@
     </div>
 
     <!-- 90分 -->
-    <div class="course-item" onclick="selectCourse('90分コース | Thai', 90, 9000, 4500, 4500, 0, 100)">
+    <div class="course-item" data-type="Thai" onclick="selectCourse('90分コース | Thai', 90, 9000, 4500, 4500, 0, 100)">
       <div class="course-left">
         <div class="course-duration">90<span>分</span></div>
         <span class="badge thai">Thai</span>
@@ -455,7 +465,7 @@
         <div class="course-staff-price">STAFF: ¥4,500</div>
       </div>
     </div>
-    <div class="course-item" onclick="selectCourse('90分コース | Oil', 90, 12000, 6000, 6000, 5000, 133)">
+    <div class="course-item" data-type="Oil" onclick="selectCourse('90分コース | Oil', 90, 12000, 6000, 6000, 5000, 133)">
       <div class="course-left">
         <div class="course-duration">90<span>分</span></div>
         <span class="badge oil">Oil</span>
@@ -467,7 +477,7 @@
     </div>
 
     <!-- 100分 -->
-    <div class="course-item" onclick="selectCourse('100分コース | Topaz', 100, 14000, 7000, 7000, 6000, 140)">
+    <div class="course-item" data-type="Topaz" onclick="selectCourse('100分コース | Topaz', 100, 14000, 7000, 7000, 6000, 140)">
       <div class="course-left">
         <div class="course-duration">100<span>分</span></div>
         <span class="badge topaz">Topaz</span>
@@ -479,7 +489,7 @@
     </div>
 
     <!-- 120分 -->
-    <div class="course-item" onclick="selectCourse('120分コース | Thai', 120, 12000, 6000, 6000, 5000, 100)">
+    <div class="course-item" data-type="Thai" onclick="selectCourse('120分コース | Thai', 120, 12000, 6000, 6000, 5000, 100)">
       <div class="course-left">
         <div class="course-duration">120<span>分</span></div>
         <span class="badge thai">Thai</span>
@@ -489,7 +499,7 @@
         <div class="course-staff-price">STAFF: ¥6,000</div>
       </div>
     </div>
-    <div class="course-item" onclick="selectCourse('120分コース | Oil', 120, 15000, 7500, 7500, 6500, 125)">
+    <div class="course-item" data-type="Oil" onclick="selectCourse('120分コース | Oil', 120, 15000, 7500, 7500, 6500, 125)">
       <div class="course-left">
         <div class="course-duration">120<span>分</span></div>
         <span class="badge oil">Oil</span>
@@ -499,7 +509,7 @@
         <div class="course-staff-price">STAFF: ¥7,500</div>
       </div>
     </div>
-    <div class="course-item" onclick="selectCourse('120分コース | Topaz', 120, 17000, 8500, 8500, 7500, 142)">
+    <div class="course-item" data-type="Topaz" onclick="selectCourse('120分コース | Topaz', 120, 17000, 8500, 8500, 7500, 142)">
       <div class="course-left">
         <div class="course-duration">120<span>分</span></div>
         <span class="badge topaz">Topaz</span>
@@ -511,7 +521,7 @@
     </div>
 
     <!-- 150分 -->
-    <div class="course-item" onclick="selectCourse('150分コース | Oil', 150, 18000, 9000, 9000, 8000, 120)">
+    <div class="course-item" data-type="Oil" onclick="selectCourse('150分コース | Oil', 150, 18000, 9000, 9000, 8000, 120)">
       <div class="course-left">
         <div class="course-duration">150<span>分</span></div>
         <span class="badge oil">Oil</span>
@@ -521,7 +531,7 @@
         <div class="course-staff-price">STAFF: ¥9,000</div>
       </div>
     </div>
-    <div class="course-item" onclick="selectCourse('150分コース | Topaz', 150, 20000, 10000, 10000, 9000, 133)">
+    <div class="course-item" data-type="Topaz" onclick="selectCourse('150分コース | Topaz', 150, 20000, 10000, 10000, 9000, 133)">
       <div class="course-left">
         <div class="course-duration">150<span>分</span></div>
         <span class="badge topaz">Topaz</span>
@@ -533,7 +543,7 @@
     </div>
 
     <!-- 180分 -->
-    <div class="course-item" onclick="selectCourse('180分コース | Oil', 180, 21000, 10500, 10500, 9500, 117)">
+    <div class="course-item" data-type="Oil" onclick="selectCourse('180分コース | Oil', 180, 21000, 10500, 10500, 9500, 117)">
       <div class="course-left">
         <div class="course-duration">180<span>分</span></div>
         <span class="badge oil">Oil</span>
@@ -543,7 +553,7 @@
         <div class="course-staff-price">STAFF: ¥10,500</div>
       </div>
     </div>
-    <div class="course-item" onclick="selectCourse('180分コース | Topaz', 180, 23000, 11500, 11500, 10500, 128)">
+    <div class="course-item" data-type="Topaz" onclick="selectCourse('180分コース | Topaz', 180, 23000, 11500, 11500, 10500, 128)">
       <div class="course-left">
         <div class="course-duration">180<span>分</span></div>
         <span class="badge topaz">Topaz</span>
@@ -612,7 +622,6 @@
       document.getElementById('val-discount').innerText = `¥${discountPrice.toLocaleString()}`;
     }
     
-    // 【文言修正】時間単価表示
     document.getElementById('val-rate').innerText = `時間単価：¥${rate}/分`;
 
     if (startTime) {
@@ -629,6 +638,27 @@
     const minutes = String(endTime.getMinutes()).padStart(2, '0');
     
     document.getElementById('detail-end-time').innerText = `${hours}:${minutes}`;
+  }
+
+  // 5. 【新機能】カテゴリフィルターの処理関数
+  function filterCategory(category, tabElement) {
+    // 全タブの「active」クラスを解除し、クリックされたタブに付与
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(t => t.classList.remove('active'));
+    tabElement.classList.add('active');
+
+    // リスト内の全項目を取得
+    const items = document.querySelectorAll('.course-item');
+    
+    items.forEach(item => {
+      const itemType = item.getAttribute('data-type');
+      
+      if (category === 'すべて' || itemType === category) {
+        item.classList.remove('hidden'); // 表示
+      } else {
+        item.classList.add('hidden');    // 非表示
+      }
+    });
   }
 </script>
 
