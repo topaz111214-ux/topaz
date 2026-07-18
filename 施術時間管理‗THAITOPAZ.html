@@ -93,6 +93,9 @@
       align-items: center;
       gap: 6px;
     }
+    .btn-update:active {
+      background-color: #114f77;
+    }
 
     /* 選択コース詳細エリア */
     .course-detail-container {
@@ -154,7 +157,7 @@
       font-weight: bold;
     }
 
-    /* 【修正部分】4項目料金エリアのスタイル */
+    /* 4項目料金エリア */
     .price-cards-container {
       display: flex;
       justify-content: space-between;
@@ -177,12 +180,12 @@
       white-space: nowrap;
     }
     .price-value {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: bold;
       color: #333333;
     }
     .price-value-discount {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: bold;
       color: #888888;
     }
@@ -225,6 +228,10 @@
       justify-content: space-between;
       padding: 12px 8px;
       border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+    }
+    .course-item:hover {
+      background-color: #fafafa;
     }
     .course-left {
       display: flex;
@@ -277,62 +284,62 @@
   <!-- ヘッダー -->
   <div class="header">
     <div class="title">Thai Topaz</div>
-    <div class="time">17:33</div>
+    <div id="header-current-time" class="time">--:--</div>
   </div>
 
   <!-- 上部ステータス表示 -->
   <div class="status-container">
     <div class="status-card">
       <div class="status-label">開始時刻</div>
-      <div class="status-value">--:--</div>
+      <div id="status-start-time" class="status-value">--:--</div>
     </div>
     <div class="status-card">
       <div class="status-label">現在時刻</div>
-      <div class="status-value blue">17:33</div>
+      <div id="status-current-time" class="status-value blue">--:--</div>
     </div>
     <div class="status-card">
       <div class="status-label">経過時間</div>
-      <div class="status-value">--分</div>
+      <div id="status-elapsed-time" class="status-value">--分</div>
     </div>
   </div>
 
   <!-- 更新ボタン -->
-  <button class="btn-update">⏱ 更新（開始時刻をセット）</button>
+  <button id="btn-update-time" class="btn-update">⏱ 更新（開始時刻をセット）</button>
 
-  <!-- 選択コース詳細エリア（ご指定の4項目に修正済み） -->
+  <!-- 選択コース詳細エリア -->
   <div class="course-detail-container">
     <div class="course-detail-title">✅ 選択コース詳細</div>
-    <div class="course-name">90分コース | Thai</div>
+    <div id="detail-course-name" class="course-name">コースを選択してください</div>
     
     <div class="time-display-box">
       <div class="time-card">
         <div class="time-label">開始時刻</div>
-        <div class="time-value">--:--</div>
+        <div id="detail-start-time" class="time-value">--:--</div>
       </div>
       <div class="arrow">→</div>
       <div class="time-card end-time">
         <div class="time-label">終了時刻</div>
-        <div class="time-value">--:--</div>
+        <div id="detail-end-time" class="time-value">--:--</div>
       </div>
     </div>
     
-    <!-- 【修正箇所】横並びの4つ枠エリア -->
+    <!-- 4つの項目ボックス -->
     <div class="price-cards-container">
       <div class="price-card">
         <div class="price-label">コース料金</div>
-        <div class="price-value">¥9,000</div>
+        <div id="val-course-price" class="price-value">—</div>
       </div>
       <div class="price-card">
         <div class="price-label">STAFF</div>
-        <div class="price-value">¥4,500</div>
+        <div id="val-staff-price" class="price-value">—</div>
       </div>
       <div class="price-card">
         <div class="price-label">OWNER</div>
-        <div class="price-value">¥9,000</div>
+        <div id="val-owner-price" class="price-value">—</div>
       </div>
       <div class="price-card">
         <div class="price-label">OWNER割引</div>
-        <div class="price-value-discount">—</div>
+        <div id="val-discount" class="price-value-discount">—</div>
       </div>
     </div>
     
@@ -349,7 +356,8 @@
 
   <!-- コース一覧リスト -->
   <div class="course-list">
-    <div class="course-item">
+    <!-- 各項目に onclick イベントを仕込み、クリック時にデータを渡します -->
+    <div class="course-item" onclick="selectCourse('20分コース | Topaz', 20, 6000, 3000)">
       <div class="course-left">
         <div class="course-duration">20<span>分</span></div>
         <span class="badge topaz">Topaz</span>
@@ -361,7 +369,7 @@
       </div>
     </div>
 
-    <div class="course-item">
+    <div class="course-item" onclick="selectCourse('30分コース | Thai', 30, 5000, 2500)">
       <div class="course-left">
         <div class="course-duration">30<span>分</span></div>
         <span class="badge thai">Thai</span>
@@ -373,7 +381,7 @@
       </div>
     </div>
 
-    <div class="course-item">
+    <div class="course-item" onclick="selectCourse('40分コース | Topaz', 40, 8000, 4000)">
       <div class="course-left">
         <div class="course-duration">40<span>分</span></div>
         <span class="badge topaz">Topaz</span>
@@ -385,7 +393,7 @@
       </div>
     </div>
 
-    <div class="course-item">
+    <div class="course-item" onclick="selectCourse('60分コース | Thai', 60, 7000, 3500)">
       <div class="course-left">
         <div class="course-duration">60<span>分</span></div>
         <span class="badge thai">Thai</span>
@@ -397,7 +405,7 @@
       </div>
     </div>
 
-    <div class="course-item">
+    <div class="course-item" onclick="selectCourse('60分コース | Oil', 60, 9000, 4500)">
       <div class="course-left">
         <div class="course-duration">60<span>分</span></div>
         <span class="badge oil">Oil</span>
@@ -409,7 +417,7 @@
       </div>
     </div>
 
-    <div class="course-item">
+    <div class="course-item" onclick="selectCourse('70分コース | Topaz', 70, 11000, 5500)">
       <div class="course-left">
         <div class="course-duration">70<span>分</span></div>
         <span class="badge topaz">Topaz</span>
@@ -421,7 +429,7 @@
       </div>
     </div>
 
-    <div class="course-item">
+    <div class="course-item" onclick="selectCourse('90分コース | Thai', 90, 9000, 4500)">
       <div class="course-left">
         <div class="course-duration">90<span>分</span></div>
         <span class="badge thai">Thai</span>
@@ -434,6 +442,80 @@
     </div>
   </div>
 </div>
+
+<!-- 💡 ここから動作プログラム（JavaScript） -->
+<script>
+  let startTime = null;
+  let selectedDuration = 0;
+
+  // 1. リアルタイムで現在時刻を更新する関数
+  function updateClock() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const timeString = `${hours}:${minutes}`;
+    
+    document.getElementById('header-current-time').innerText = timeString;
+    document.getElementById('status-current-time').innerText = timeString;
+
+    // 開始時刻がセットされている場合は、経過時間を計算
+    if (startTime) {
+      const elapsedMs = now - startTime;
+      const elapsedMins = Math.floor(elapsedMs / 1000 / 60);
+      document.getElementById('status-elapsed-time').innerText = `${elapsedMins}分`;
+    }
+  }
+
+  // 1秒ごとに時計を動かす
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // 2. 「更新」ボタンを押したときの処理（開始時刻をセット）
+  document.getElementById('btn-update-time').addEventListener('click', () => {
+    startTime = new Date();
+    const hours = String(startTime.getHours()).padStart(2, '0');
+    const minutes = String(startTime.getMinutes()).padStart(2, '0');
+    const timeString = `${hours}:${minutes}`;
+
+    // 各所の開始時刻表示を書き換える
+    document.getElementById('status-start-time').innerText = timeString;
+    document.getElementById('detail-start-time').innerText = timeString;
+    document.getElementById('status-elapsed-time').innerText = "0分";
+
+    // もしすでにコースが選ばれていたら、終了時刻を再計算する
+    if (selectedDuration > 0) {
+      calculateEndTime();
+    }
+  });
+
+  // 3. コースを選択したときの処理
+  function selectCourse(courseName, duration, price, staffPrice) {
+    selectedDuration = duration;
+    
+    // 詳細エリアのテキストを書き換え
+    document.getElementById('detail-course-name').innerText = courseName;
+    document.getElementById('val-course-price').innerText = `¥${price.toLocaleString()}`;
+    document.getElementById('val-staff-price').innerText = `¥${staffPrice.toLocaleString()}`;
+    document.getElementById('val-owner-price').innerText = `¥${price.toLocaleString()}`;
+    document.getElementById('val-discount').innerText = '—';
+
+    // 開始時刻がすでにセットされていれば、終了時刻を計算
+    if (startTime) {
+      calculateEndTime();
+    }
+  }
+
+  // 4. 終了時刻を計算して表示する関数
+  function calculateEndTime() {
+    if (!startTime || selectedDuration === 0) return;
+
+    const endTime = new Date(startTime.getTime() + selectedDuration * 60000);
+    const hours = String(endTime.getHours()).padStart(2, '0');
+    const minutes = String(endTime.getMinutes()).padStart(2, '0');
+    
+    document.getElementById('detail-end-time').innerText = `${hours}:${minutes}`;
+  }
+</script>
 
 </body>
 </html>
