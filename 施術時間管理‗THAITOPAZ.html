@@ -249,7 +249,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 8px; /* 上下余白を増やしてタップしやすく */
+      padding: 14px 8px;
       border-bottom: 1px solid #f0f0f0;
       cursor: pointer;
     }
@@ -267,10 +267,9 @@
       gap: 12px;
     }
     
-    /* 【文字拡大】コース時間 */
     .course-duration {
       font-weight: bold;
-      font-size: 18px; /* 16pxから拡大 */
+      font-size: 18px;
       color: #222222;
       width: 55px;
     }
@@ -280,13 +279,12 @@
       color: #555555;
     }
     
-    /* 【文字拡大】コースバッジ */
     .badge {
-      font-size: 14px; /* 12pxから拡大 */
+      font-size: 14px;
       padding: 4px 8px;
       border-radius: 4px;
       font-weight: bold;
-      width: 65px; /* バッジの横幅を広げて文字を大きく */
+      width: 65px;
       text-align: center;
     }
     .badge.thai { background-color: #e6f7ff; color: #1a6fa5; }
@@ -297,10 +295,9 @@
       text-align: right;
     }
     
-    /* 【文字拡大】コース料金 */
     .course-main-price {
       font-weight: bold;
-      font-size: 18px; /* 15pxから拡大 */
+      font-size: 18px;
       color: #111111;
     }
   </style>
@@ -382,9 +379,8 @@
     <div class="tab" onclick="filterCategory('Topaz', this)">Topaz</div>
   </div>
 
-  <!-- コース一覧リスト（スタッフ料金を非表示にし、主要文字を拡大） -->
+  <!-- コース一覧リスト -->
   <div class="course-list" id="course-list-container">
-    <!-- 20分 -->
     <div class="course-item" data-type="Topaz" onclick="selectCourse('20分コース | Topaz', 20, 6000, 3000, 3000, 0, 300)">
       <div class="course-left">
         <div class="course-duration">20<span>分</span></div>
@@ -395,7 +391,6 @@
       </div>
     </div>
 
-    <!-- 30分 -->
     <div class="course-item" data-type="Thai" onclick="selectCourse('30分コース | Thai', 30, 5000, 2500, 2500, 0, 167)">
       <div class="course-left">
         <div class="course-duration">30<span>分</span></div>
@@ -406,7 +401,6 @@
       </div>
     </div>
 
-    <!-- 40分 -->
     <div class="course-item" data-type="Topaz" onclick="selectCourse('40分コース | Topaz', 40, 8000, 4000, 4000, 0, 200)">
       <div class="course-left">
         <div class="course-duration">40<span>分</span></div>
@@ -417,7 +411,6 @@
       </div>
     </div>
 
-    <!-- 60分 -->
     <div class="course-item" data-type="Thai" onclick="selectCourse('60分コース | Thai', 60, 7000, 3500, 3500, 0, 117)">
       <div class="course-left">
         <div class="course-duration">60<span>分</span></div>
@@ -437,7 +430,6 @@
       </div>
     </div>
 
-    <!-- 70分 -->
     <div class="course-item" data-type="Topaz" onclick="selectCourse('70分コース | Topaz', 70, 11000, 5500, 5500, 4500, 157)">
       <div class="course-left">
         <div class="course-duration">70<span>分</span></div>
@@ -448,7 +440,6 @@
       </div>
     </div>
 
-    <!-- 90分 -->
     <div class="course-item" data-type="Thai" onclick="selectCourse('90分コース | Thai', 90, 9000, 4500, 4500, 0, 100)">
       <div class="course-left">
         <div class="course-duration">90<span>分</span></div>
@@ -468,7 +459,6 @@
       </div>
     </div>
 
-    <!-- 100分 -->
     <div class="course-item" data-type="Topaz" onclick="selectCourse('100分コース | Topaz', 100, 14000, 7000, 7000, 6000, 140)">
       <div class="course-left">
         <div class="course-duration">100<span>分</span></div>
@@ -479,7 +469,6 @@
       </div>
     </div>
 
-    <!-- 120分 -->
     <div class="course-item" data-type="Thai" onclick="selectCourse('120分コース | Thai', 120, 12000, 6000, 6000, 5000, 100)">
       <div class="course-left">
         <div class="course-duration">120<span>分</span></div>
@@ -508,7 +497,6 @@
       </div>
     </div>
 
-    <!-- 150分 -->
     <div class="course-item" data-type="Oil" onclick="selectCourse('150分コース | Oil', 150, 18000, 9000, 9000, 8000, 120)">
       <div class="course-left">
         <div class="course-duration">150<span>分</span></div>
@@ -528,7 +516,6 @@
       </div>
     </div>
 
-    <!-- 180分 -->
     <div class="course-item" data-type="Oil" onclick="selectCourse('180分コース | Oil', 180, 21000, 10500, 10500, 9500, 117)">
       <div class="course-left">
         <div class="course-duration">180<span>分</span></div>
@@ -565,23 +552,46 @@
     document.getElementById('header-current-time').innerText = timeString;
     document.getElementById('status-current-time').innerText = timeString;
 
+    // 経過時間は「実際の現在時刻」と「丸められた開始時刻」の差分でリアルタイム計算
     if (startTime) {
       const elapsedMs = now - startTime;
       const elapsedMins = Math.floor(elapsedMs / 1000 / 60);
-      document.getElementById('status-elapsed-time').innerText = `${elapsedMins}分`;
+      document.getElementById('status-elapsed-time').innerText = `${elapsedMins < 0 ? 0 : elapsedMins}分`;
     }
   }
 
   setInterval(updateClock, 1000);
   updateClock();
 
-  // 2. 「更新」ボタン処理
+  // 2. 【Excel数式再現】5分刻みの丸め処理関数
+  function getRoundedTime(date) {
+    const rounded = new Date(date.getTime());
+    const mins = rounded.getMinutes();
+    const remainder = mins % 5;
+
+    if (remainder < 3) {
+      // 3分未満（1分, 2分）は切り捨て
+      rounded.setMinutes(mins - remainder);
+    } else {
+      // 3分以上（3分, 4分）は切り上げ（次の5分刻みへ）
+      rounded.setMinutes(mins + (5 - remainder));
+    }
+    rounded.setSeconds(0);
+    return rounded;
+  }
+
+  // 3. 「更新」ボタン処理（開始時刻を5分刻みに丸めてセット）
   document.getElementById('btn-update-time').addEventListener('click', () => {
-    startTime = new Date();
+    const currentActualTime = new Date();
+    
+    // 現在時刻をご提示の数式ルール（5分単位・3分境）で自動丸め
+    startTime = getRoundedTime(currentActualTime);
+
     const hours = String(startTime.getHours()).padStart(2, '0');
     const minutes = String(startTime.getMinutes()).padStart(2, '0');
     const timeString = `${hours}:${minutes}`;
 
+    // 各エリアに丸められた開始時刻を反映
     document.getElementById('status-start-time').innerText = timeString;
     document.getElementById('detail-start-time').innerText = timeString;
     document.getElementById('status-elapsed-time').innerText = "0分";
@@ -591,7 +601,7 @@
     }
   });
 
-  // 3. コース選択処理
+  // 4. コース選択処理
   function selectCourse(courseName, duration, price, staffPrice, ownerPrice, discountPrice, rate) {
     selectedDuration = duration;
     
@@ -613,7 +623,7 @@
     }
   }
 
-  // 4. 終了時刻計算
+  // 5. 終了時刻計算（丸められた開始時刻をもとに計算）
   function calculateEndTime() {
     if (!startTime || selectedDuration === 0) return;
 
@@ -624,7 +634,7 @@
     document.getElementById('detail-end-time').innerText = `${hours}:${minutes}`;
   }
 
-  // 5. カテゴリフィルターの処理関数
+  // 6. カテゴリフィルター処理
   function filterCategory(category, tabElement) {
     const tabs = document.querySelectorAll('.tab');
     tabs.forEach(t => t.classList.remove('active'));
