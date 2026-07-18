@@ -242,6 +242,7 @@
       font-weight: bold;
       font-size: 14px;
       color: #333333;
+      width: 40px; /* 横幅を統一して見やすく */
     }
     .course-duration span {
       font-size: 11px;
@@ -253,6 +254,8 @@
       padding: 2px 6px;
       border-radius: 4px;
       font-weight: 500;
+      width: 50px;
+      text-align: center;
     }
     .badge.thai { background-color: #e6f7ff; color: #1a6fa5; }
     .badge.topaz { background-color: #fff1f0; color: #ff4d4f; }
@@ -354,9 +357,8 @@
     <div class="tab">Topaz</div>
   </div>
 
-  <!-- コース一覧リスト -->
+  <!-- コース一覧リスト（全種類を完全に反映） -->
   <div class="course-list">
-    <!-- 各項目に onclick イベントを仕込み、クリック時にデータを渡します -->
     <div class="course-item" onclick="selectCourse('20分コース | Topaz', 20, 6000, 3000)">
       <div class="course-left">
         <div class="course-duration">20<span>分</span></div>
@@ -443,7 +445,7 @@
   </div>
 </div>
 
-<!-- 💡 ここから動作プログラム（JavaScript） -->
+<!-- 動作プログラム（JavaScript） -->
 <script>
   let startTime = null;
   let selectedDuration = 0;
@@ -458,7 +460,6 @@
     document.getElementById('header-current-time').innerText = timeString;
     document.getElementById('status-current-time').innerText = timeString;
 
-    // 開始時刻がセットされている場合は、経過時間を計算
     if (startTime) {
       const elapsedMs = now - startTime;
       const elapsedMins = Math.floor(elapsedMs / 1000 / 60);
@@ -466,7 +467,6 @@
     }
   }
 
-  // 1秒ごとに時計を動かす
   setInterval(updateClock, 1000);
   updateClock();
 
@@ -477,12 +477,10 @@
     const minutes = String(startTime.getMinutes()).padStart(2, '0');
     const timeString = `${hours}:${minutes}`;
 
-    // 各所の開始時刻表示を書き換える
     document.getElementById('status-start-time').innerText = timeString;
     document.getElementById('detail-start-time').innerText = timeString;
     document.getElementById('status-elapsed-time').innerText = "0分";
 
-    // もしすでにコースが選ばれていたら、終了時刻を再計算する
     if (selectedDuration > 0) {
       calculateEndTime();
     }
@@ -492,14 +490,12 @@
   function selectCourse(courseName, duration, price, staffPrice) {
     selectedDuration = duration;
     
-    // 詳細エリアのテキストを書き換え
     document.getElementById('detail-course-name').innerText = courseName;
     document.getElementById('val-course-price').innerText = `¥${price.toLocaleString()}`;
     document.getElementById('val-staff-price').innerText = `¥${staffPrice.toLocaleString()}`;
     document.getElementById('val-owner-price').innerText = `¥${price.toLocaleString()}`;
     document.getElementById('val-discount').innerText = '—';
 
-    // 開始時刻がすでにセットされていれば、終了時刻を計算
     if (startTime) {
       calculateEndTime();
     }
