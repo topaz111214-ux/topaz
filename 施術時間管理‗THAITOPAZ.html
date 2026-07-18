@@ -21,7 +21,7 @@
 
     .app-container {
       width: 100%;
-      max-width: 480px; /* 少し横幅を広げて見やすく */
+      max-width: 480px;
       background-color: #ffffff;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
@@ -120,7 +120,7 @@
       margin-bottom: 12px;
     }
 
-    /* 【文字サイズ拡大】詳細の時間表示 */
+    /* 詳細の時間表示 */
     .time-display-box {
       display: flex;
       align-items: center;
@@ -140,13 +140,13 @@
       border-color: #ff4d4f;
     }
     .time-card .time-label {
-      font-size: 12px; /* ラベルを少し大きく */
+      font-size: 12px;
       color: #777777;
       margin-bottom: 4px;
       font-weight: bold;
     }
     .time-card .time-value {
-      font-size: 24px; /* 数字を大幅に大きく */
+      font-size: 24px;
       font-weight: bold;
       color: #1a6fa5;
     }
@@ -159,7 +159,7 @@
       font-size: 18px;
     }
 
-    /* 【文字サイズ拡大】4項目料金エリア */
+    /* 【ズレ修正】4項目料金エリア */
     .price-cards-container {
       display: flex;
       justify-content: space-between;
@@ -171,33 +171,46 @@
       background-color: #ffffff;
       border: 1px solid #e0e0e0;
       border-radius: 6px;
-      padding: 10px 2px; /* 上下余白を増やして見やすく */
+      padding: 10px 2px;
       text-align: center;
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      /* 上下のズレを防ぎ、中央揃えを維持する設定 */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 62px; 
     }
     .price-label {
-      font-size: 11px; /* 文字サイズを大きく */
+      font-size: 11px;
       font-weight: bold;
-      color: #555555; /* 色を濃くしてクッキリ */
-      margin-bottom: 6px;
-      white-space: nowrap;
+      color: #555555;
+      margin-bottom: 4px;
+      height: 16px; /* ラベル自体の高さを固定してズレを防止 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .price-value {
-      font-size: 15px; /* 金額の数値を大きく */
+      font-size: 15px;
       font-weight: bold;
       color: #222222;
+      margin-top: auto; /* 金額を下側に綺麗に揃える */
     }
     .price-value-discount {
       font-size: 15px;
       font-weight: bold;
-      color: #cc3300; /* 割引料金は赤・オレンジ系で強調 */
+      color: #cc3300;
+      margin-top: auto;
     }
+    
+    /* 【文字拡大＆文言変更】単価ラベルのスタイル */
     .rate-label {
       text-align: right;
-      font-size: 12px;
+      font-size: 13px; /* 少し大きく調整 */
       font-weight: bold;
-      color: #666666;
-      margin-top: 6px;
+      color: #555555; /* クッキリ見えるように少し濃く */
+      margin-top: 8px;
     }
 
     /* タブ切り替え */
@@ -225,7 +238,7 @@
     /* コース一覧リスト */
     .course-list {
       padding: 0 12px;
-      max-height: 400px; /* スクロールできるように調整 */
+      max-height: 400px;
       overflow-y: auto;
     }
     .course-item {
@@ -266,11 +279,6 @@
     .badge.thai { background-color: #e6f7ff; color: #1a6fa5; }
     .badge.topaz { background-color: #fff1f0; color: #ff4d4f; }
     .badge.oil { background-color: #fffbe6; color: #d4b106; }
-    
-    .course-time-flow {
-      font-size: 11px;
-      color: #999999;
-    }
     
     .course-right {
       text-align: right;
@@ -332,7 +340,7 @@
       </div>
     </div>
     
-    <!-- 大きく調整された4つの項目ボックス -->
+    <!-- 位置調整された4つの項目ボックス -->
     <div class="price-cards-container">
       <div class="price-card">
         <div class="price-label">コース料金</div>
@@ -352,7 +360,8 @@
       </div>
     </div>
     
-    <div id="val-rate" class="rate-label">¥0/分</div>
+    <!-- 【文言変更】時間単価表示エリア -->
+    <div id="val-rate" class="rate-label">時間単価：¥0/分</div>
   </div>
 
   <!-- カテゴリタブ -->
@@ -363,7 +372,7 @@
     <div class="tab">Topaz</div>
   </div>
 
-  <!-- コース一覧リスト（全21コースを完全に反映） -->
+  <!-- コース一覧リスト -->
   <div class="course-list">
     <!-- 20分 -->
     <div class="course-item" onclick="selectCourse('20分コース | Topaz', 20, 6000, 3000, 3000, 0, 300)">
@@ -588,7 +597,7 @@
     }
   });
 
-  // 3. コース選択処理（全料金項目と分単価に対応）
+  // 3. コース選択処理
   function selectCourse(courseName, duration, price, staffPrice, ownerPrice, discountPrice, rate) {
     selectedDuration = duration;
     
@@ -597,15 +606,14 @@
     document.getElementById('val-staff-price').innerText = `¥${staffPrice.toLocaleString()}`;
     document.getElementById('val-owner-price').innerText = `¥${ownerPrice.toLocaleString()}`;
     
-    // 割引済料金が「ー」の場合はそのまま表示、数値がある場合は「¥金額」で表示
     if(discountPrice === 0) {
       document.getElementById('val-discount').innerText = '—';
     } else {
       document.getElementById('val-discount').innerText = `¥${discountPrice.toLocaleString()}`;
     }
     
-    // 分単価の表示更新
-    document.getElementById('val-rate').innerText = `¥${rate}/分`;
+    // 【文言修正】時間単価表示
+    document.getElementById('val-rate').innerText = `時間単価：¥${rate}/分`;
 
     if (startTime) {
       calculateEndTime();
