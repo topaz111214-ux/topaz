@@ -311,7 +311,7 @@
     <div id="header-current-time" class="time">--:--</div>
   </div>
 
-  <!-- 上部ステータス表示 -->
+  <!-- 上部ステータス表示（上の開始時刻ボックス） -->
   <div class="status-container">
     <div class="status-card">
       <div class="status-label">開始時刻</div>
@@ -336,6 +336,7 @@
     <div id="detail-course-name" class="course-name">コースを選択してください</div>
     
     <div class="time-display-box">
+      <!-- 真ん中の開始時刻ボックス -->
       <div class="time-card">
         <div class="time-label">開始時刻</div>
         <div id="detail-start-time" class="time-value">--:--</div>
@@ -539,7 +540,8 @@
 
 <!-- 動作プログラム（JavaScript） -->
 <script>
-  let startTime = null;
+  let actualStartTime = null; // 更新したそのままの時間（上部用）
+  let roundedStartTime = null; // 5分単位に計算した時間（真ん中・終了時刻用）
   let selectedDuration = 0;
 
   // 1. リアルタイム時計更新
@@ -552,9 +554,9 @@
     document.getElementById('header-current-time').innerText = timeString;
     document.getElementById('status-current-time').innerText = timeString;
 
-    // 経過時間は「実際の現在時刻」と「丸められた開始時刻」の差分でリアルタイム計算
-    if (startTime) {
-      const elapsedMs = now - startTime;
+    // 経過時間は「実際の現在時刻」と「更新したそのままの時間」の差分でリアルタイム計算
+    if (actualStartTime) {
+      const elapsedMs = now - actualStartTime;
       const elapsedMins = Math.floor(elapsedMs / 1000 / 60);
       document.getElementById('status-elapsed-time').innerText = `${elapsedMins < 0 ? 0 : elapsedMins}分`;
     }
@@ -563,37 +565,38 @@
   setInterval(updateClock, 1000);
   updateClock();
 
-  // 2. 【Excel数式再現】5分刻みの丸め処理関数
+  // 2. 5分刻みの丸め処理関数
   function getRoundedTime(date) {
     const rounded = new Date(date.getTime());
     const mins = rounded.getMinutes();
     const remainder = mins % 5;
 
     if (remainder < 3) {
-      // 3分未満（1分, 2分）は切り捨て
       rounded.setMinutes(mins - remainder);
     } else {
-      // 3分以上（3分, 4分）は切り上げ（次の5分刻みへ）
       rounded.setMinutes(mins + (5 - remainder));
     }
     rounded.setSeconds(0);
     return rounded;
   }
 
-  // 3. 「更新」ボタン処理（開始時刻を5分刻みに丸めてセット）
+  // 時間を「HH:MM」の文字列にする便利関数
+  function formatTime(date) {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
+  // 3. 「更新」ボタン処理
   document.getElementById('btn-update-time').addEventListener('click', () => {
-    const currentActualTime = new Date();
-    
-    // 現在時刻をご提示の数式ルール（5分単位・3分境）で自動丸め
-    startTime = getRoundedTime(currentActualTime);
+    // A. 更新ボタンを押したそのままの時間
+    actualStartTime = new Date();
+    document.getElementById('status-start-time').innerText = formatTime(actualStartTime);
 
-    const hours = String(startTime.getHours()).padStart(2, '0');
-    const minutes = String(startTime.getMinutes()).padStart(2, '0');
-    const timeString = `${hours}:${minutes}`;
+    // B. 計算式が反映した5分単位の時間
+    roundedStartTime = getRoundedTime(actualStartTime);
+    document.getElementById('detail-start-time').innerText = formatTime(roundedStartTime);
 
-    // 各エリアに丸められた開始時刻を反映
-    document.getElementById('status-start-time').innerText = timeString;
-    document.getElementById('detail-start-time').innerText = timeString;
     document.getElementById('status-elapsed-time').innerText = "0分";
 
     if (selectedDuration > 0) {
@@ -618,20 +621,17 @@
     
     document.getElementById('val-rate').innerText = `時間単価：¥${rate}/分`;
 
-    if (startTime) {
+    if (roundedStartTime) {
       calculateEndTime();
     }
   }
 
-  // 5. 終了時刻計算（丸められた開始時刻をもとに計算）
+  // 5. 終了時刻計算（丸められた真ん中の開始時刻をもとに計算）
   function calculateEndTime() {
-    if (!startTime || selectedDuration === 0) return;
+    if (!roundedStartTime || selectedDuration === 0) return;
 
-    const endTime = new Date(startTime.getTime() + selectedDuration * 60000);
-    const hours = String(endTime.getHours()).padStart(2, '0');
-    const minutes = String(endTime.getMinutes()).padStart(2, '0');
-    
-    document.getElementById('detail-end-time').innerText = `${hours}:${minutes}`;
+    const endTime = new Date(roundedStartTime.getTime() + selectedDuration * 60000);
+    document.getElementById('detail-end-time').innerText = formatTime(endTime);
   }
 
   // 6. カテゴリフィルター処理
