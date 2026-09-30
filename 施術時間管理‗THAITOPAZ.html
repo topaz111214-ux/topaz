@@ -26,10 +26,10 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
 .lang-btn{background:none;border:none;color:rgba(255,255,255,.8);font-size:11px;font-weight:600;padding:3px 6px;border-radius:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s}
 .lang-btn.on{background:#fff;color:#1a6fa8}
 
-/* 歯車ボタン */
-.btn-setting{background:none;border:none;cursor:pointer;color:#fff;padding:5px;border-radius:6px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:background .2s}
-.btn-setting:active{background:rgba(255,255,255,.25)}
-.btn-setting svg{width:18px;height:18px;stroke:currentColor}
+/* 歯車ボタン（高精細・美バランス） */
+.btn-setting{background:rgba(255,255,255,.15);border:none;cursor:pointer;color:#fff;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:all .15s ease;flex-shrink:0}
+.btn-setting:active{background:rgba(255,255,255,.3);transform:scale(.95)}
+.btn-setting svg{width:20px;height:20px;fill:currentColor;display:block}
 
 /* レイアウトグリッド */
 .main-grid{display:flex;flex-direction:column;gap:8px;flex:1}
@@ -124,7 +124,7 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
 .modal-overlay.open{display:flex}
 .modal-content{background:#fff;border-radius:14px;width:100%;max-width:760px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 8px 30px rgba(0,0,0,.25);overflow:hidden}
 .modal-hdr{background:#f7f7f8;border-bottom:1px solid #e5e5ea;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
-.modal-hdr h3{font-size:16px;font-weight:700;color:#1c1c1e}
+.modal-hdr h3{font-size:16px;font-weight:700;color:#1c1c1e;display:flex;align-items:center;gap:6px}
 .modal-close{background:none;border:none;font-size:24px;color:#8e8e93;cursor:pointer;line-height:1;padding:0 4px}
 .modal-body{padding:14px;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:14px}
 
@@ -193,10 +193,10 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
         <button class="lang-btn" id="btnLangTh" onclick="setLang('th')">TH</button>
       </div>
       <span class="hdr-c" id="liveTime">--:--</span>
+      <!-- 修正：高精細マテリアル歯車アイコン -->
       <button class="btn-setting" id="btnOpenSetting" title="設定" aria-label="設定">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        <svg viewBox="0 0 24 24">
+          <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
         </svg>
       </button>
     </div>
@@ -250,7 +250,7 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
 <div class="modal-overlay" id="settingModal">
   <div class="modal-content">
     <div class="modal-hdr">
-      <h3 id="lblSettingHdr">⚙️️ 設定（基本設定・コース一覧）</h3>
+      <h3 id="lblSettingHdr"><svg style="width:18px;height:18px;fill:currentColor;display:inline-block;vertical-align:-3px;" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg> <span id="lblSettingHdrText">設定（基本設定・コース一覧）</span></h3>
       <button class="modal-close" id="btnCloseSetting">&times;</button>
     </div>
     <div class="modal-body">
@@ -337,7 +337,7 @@ var I18N = {
     all: "すべて",
     courseTime: "コース時間",
     courseName: "コース名",
-    settingHdr: "⚙️ 設定（基本設定・コース一覧）",
+    settingHdrText: "設定（基本設定・コース一覧）",
     basicCfgTitle: "基本設定（項目名・基本％設定）",
     basicDesc: "※基本設定を入力後、「全コースに反映」ボタンを押すと、登録済みの全コースに自動計算で一括反映されます。",
     storeLabel: "店舗表示名",
@@ -379,7 +379,7 @@ var I18N = {
     all: "All",
     courseTime: "Duration",
     courseName: "Course Name",
-    settingHdr: "⚙️ Settings (Basic & Courses)",
+    settingHdrText: "Settings (Basic & Courses)",
     basicCfgTitle: "Basic Settings (Item Names & Default %)",
     basicDesc: "* After entering basic settings, click 'Apply to All' to recalculate all courses automatically.",
     storeLabel: "Store Name",
@@ -421,7 +421,7 @@ var I18N = {
     all: "ทั้งหมด",
     courseTime: "ระยะเวลา",
     courseName: "ชื่อคอร์ส",
-    settingHdr: "⚙️ การตั้งค่า (พื้นฐาน & คอร์ส)",
+    settingHdrText: "การตั้งค่า (พื้นฐาน & คอร์ส)",
     basicCfgTitle: "การตั้งค่าพื้นฐาน (ชื่อรายการ & % เริ่มต้น)",
     basicDesc: "* หลังระบุการตั้งค่าพื้นฐาน กด 'นำไปใช้กับทุกคอร์ส' เพื่อคำนวณอัตโนมัติทั้งหมด",
     storeLabel: "ชื่อร้านค้า",
@@ -562,15 +562,12 @@ function loadSettings(){
     basicPcts = Object.assign({}, DEFAULT_BASIC_PCTS);
   }
 
-  // 時間が短い順に初期ソート
   COURSES.sort(function(a,b){ return a.m - b.m; });
-
   document.getElementById('storeNameText').textContent = storeName;
   updateLangUI();
 }
 
 function saveSettings(coursesList, name, labels, pcts){
-  // 時間が短い順にソートして確定
   coursesList.sort(function(a,b){ return a.m - b.m; });
   COURSES = coursesList;
   storeName = name;
@@ -615,7 +612,7 @@ function updateLangUI(){
   document.getElementById('lblRStart').textContent = t.startTime;
   document.getElementById('lblREnd').textContent = t.endTime;
 
-  document.getElementById('lblSettingHdr').textContent = t.settingHdr;
+  document.getElementById('lblSettingHdrText').textContent = t.settingHdrText;
   document.getElementById('lblBasicCfgTitle').textContent = t.basicCfgTitle;
   document.getElementById('lblBasicDesc').textContent = t.basicDesc;
   document.getElementById('lblStoreLabel').textContent = t.storeLabel;
@@ -719,7 +716,6 @@ function render(){
     groupsByMin[c.m].push(c);
   }
 
-  // 時間が短い順（昇順）にソート
   minOrder.sort(function(a,b){ return a - b; });
 
   for(var g=0; g<minOrder.length; g++){
@@ -934,14 +930,12 @@ function applyBasicSettingsToAll(){
   alert(t.applyDone);
 }
 
-// コース時間を変更した際に自動ソートして再描画
 function onCourseTimeChange(){
-  var currentList = getEditCourses(); // getEditCourses内で自動ソートされる
+  var currentList = getEditCourses();
   renderCourseEditItems(currentList);
 }
 
 function renderCourseEditItems(list){
-  // 時間が短い順にソートして描画
   list.sort(function(a,b){ return a.m - b.m; });
 
   var t = I18N[currentLang];
@@ -1100,7 +1094,6 @@ function getEditCourses(){
       percents: percents
     });
   });
-  // 時間が短い順にソート
   list.sort(function(a,b){ return a.m - b.m; });
   return list;
 }
@@ -1128,7 +1121,7 @@ document.getElementById('btnCloseSetting').onclick = function(){
   modal.classList.remove('open');
 };
 
-// コース追加（追加後も自動ソート）
+// コース追加
 document.getElementById('btnAddCourse').onclick = function(){
   var currentList = getEditCourses();
   var bp2 = (basicPcts.p2 !== null && basicPcts.p2 !== undefined) ? basicPcts.p2 : null;
@@ -1149,7 +1142,6 @@ document.getElementById('btnAddCourse').onclick = function(){
     percents: [null, bp2, bp3, bp4, bp5]
   });
 
-  // 短い順にソートして描画
   currentList.sort(function(a,b){ return a.m - b.m; });
   renderCourseEditItems(currentList);
 };
