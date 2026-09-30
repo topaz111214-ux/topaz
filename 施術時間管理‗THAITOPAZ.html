@@ -151,7 +151,7 @@ input[type="number"] { -moz-appearance: textfield; }
 .tbox.end .tbox-val { color: #d32f2f; }
 .arrow { font-size: 20px; color: #8e8e93; text-align: center; }
 
-/* 5項目＋単価の価格表示 */
+/* 5項目＋単価の価格表示（スタッフごとのテーマカラー連動） */
 .res-prices { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 7px; }
 @media(max-width:380px){
   .res-prices { grid-template-columns: repeat(2,1fr); }
@@ -175,14 +175,17 @@ input[type="number"] { -moz-appearance: textfield; }
 .rp-val {
   font-size: 16px;
   font-weight: 700;
-  color: #1c1c1e;
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
 }
-.rp-val.hl1 { color: #1565c0; }
-.rp-val.hl2 { color: #2563eb; }
-.rp-val.hl3 { color: #059669; }
-.rp-val.hl-unit { color: #1e7e34; }
+
+/* 金額色分け */
+.rp-val.hl-base { color: #0f172a; }
+.rp-val.hl-staff-a { color: #1d4ed8; }
+.rp-val.hl-staff-b { color: #059669; }
+.rp-val.hl-staff-c { color: #d97706; }
+.rp-val.hl-staff-d { color: #7c3aed; }
+.rp-val.hl-unit { color: #047857; }
 
 /* フィルター */
 .filter-row { display: flex; gap: 5px; overflow-x: auto; flex-shrink: 0; padding-bottom: 2px; }
@@ -199,9 +202,7 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 .ftab.on { border-color: #1a6fa8; background: #e8f2fa; color: #1a6fa8; font-weight: 600; }
 
-/* ============================================================
-   コース一覧（同一分数の横並び表示・コース名横に大きめ金額・文字欠け防止）
-============================================================ */
+/* コース一覧 */
 .clist {
   background: transparent;
   overflow-y: auto;
@@ -211,7 +212,6 @@ input[type="number"] { -moz-appearance: textfield; }
   gap: 5px;
 }
 
-/* 分数グループ行 */
 .tg-row {
   background: #ffffff;
   border-radius: 8px;
@@ -223,7 +223,6 @@ input[type="number"] { -moz-appearance: textfield; }
   gap: 6px;
 }
 
-/* 左側：分数＆時間情報 */
 .tg-time-col {
   width: 58px;
   flex-shrink: 0;
@@ -258,7 +257,6 @@ input[type="number"] { -moz-appearance: textfield; }
   font-variant-numeric: tabular-nums;
 }
 
-/* 右側：同じ分数のコース横並びエリア */
 .tg-items-col {
   display: flex;
   gap: 5px;
@@ -267,7 +265,6 @@ input[type="number"] { -moz-appearance: textfield; }
   flex-wrap: wrap;
 }
 
-/* 各コースボタン */
 .tg-item-btn {
   flex: 1 1 0;
   min-width: 78px;
@@ -291,7 +288,6 @@ input[type="number"] { -moz-appearance: textfield; }
   background: #f1f5f9;
 }
 
-/* 選択されたコースのみに適用するスタイル */
 .tg-item-btn.selected {
   background: #e9f7ee !important;
   border-color: #34c759 !important;
@@ -301,7 +297,6 @@ input[type="number"] { -moz-appearance: textfield; }
   color: #166534;
 }
 
-/* コース名バッジ */
 .c-badge {
   font-size: 10px;
   font-weight: 700;
@@ -318,7 +313,6 @@ input[type="number"] { -moz-appearance: textfield; }
 .nm-topaz { background: #fde8ec; color: #b71c1c; }
 .nm-other { background: #eef1f4; color: #495057; }
 
-/* 金額表示 */
 .tg-price {
   font-size: 14px;
   font-weight: 700;
@@ -344,7 +338,7 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 /* ============================================================
-   設定モーダル（多言語完全対応）
+   設定モーダル
 ============================================================ */
 .modal-overlay {
   position: fixed;
@@ -434,7 +428,7 @@ input[type="number"] { -moz-appearance: textfield; }
   gap: 10px;
 }
 
-/* 1. 基本設定ボックス */
+/* 基本設定ボックス */
 .basic-cfg-box {
   background: #f0f7ff;
   border: 1px solid #bae6fd;
@@ -490,30 +484,40 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 .store-input:focus { border-color: #38bdf8; }
 
-/* 2列グリッド */
-.basic-grid-2col {
+/* 新配置レイアウト（iPhone最適化） */
+.basic-cfg-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 2px;
+}
+
+.cfg-row-2col {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 5px 6px;
-  margin-top: 1px;
 }
 
 .cfg-cell {
   background: #ffffff;
   border: 1px solid #cbd5e1;
   border-radius: 5px;
-  padding: 3px 5px;
+  padding: 3px 6px;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   min-width: 0;
+}
+
+.cfg-cell.full-row {
+  width: 100%;
 }
 
 .cfg-badge {
   color: #0284c7;
   font-weight: 700;
-  font-size: 12px;
-  width: 14px;
+  font-size: 13px;
+  width: 16px;
   text-align: center;
   flex-shrink: 0;
 }
@@ -521,11 +525,11 @@ input[type="number"] { -moz-appearance: textfield; }
 .inner-name {
   flex: 1;
   min-width: 0;
-  height: 26px;
+  height: 28px;
   border: 1px solid #e2e8f0;
   border-radius: 4px;
-  padding: 2px 5px;
-  font-size: 11.5px;
+  padding: 2px 6px;
+  font-size: 12px;
   background: #ffffff;
   outline: none;
 }
@@ -533,12 +537,12 @@ input[type="number"] { -moz-appearance: textfield; }
 .full-width { width: 100%; }
 
 .inner-pct {
-  width: 32px;
-  height: 26px;
+  width: 36px;
+  height: 28px;
   border: 1px solid #e2e8f0;
   border-radius: 4px;
   text-align: center;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 700;
   color: #2563eb;
   background: #ffffff;
@@ -549,23 +553,23 @@ input[type="number"] { -moz-appearance: textfield; }
 .inner-pct:focus { border-color: #38bdf8; }
 
 .inner-yen {
-  width: 52px;
-  height: 26px;
+  width: 58px;
+  height: 28px;
   border: 1px solid #e2e8f0;
   border-radius: 4px;
   text-align: right;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 700;
   color: #059669;
   background: #ffffff;
   outline: none;
   flex-shrink: 0;
-  padding: 2px 4px;
+  padding: 2px 5px;
 }
 .inner-yen:focus { border-color: #38bdf8; }
 
 .unit-lbl {
-  font-size: 11px;
+  font-size: 11.5px;
   color: #475569;
   font-weight: 600;
   flex-shrink: 0;
@@ -591,7 +595,7 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 .btn-apply-all:hover { background: #0270ad; }
 
-/* 2. コース一覧セクション */
+/* コース一覧セクション */
 .courses-section {
   display: flex;
   flex-direction: column;
@@ -729,9 +733,59 @@ input[type="number"] { -moz-appearance: textfield; }
   border-radius: 4px;
   border: 1px solid #cbd5e1;
 }
-.input-base { color: #0f172a; border-color: #94a3b8; background: #ffffff; }
-.input-staff { color: #2563eb; background: #eff6ff; border-color: #bfdbfe; }
-.input-opt { color: #64748b; background: #f8fafc; border-color: #cbd5e1; }
+
+/* ============================================================
+   ★スタッフ金額入力欄＆ラベルのテーマカラー別色分け（A〜D）
+============================================================ */
+.input-base {
+  color: #0f172a;
+  border-color: #cbd5e1;
+  background: #ffffff;
+}
+
+/* STAFF(A): ブルー */
+.input-staff-a {
+  color: #1d4ed8 !important;
+  background: #eff6ff !important;
+  border-color: #bfdbfe !important;
+}
+.amt-col .lbl-staff-a {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+/* STAFF(B): グリーン */
+.input-staff-b {
+  color: #059669 !important;
+  background: #ecfdf5 !important;
+  border-color: #a7f3d0 !important;
+}
+.amt-col .lbl-staff-b {
+  color: #059669;
+  font-weight: 600;
+}
+
+/* STAFF(C): オレンジ */
+.input-staff-c {
+  color: #d97706 !important;
+  background: #fffbeb !important;
+  border-color: #fde68a !important;
+}
+.amt-col .lbl-staff-c {
+  color: #d97706;
+  font-weight: 600;
+}
+
+/* STAFF(D): パープル（色なしを解消・AからDまで全て別のテーマカラーに） */
+.input-staff-d {
+  color: #7c3aed !important;
+  background: #f5f3ff !important;
+  border-color: #ddd6fe !important;
+}
+.amt-col .lbl-staff-d {
+  color: #7c3aed;
+  font-weight: 600;
+}
 
 .modal-ftr {
   padding: 8px 14px;
@@ -831,7 +885,7 @@ input[type="number"] { -moz-appearance: textfield; }
 </div>
 
 <!-- ============================================================
-     設定モーダル（多言語完全対応）
+     設定モーダル（多言語完全対応 ＆ 新配置レイアウト）
 ============================================================ -->
 <div class="modal-overlay" id="settingModal">
   <div class="modal-content">
@@ -864,27 +918,23 @@ input[type="number"] { -moz-appearance: textfield; }
           <input type="text" id="setting-store-name" value="Thai Topaz" class="store-input">
         </div>
 
-        <!-- 2列グリッド -->
-        <div class="basic-grid-2col">
-          <!-- 左列: ① 基本コース料金 -->
-          <div class="cfg-cell">
-            <span class="cfg-badge">①</span>
-            <input type="text" id="cfg-item1-name" value="基本コース料金" class="inner-name full-width" placeholder="基本料金名">
+        <!-- ★新配置レイアウト（iPhoneでも入力欄が一切隠れない横幅確保・行数削減） -->
+        <div class="basic-cfg-layout">
+          <!-- 1行目: ① 基本コース料金 ＆ ② 時間単価(分) （2列横並び） -->
+          <div class="cfg-row-2col">
+            <div class="cfg-cell">
+              <span class="cfg-badge">①</span>
+              <input type="text" id="cfg-item1-name" value="基本コース料金" class="inner-name full-width" placeholder="基本料金名">
+            </div>
+            <div class="cfg-cell">
+              <span class="cfg-badge">②</span>
+              <input type="text" id="cfg-unit-name" value="時間単価(分)" class="inner-name full-width" placeholder="単価名称">
+            </div>
           </div>
 
-          <!-- 右列: ④ STAFF(C) -->
-          <div class="cfg-cell">
-            <span class="cfg-badge">④</span>
-            <input type="text" id="cfg-item4-name" value="STAFF(C)" class="inner-name" placeholder="名称" oninput="autoRecalcAll()">
-            <input type="number" id="cfg-item4-pct" value="50" class="inner-pct" placeholder="" oninput="autoRecalcAll()">
-            <span class="unit-lbl">%</span>
-            <input type="number" id="cfg-item4-yen" value="-1000" class="inner-yen" placeholder="±円" oninput="autoRecalcAll()">
-            <span class="unit-lbl unit-yen-lbl">円</span>
-          </div>
-
-          <!-- 左列: ② STAFF(A) -->
-          <div class="cfg-cell">
-            <span class="cfg-badge">②</span>
+          <!-- 2行目: ③ STAFF(A) （1行全幅） -->
+          <div class="cfg-cell full-row">
+            <span class="cfg-badge">③</span>
             <input type="text" id="cfg-item2-name" value="STAFF(A)" class="inner-name" placeholder="名称" oninput="autoRecalcAll()">
             <input type="number" id="cfg-item2-pct" value="50" class="inner-pct" placeholder="" oninput="autoRecalcAll()">
             <span class="unit-lbl">%</span>
@@ -892,19 +942,9 @@ input[type="number"] { -moz-appearance: textfield; }
             <span class="unit-lbl unit-yen-lbl">円</span>
           </div>
 
-          <!-- 右列: ⑤ 任意⑤ -->
-          <div class="cfg-cell">
-            <span class="cfg-badge">⑤</span>
-            <input type="text" id="cfg-item5-name" value="任意⑤" class="inner-name" placeholder="名称" oninput="autoRecalcAll()">
-            <input type="number" id="cfg-item5-pct" value="" class="inner-pct" placeholder="" oninput="autoRecalcAll()">
-            <span class="unit-lbl">%</span>
-            <input type="number" id="cfg-item5-yen" value="" class="inner-yen" placeholder="±円" oninput="autoRecalcAll()">
-            <span class="unit-lbl unit-yen-lbl">円</span>
-          </div>
-
-          <!-- 左列: ③ STAFF(B) -->
-          <div class="cfg-cell">
-            <span class="cfg-badge">③</span>
+          <!-- 3行目: ④ STAFF(B) （1行全幅） -->
+          <div class="cfg-cell full-row">
+            <span class="cfg-badge">④</span>
             <input type="text" id="cfg-item3-name" value="STAFF(B)" class="inner-name" placeholder="名称" oninput="autoRecalcAll()">
             <input type="number" id="cfg-item3-pct" value="50" class="inner-pct" placeholder="" oninput="autoRecalcAll()">
             <span class="unit-lbl">%</span>
@@ -912,10 +952,24 @@ input[type="number"] { -moz-appearance: textfield; }
             <span class="unit-lbl unit-yen-lbl">円</span>
           </div>
 
-          <!-- 右列: 単 時間単価(分) -->
-          <div class="cfg-cell">
+          <!-- 4行目: ⑤ STAFF(C) （1行全幅） -->
+          <div class="cfg-cell full-row">
+            <span class="cfg-badge">⑤</span>
+            <input type="text" id="cfg-item4-name" value="STAFF(C)" class="inner-name" placeholder="名称" oninput="autoRecalcAll()">
+            <input type="number" id="cfg-item4-pct" value="50" class="inner-pct" placeholder="" oninput="autoRecalcAll()">
+            <span class="unit-lbl">%</span>
+            <input type="number" id="cfg-item4-yen" value="-1000" class="inner-yen" placeholder="±円" oninput="autoRecalcAll()">
+            <span class="unit-lbl unit-yen-lbl">円</span>
+          </div>
+
+          <!-- 5行目: ⑥ STAFF(D) （1行全幅） -->
+          <div class="cfg-cell full-row">
             <span class="cfg-badge">⑥</span>
-            <input type="text" id="cfg-unit-name" value="時間単価(分)" class="inner-name full-width" placeholder="単価名称">
+            <input type="text" id="cfg-item5-name" value="STAFF(D)" class="inner-name" placeholder="名称" oninput="autoRecalcAll()">
+            <input type="number" id="cfg-item5-pct" value="40" class="inner-pct" placeholder="" oninput="autoRecalcAll()">
+            <span class="unit-lbl">%</span>
+            <input type="number" id="cfg-item5-yen" value="" class="inner-yen" placeholder="±円" oninput="autoRecalcAll()">
+            <span class="unit-lbl unit-yen-lbl">円</span>
           </div>
         </div>
 
@@ -944,7 +998,7 @@ input[type="number"] { -moz-appearance: textfield; }
 </div>
 
 <!-- ============================================================
-     JavaScript ロジック部（完全多言語対応）
+     JavaScript ロジック部（完全多言語対応 ＆ 新配置・カラー連動）
 ============================================================ -->
 <script>
 // 多言語辞書
@@ -960,13 +1014,13 @@ var I18N = {
     endTime: "終了時刻",
     all: "すべて",
     
-    // 選択コース詳細（6項目）
+    // 選択コース詳細
     basePrice: "基本料金",
     baseCoursePrice: "基本コース料金",
     staffA: "STAFF(A)",
     staffB: "STAFF(B)",
     staffC: "STAFF(C)",
-    custom5: "任意⑤",
+    custom5: "STAFF(D)",
     unitPrice: "時間単価(分)",
     
     // 設定モーダルUI
@@ -1012,13 +1066,13 @@ var I18N = {
     endTime: "End Time",
     all: "All",
     
-    // 選択コース詳細（6項目）
+    // 選択コース詳細
     basePrice: "Base Price",
     baseCoursePrice: "Base Course Price",
     staffA: "STAFF(A)",
     staffB: "STAFF(B)",
     staffC: "STAFF(C)",
-    custom5: "Option ⑤",
+    custom5: "STAFF(D)",
     unitPrice: "Unit Price (min)",
     
     // 設定モーダルUI
@@ -1064,13 +1118,13 @@ var I18N = {
     endTime: "เวลาสิ้นสุด",
     all: "ทั้งหมด",
     
-    // 選択コース詳細（6項目）
+    // 選択コース詳細
     basePrice: "ราคาหลัก",
     baseCoursePrice: "ราคาคอร์สหลัก",
     staffA: "STAFF(A)",
     staffB: "STAFF(B)",
     staffC: "STAFF(C)",
-    custom5: "ตัวเลือก ⑤",
+    custom5: "STAFF(D)",
     unitPrice: "ราคาต่อนาที",
     
     // 設定モーダルUI
@@ -1110,18 +1164,16 @@ var I18N = {
 var currentLang = 'ja';
 var STORAGE_KEY = "CH_MANAGER_SETTINGS_DATA_V4";
 
-// デフォルト基本設定
 var DEFAULT_BASIC_SETTINGS = {
   storeName: "Thai Topaz",
   item1Name: "基本コース料金",
   item2: { name: "STAFF(A)", pct: "50", yen: "0" },
   item3: { name: "STAFF(B)", pct: "50", yen: "1000" },
   item4: { name: "STAFF(C)", pct: "50", yen: "-1000" },
-  item5: { name: "任意⑤", pct: "", yen: "" },
+  item5: { name: "STAFF(D)", pct: "40", yen: "" },
   unitName: "時間単価(分)"
 };
 
-// デフォルトコース一覧
 var DEFAULT_COURSES = [
   { m: 20,  name: 'Topaz',          price: 6000,  a: 3000, b: 4000, c: 2000, d: '' },
   { m: 30,  name: 'Thai',           price: 5000,  a: 2500, b: 3500, c: 1500, d: '' },
@@ -1174,7 +1226,6 @@ function getEffectiveStartTime() {
   return round5min(st || new Date());
 }
 
-// 各項目のラベル名を現在の言語に合わせて解決する関数
 function resolveItemName(itemKey, customName) {
   var t = I18N[currentLang];
   var defaultNames = [
@@ -1182,7 +1233,7 @@ function resolveItemName(itemKey, customName) {
     'STAFF(A)', 'พนักงาน(A)',
     'STAFF(B)', 'พนักงาน(B)',
     'STAFF(C)', 'พนักงาน(C)',
-    '任意⑤', 'Option ⑤', 'Option 5', 'Custom ⑤', 'Custom 5', 'ตัวเลือก ⑤',
+    'STAFF(D)', '任意⑤', 'Option ⑤', 'Option 5', 'Custom ⑤', 'Custom 5', 'ตัวเลือก ⑤',
     '時間単価(分)', '時間単価', 'Unit Price (min)', 'Unit Price', 'ราคาต่อนาที'
   ];
   if (!customName || defaultNames.indexOf(customName.trim()) !== -1) {
@@ -1207,7 +1258,6 @@ function setLang(lang){
   }
 }
 
-// 全UI要素の言語更新
 function updateLangUI(){
   var t = I18N[currentLang];
   document.getElementById('btnLangJa').className = 'lang-btn' + (currentLang==='ja'?' on':'');
@@ -1244,11 +1294,9 @@ function updateLangUI(){
   var elSaveMain = document.getElementById('btnSaveMain');
   if(elSaveMain) elSaveMain.textContent = t.btnSave;
 
-  // 単位表記（円 / ¥ / เยน）
   var yenLabels = document.querySelectorAll('.unit-yen-lbl');
   yenLabels.forEach(function(el){ el.textContent = t.yenUnit; });
 
-  // モーダル内の入力欄プレースホルダー更新
   var item1Input = document.getElementById('cfg-item1-name');
   if(item1Input) item1Input.placeholder = t.cfgItem1Placeholder;
   var unitInput = document.getElementById('cfg-unit-name');
@@ -1262,7 +1310,6 @@ function updateLangUI(){
   var yenInputs = document.querySelectorAll('.inner-yen');
   yenInputs.forEach(function(el){ el.placeholder = t.cfgPlusMinusPlaceholder; });
 
-  // もし設定モーダルが開いている場合は、入力値も言語に合わせて再同期
   var modalEl = document.getElementById('settingModal');
   if(modalEl && modalEl.classList.contains('open')){
     populateModalFromState();
@@ -1300,9 +1347,6 @@ function sf(cat){
   renderMainList();
 }
 
-// ============================================================
-// メイン一覧レンダリング
-// ============================================================
 function renderMainList(){
   var t = I18N[currentLang];
   var l = document.getElementById('clist');
@@ -1382,9 +1426,6 @@ function selectCourse(c){
   renderMainList();
 }
 
-// ============================================================
-// 選択詳細ボックスの表示
-// ============================================================
 function showRes(c, ss, es){
   selectedCourseData = c;
   var t = I18N[currentLang];
@@ -1405,17 +1446,16 @@ function showRes(c, ss, es){
 
   var rpBox = document.getElementById('resPrices');
   rpBox.innerHTML = 
-    '<div class="rp"><div class="rp-lbl">' + labelItem1 + '</div><div class="rp-val hl1">' + yen(p1) + '</div></div>'
-    + '<div class="rp"><div class="rp-lbl">' + labelItem2 + '</div><div class="rp-val hl2">' + (c.a!==''?yen(c.a):'—') + '</div></div>'
-    + '<div class="rp"><div class="rp-lbl">' + labelItem3 + '</div><div class="rp-val hl3">' + (c.b!==''?yen(c.b):'—') + '</div></div>'
-    + '<div class="rp"><div class="rp-lbl">' + labelItem4 + '</div><div class="rp-val">' + (c.c!==''?yen(c.c):'—') + '</div></div>'
-    + '<div class="rp"><div class="rp-lbl">' + labelItem5 + '</div><div class="rp-val">' + (c.d!==''?yen(c.d):'—') + '</div></div>'
+    '<div class="rp"><div class="rp-lbl">' + labelItem1 + '</div><div class="rp-val hl-base">' + yen(p1) + '</div></div>'
+    + '<div class="rp"><div class="rp-lbl">' + labelItem2 + '</div><div class="rp-val hl-staff-a">' + (c.a!==''?yen(c.a):'—') + '</div></div>'
+    + '<div class="rp"><div class="rp-lbl">' + labelItem3 + '</div><div class="rp-val hl-staff-b">' + (c.b!==''?yen(c.b):'—') + '</div></div>'
+    + '<div class="rp"><div class="rp-lbl">' + labelItem4 + '</div><div class="rp-val hl-staff-c">' + (c.c!==''?yen(c.c):'—') + '</div></div>'
+    + '<div class="rp"><div class="rp-lbl">' + labelItem5 + '</div><div class="rp-val hl-staff-d">' + (c.d!==''?yen(c.d):'—') + '</div></div>'
     + '<div class="rp"><div class="rp-lbl">' + labelUnit + '</div><div class="rp-val hl-unit">' + (unitVal ? '¥' + unitVal : '—') + '</div></div>';
 
   document.getElementById('res').classList.add('on');
 }
 
-// 毎分のタイマー更新
 function tick(){
   var t = I18N[currentLang];
   var now = new Date();
@@ -1429,7 +1469,6 @@ function tick(){
   }
 }
 
-// 開始ボタン押下時
 document.getElementById('btnUpd').onclick = function(){
   st = new Date();
   document.getElementById('startTime').textContent = fmt(st);
@@ -1448,7 +1487,7 @@ document.getElementById('btnUpd').onclick = function(){
 };
 
 // ============================================================
-// 設定モーダル ロジック（完全多言語対応）
+// 設定モーダル ロジック
 // ============================================================
 var modal = document.getElementById('settingModal');
 
@@ -1658,19 +1697,19 @@ function addNewCourse(){
       </div>
       <div class="amt-col">
         <span class="amt-label lbl-staff-a">${formatLabelText(nameA, pctA, yenA)}</span>
-        <input type="number" class="input-amt input-staff input-staff-a" value="${valA}">
+        <input type="number" class="input-amt input-staff-a" value="${valA}">
       </div>
       <div class="amt-col">
         <span class="amt-label lbl-staff-b">${formatLabelText(nameB, pctB, yenB)}</span>
-        <input type="number" class="input-amt input-staff input-staff-b" value="${valB}">
+        <input type="number" class="input-amt input-staff-b" value="${valB}">
       </div>
       <div class="amt-col">
         <span class="amt-label lbl-staff-c">${formatLabelText(nameC, pctC, yenC)}</span>
-        <input type="number" class="input-amt input-staff input-staff-c" value="${valC}">
+        <input type="number" class="input-amt input-staff-c" value="${valC}">
       </div>
       <div class="amt-col">
         <span class="amt-label lbl-staff-d">${formatLabelText(nameD, pctD, yenD)}</span>
-        <input type="number" class="input-amt input-opt input-staff-d" value="${valD}" placeholder="-">
+        <input type="number" class="input-amt input-staff-d" value="${valD}" placeholder="-">
       </div>
     </div>
   `;
@@ -1684,38 +1723,42 @@ function populateModalFromState(){
 
   document.getElementById("setting-store-name").value = bs.storeName || "Thai Topaz";
 
-  // 各言語に自動変換（カスタム入力はそのまま保持）
+  // ① 基本コース料金 ＆ ② 時間単価(分)
   var input1 = document.getElementById("cfg-item1-name");
   input1.value = resolveItemName('baseCoursePrice', bs.item1Name);
   input1.placeholder = t.cfgItem1Placeholder;
 
+  var inputUnit = document.getElementById("cfg-unit-name");
+  inputUnit.value = resolveItemName('unitPrice', bs.unitName);
+  inputUnit.placeholder = t.cfgUnitPlaceholder;
+
+  // ③ STAFF(A)
   var input2 = document.getElementById("cfg-item2-name");
   input2.value = resolveItemName('staffA', bs.item2.name);
   input2.placeholder = t.cfgNamePlaceholder;
   document.getElementById("cfg-item2-pct").value = bs.item2.pct != null ? bs.item2.pct : "50";
   document.getElementById("cfg-item2-yen").value = bs.item2.yen != null ? bs.item2.yen : "";
 
+  // ④ STAFF(B)
   var input3 = document.getElementById("cfg-item3-name");
   input3.value = resolveItemName('staffB', bs.item3.name);
   input3.placeholder = t.cfgNamePlaceholder;
   document.getElementById("cfg-item3-pct").value = bs.item3.pct != null ? bs.item3.pct : "50";
   document.getElementById("cfg-item3-yen").value = bs.item3.yen != null ? bs.item3.yen : "";
 
+  // ⑤ STAFF(C)
   var input4 = document.getElementById("cfg-item4-name");
   input4.value = resolveItemName('staffC', bs.item4.name);
   input4.placeholder = t.cfgNamePlaceholder;
   document.getElementById("cfg-item4-pct").value = bs.item4.pct != null ? bs.item4.pct : "50";
   document.getElementById("cfg-item4-yen").value = bs.item4.yen != null ? bs.item4.yen : "";
 
+  // ⑥ STAFF(D)
   var input5 = document.getElementById("cfg-item5-name");
   input5.value = resolveItemName('custom5', bs.item5.name);
   input5.placeholder = t.cfgNamePlaceholder;
   document.getElementById("cfg-item5-pct").value = bs.item5.pct != null ? bs.item5.pct : "";
   document.getElementById("cfg-item5-yen").value = bs.item5.yen != null ? bs.item5.yen : "";
-
-  var inputUnit = document.getElementById("cfg-unit-name");
-  inputUnit.value = resolveItemName('unitPrice', bs.unitName);
-  inputUnit.placeholder = t.cfgUnitPlaceholder;
 
   // プレースホルダー（±円 / ±¥ / ±เยน）
   var yenInputs = document.querySelectorAll(".inner-yen");
@@ -1770,19 +1813,19 @@ function populateModalFromState(){
         </div>
         <div class="amt-col">
           <span class="amt-label lbl-staff-a">${formatLabelText(nameA, pctA, yenA)}</span>
-          <input type="number" class="input-amt input-staff input-staff-a" value="${c.a != null ? c.a : ''}">
+          <input type="number" class="input-amt input-staff-a" value="${c.a != null ? c.a : ''}">
         </div>
         <div class="amt-col">
           <span class="amt-label lbl-staff-b">${formatLabelText(nameB, pctB, yenB)}</span>
-          <input type="number" class="input-amt input-staff input-staff-b" value="${c.b != null ? c.b : ''}">
+          <input type="number" class="input-amt input-staff-b" value="${c.b != null ? c.b : ''}">
         </div>
         <div class="amt-col">
           <span class="amt-label lbl-staff-c">${formatLabelText(nameC, pctC, yenC)}</span>
-          <input type="number" class="input-amt input-staff input-staff-c" value="${c.c != null ? c.c : ''}">
+          <input type="number" class="input-amt input-staff-c" value="${c.c != null ? c.c : ''}">
         </div>
         <div class="amt-col">
           <span class="amt-label lbl-staff-d">${formatLabelText(nameD, pctD, yenD)}</span>
-          <input type="number" class="input-amt input-opt input-staff-d" value="${c.d != null ? c.d : ''}" placeholder="-">
+          <input type="number" class="input-amt input-staff-d" value="${c.d != null ? c.d : ''}" placeholder="-">
         </div>
       </div>
     `;
