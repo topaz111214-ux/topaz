@@ -91,7 +91,7 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
 .mgroup-times{font-size:12px;color:#636366}
 .mgroup-times b{color:#1c1c1e;font-size:13px}
 
-.mgroup-items{display:grid;grid-template-columns:repeat(auto-fit, minmax(115px, 1fr));gap:6px}
+.mgroup-items{display:grid;grid-template-columns:repeat(auto-fit, minmax(110px, 1fr));gap:6px}
 .mitem{background:#fff;border:1.5px solid #d1d1d6;border-radius:8px;padding:6px 8px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s}
 .mitem:active{background:#f0f7ff;border-color:#1a6fa8}
 
@@ -109,8 +109,7 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
 .nm-other{background:#eef1f4;color:#495057}
 
 .mitem-pr{text-align:right}
-.mitem-main{font-size:13px;font-weight:700;color:#1c1c1e;display:block}
-.mitem-sub{font-size:10px;color:#8e8e93;display:block}
+.mitem-main{font-size:14px;font-weight:700;color:#1c1c1e}
 
 /* PC・デスクトップ（768px以上）対応 */
 @media(min-width: 768px){
@@ -197,7 +196,7 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
       <button class="btn-setting" id="btnOpenSetting" title="設定" aria-label="設定">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
       </button>
     </div>
@@ -257,7 +256,7 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
     <div class="modal-body">
       <!-- 基本設定枠 -->
       <div class="basic-cfg-box">
-        <div class="basic-cfg-title">📌 基本設定（項目名・基本％設定）</div>
+        <div class="basic-cfg-title">📌 <span id="lblBasicCfgTitle">基本設定（項目名・基本％設定）</span></div>
         <div class="basic-cfg-desc" id="lblBasicDesc">※基本設定を入力後、「全コースに反映」ボタンを押すと、登録済みの全コースに自動計算で一括反映されます。</div>
         
         <div class="b-field">
@@ -265,42 +264,42 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
           <input type="text" class="b-input" id="cfgStoreName" value="Thai Topaz">
         </div>
         
-        <div style="font-size:11px;font-weight:700;color:#1a6fa8;margin-top:2px;">金額項目の名称 ＆ 基本％（①の料金に対する割合）</div>
+        <div style="font-size:11px;font-weight:700;color:#1a6fa8;margin-top:2px;" id="lblBasicItemHeader">金額項目の名称 ＆ 基本％（①の料金に対する割合）</div>
         <div class="basic-cfg-grid">
           <div class="b-field">
-            <div class="b-label">項目1（単価＆％計算元）</div>
+            <div class="b-label" id="lblItem1Title">項目1（単価＆％計算元）</div>
             <input type="text" class="b-input" id="cfgLabelP1" value="基本コース料金">
           </div>
           <div class="b-field">
-            <div class="b-label">項目2 ［名称 / ％］</div>
+            <div class="b-label" id="lblItem2Title">項目2 ［名称 / ％］</div>
             <div class="b-input-group">
               <input type="text" class="b-input" id="cfgLabelP2" value="STAFF(A)">
               <div class="b-pct-wrap"><input type="number" class="b-pct-input" id="cfgPctP2" placeholder="%" step="any"><span>%</span></div>
             </div>
           </div>
           <div class="b-field">
-            <div class="b-label">項目3 ［名称 / ％］</div>
+            <div class="b-label" id="lblItem3Title">項目3 ［名称 / ％］</div>
             <div class="b-input-group">
               <input type="text" class="b-input" id="cfgLabelP3" value="STAFF(B)">
               <div class="b-pct-wrap"><input type="number" class="b-pct-input" id="cfgPctP3" placeholder="%" step="any"><span>%</span></div>
             </div>
           </div>
           <div class="b-field">
-            <div class="b-label">項目4 ［名称 / ％］</div>
+            <div class="b-label" id="lblItem4Title">項目4 ［名称 / ％］</div>
             <div class="b-input-group">
               <input type="text" class="b-input" id="cfgLabelP4" value="STAFF(C)">
               <div class="b-pct-wrap"><input type="number" class="b-pct-input" id="cfgPctP4" placeholder="%" step="any"><span>%</span></div>
             </div>
           </div>
           <div class="b-field">
-            <div class="b-label">項目5 ［名称 / ％］</div>
+            <div class="b-label" id="lblItem5Title">項目5 ［名称 / ％］</div>
             <div class="b-input-group">
               <input type="text" class="b-input" id="cfgLabelP5" value="任意⑤">
               <div class="b-pct-wrap"><input type="number" class="b-pct-input" id="cfgPctP5" placeholder="%" step="any"><span>%</span></div>
             </div>
           </div>
           <div class="b-field">
-            <div class="b-label">単価名称（自動計算）</div>
+            <div class="b-label" id="lblUnitTitle">単価名称（自動計算）</div>
             <input type="text" class="b-input" id="cfgLabelUnit" value="時間単価(分)">
           </div>
         </div>
@@ -339,8 +338,16 @@ var I18N = {
     courseTime: "コース時間",
     courseName: "コース名",
     settingHdr: "⚙️ 設定（基本設定・コース一覧）",
+    basicCfgTitle: "基本設定（項目名・基本％設定）",
     basicDesc: "※基本設定を入力後、「全コースに反映」ボタンを押すと、登録済みの全コースに自動計算で一括反映されます。",
     storeLabel: "店舗表示名",
+    basicItemHeader: "金額項目の名称 ＆ 基本％（①の料金に対する割合）",
+    item1Label: "項目1（単価＆％計算元）",
+    item2Label: "項目2 ［名称 / ％］",
+    item3Label: "項目3 ［名称 / ％］",
+    item4Label: "項目4 ［名称 / ％］",
+    item5Label: "項目5 ［名称 / ％］",
+    unitLabel: "単価名称（自動計算）",
     courseEditLabel: "コース一覧編集",
     addCourse: "+ 新しいコースを追加",
     save: "保存して適用",
@@ -350,7 +357,15 @@ var I18N = {
     applyDone: "基本設定の項目と％を全コースに反映・再計算しました！",
     resetConfirm: "設定を初期状態（デフォルトコース）に戻しますか？",
     close: "閉じる",
-    open: "開く"
+    open: "開く",
+    defaultLabels: {
+      p1: '基本コース料金',
+      p2: 'STAFF(A)',
+      p3: 'STAFF(B)',
+      p4: 'STAFF(C)',
+      p5: '任意⑤',
+      unit: '時間単価(分)'
+    }
   },
   en: {
     startTime: "Start Time",
@@ -358,51 +373,83 @@ var I18N = {
     elapsed: "Elapsed",
     minUnit: "min",
     btnUpd: "⏱ Update (Set Start Time)",
-    resTitle: "✅ Selected Course",
+    resTitle: "✅ Selected Course Details",
     courseLabel: "min Course ｜ ",
     endTime: "End Time",
     all: "All",
     courseTime: "Duration",
     courseName: "Course Name",
-    settingHdr: "⚙️ Settings",
+    settingHdr: "⚙️ Settings (Basic & Courses)",
+    basicCfgTitle: "Basic Settings (Item Names & Default %)",
     basicDesc: "* After entering basic settings, click 'Apply to All' to recalculate all courses automatically.",
     storeLabel: "Store Name",
+    basicItemHeader: "Price Item Names & Default % (Ratio of Item 1)",
+    item1Label: "Item 1 (Base & % Source)",
+    item2Label: "Item 2 [Name / %]",
+    item3Label: "Item 3 [Name / %]",
+    item4Label: "Item 4 [Name / %]",
+    item5Label: "Item 5 [Name / %]",
+    unitLabel: "Unit Rate Name (Auto)",
     courseEditLabel: "Edit Course List",
     addCourse: "+ Add New Course",
     save: "Save & Apply",
     reset: "Reset",
     delete: "Delete",
     applyBtn: "Apply to All Courses",
-    applyDone: "Basic settings and % applied to all courses!",
+    applyDone: "Basic settings applied to all courses!",
     resetConfirm: "Reset all settings to default courses?",
     close: "Close",
-    open: "Open"
+    open: "Open",
+    defaultLabels: {
+      p1: 'Base Price',
+      p2: 'STAFF(A)',
+      p3: 'STAFF(B)',
+      p4: 'STAFF(C)',
+      p5: 'Option 5',
+      unit: 'Rate (/min)'
+    }
   },
   th: {
     startTime: "เวลาเริ่มต้น",
     nowTime: "เวลาปัจจุบัน",
     elapsed: "เวลาที่ใช้ไป",
     minUnit: "นาที",
-    btnUpd: "⏱ อัปเดต / ตั้งเวลาเริ่มต้น",
+    btnUpd: "⏱ อัปเดต (ตั้งเวลาเริ่ม)",
     resTitle: "✅ รายละเอียดคอร์ส",
     courseLabel: " นาที ｜ ",
     endTime: "เวลาสิ้นสุด",
     all: "ทั้งหมด",
     courseTime: "ระยะเวลา",
     courseName: "ชื่อคอร์ส",
-    settingHdr: "⚙️ การตั้งค่า",
-    basicDesc: "* หลังจากป้อนการตั้งค่าพื้นฐานแล้ว กดปุ่ม 'นำไปใช้กับทุกคอร์ส' เพื่อคำนวณอัตโนมัติทั้งหมด",
+    settingHdr: "⚙️ การตั้งค่า (พื้นฐาน & คอร์ส)",
+    basicCfgTitle: "การตั้งค่าพื้นฐาน (ชื่อรายการ & % เริ่มต้น)",
+    basicDesc: "* หลังระบุการตั้งค่าพื้นฐาน กด 'นำไปใช้กับทุกคอร์ส' เพื่อคำนวณอัตโนมัติทั้งหมด",
     storeLabel: "ชื่อร้านค้า",
+    basicItemHeader: "ชื่อรายการราคา & % เริ่มต้น (สัดส่วนของรายการ 1)",
+    item1Label: "รายการ 1 (ราคาฐาน & คำนวณ %)",
+    item2Label: "รายการ 2 [ชื่อ / %]",
+    item3Label: "รายการ 3 [ชื่อ / %]",
+    item4Label: "รายการ 4 [ชื่อ / %]",
+    item5Label: "รายการ 5 [ชื่อ / %]",
+    unitLabel: "ชื่อราคาต่อนาที (อัตโนมัติ)",
     courseEditLabel: "แก้ไขรายการคอร์ส",
     addCourse: "+ เพิ่มคอร์สใหม่",
     save: "บันทึกและนำไปใช้",
     reset: "ค่าเริ่มต้น",
     delete: "ลบ",
     applyBtn: "นำไปใช้กับทุกคอร์ส",
-    applyDone: "นำการตั้งค่าพื้นฐานไปใช้กับทุกคอร์สเรียบร้อยแล้ว!",
+    applyDone: "นำการตั้งค่าพื้นฐานไปใช้เรียบร้อยแล้ว!",
     resetConfirm: "ต้องการรีเซ็ตการตั้งค่ากลับเป็นค่าเริ่มต้นหรือไม่?",
     close: "ปิด",
-    open: "เปิด"
+    open: "เปิด",
+    defaultLabels: {
+      p1: 'ราคาคอร์สพื้นฐาน',
+      p2: 'STAFF(A)',
+      p3: 'STAFF(B)',
+      p4: 'STAFF(C)',
+      p5: 'อื่นๆ 5',
+      unit: 'ราคาต่อนาที'
+    }
   }
 };
 
@@ -435,7 +482,7 @@ var DEFAULT_COURSES = [
   {m:120, name:'Oil',   prices:[15000, 7500, 6000, null, null], percents:[null, 50, 40, null, null]},
   {m:120, name:'Topaz', prices:[17000, 8500, 6800, null, null], percents:[null, 50, 40, null, null]},
   {m:150, name:'Oil',   prices:[18000, 9000, 7200, null, null], percents:[null, 50, 40, null, null]},
-  {m:150, name:'Topaz', prices:[20000, 10000, 8000, null, null], percents:[null, 50, 40, null, null]},
+  {m:150, name:'Topaz', prices:[20000, 10000, 9000, null, null], percents:[null, 50, 40, null, null]},
   {m:180, name:'Oil',   prices:[21000, 10500, 8400, null, null], percents:[null, 50, 40, null, null]},
   {m:180, name:'Topaz', prices:[23000, 11500, 9200, null, null], percents:[null, 50, 40, null, null]}
 ];
@@ -443,11 +490,26 @@ var DEFAULT_COURSES = [
 var COURSES = [];
 var storeName = "Thai Topaz";
 var st=null, currentFilter='all', selectedCourseData=null;
-var isResOpen = false; // 起動初期は閉じた状態
+var isResOpen = false;
 
 function getArrItem(arr, idx){
   if(!arr || !Array.isArray(arr) || idx >= arr.length) return null;
   return arr[idx];
+}
+
+// 言語に応じた適切な項目名を返す関数（デフォルト日本語の場合は各言語の翻訳に自動変換）
+function getActiveLabel(key){
+  var jaDef = I18N.ja.defaultLabels;
+  var curDef = I18N[currentLang].defaultLabels;
+
+  if(currentLang !== 'ja'){
+    var curVal = basicLabels[key];
+    // 日本語のデフォルト値のままであれば、選択言語のデフォルト値に差し替える
+    if(!curVal || curVal === jaDef[key] || curVal === '基本コース料金' || curVal === 'STAFF' || curVal === 'OWNER' || curVal === 'OWNER割引' || curVal === '時間単価(分)' || curVal === '単価(分)' || curVal === '任意⑤' || curVal === 'STAFF(C)'){
+      return curDef[key] || curVal;
+    }
+  }
+  return basicLabels[key] || curDef[key] || '';
 }
 
 // 5分刻みの四捨五入（2捨3入）
@@ -550,8 +612,18 @@ function updateLangUI(){
   document.getElementById('lblREnd').textContent = t.endTime;
 
   document.getElementById('lblSettingHdr').textContent = t.settingHdr;
+  document.getElementById('lblBasicCfgTitle').textContent = t.basicCfgTitle;
   document.getElementById('lblBasicDesc').textContent = t.basicDesc;
   document.getElementById('lblStoreLabel').textContent = t.storeLabel;
+  document.getElementById('lblBasicItemHeader').textContent = t.basicItemHeader;
+
+  document.getElementById('lblItem1Title').textContent = t.item1Label;
+  document.getElementById('lblItem2Title').textContent = t.item2Label;
+  document.getElementById('lblItem3Title').textContent = t.item3Label;
+  document.getElementById('lblItem4Title').textContent = t.item4Label;
+  document.getElementById('lblItem5Title').textContent = t.item5Label;
+  document.getElementById('lblUnitTitle').textContent = t.unitLabel;
+
   document.getElementById('lblCourseEditLabel').textContent = t.courseEditLabel;
   document.getElementById('btnAddCourse').textContent = t.addCourse;
   document.getElementById('btnResetSetting').textContent = t.reset;
@@ -669,34 +741,23 @@ function render(){
     courseList.forEach(function(cc){
       var eff = getEffectivePrices(cc);
       var p1 = getArrItem(eff, 0) || 0;
-      var p2 = getArrItem(eff, 1);
 
-      var p2Label = basicLabels.p2;
-      var p2Pct = (cc.percents && cc.percents.length > 1) ? getArrItem(cc.percents, 1) : null;
-      if(p2Pct !== null && p2Pct !== undefined && p2Pct !== '' && !isNaN(p2Pct)){
-        p2Label = p2Pct + '%';
-      }
-
-      // ユーザーが選択したコースのみに色をつける
       var isSelected = (selectedCourseData && ckey(selectedCourseData) === ckey(cc));
 
       var itemCard = document.createElement('div');
       itemCard.className = 'mitem' + (isSelected ? ' selected' : '');
       
-      var subText = (p2 !== null && p2 !== undefined && !isNaN(p2)) ? (p2Label + ':' + yen(p2)) : '';
-
       itemCard.innerHTML = 
         '<span class="c-badge '+nbadge(cc.name)+'">'+cc.name+'</span>'
         +'<div class="mitem-pr">'
           +'<span class="mitem-main">'+yen(p1)+'</span>'
-          +(subText ? '<span class="mitem-sub">'+subText+'</span>' : '')
         +'</div>';
 
       itemCard.onclick = function(){
         showRes(cc, ss, es);
-        isResOpen = true; // タップで自動展開
+        isResOpen = true;
         updateResDisplay();
-        render(); // 選択色を即座に更新
+        render();
       };
 
       itemsWrap.appendChild(itemCard);
@@ -707,7 +768,7 @@ function render(){
   }
 }
 
-// 選択詳細ボックスの表示
+// 選択詳細ボックスの表示（各言語の項目名で表示）
 function showRes(c, ss, es){
   if(!c) return;
   selectedCourseData = c;
@@ -731,14 +792,22 @@ function showRes(c, ss, es){
     return '';
   }
 
+  // 言語に応じた項目ラベルを取得
+  var l1 = getActiveLabel('p1');
+  var l2 = getActiveLabel('p2');
+  var l3 = getActiveLabel('p3');
+  var l4 = getActiveLabel('p4');
+  var l5 = getActiveLabel('p5');
+  var lUnit = getActiveLabel('unit');
+
   var rpBox = document.getElementById('resPrices');
   rpBox.innerHTML = 
-    '<div class="rp"><div class="rp-lbl">'+basicLabels.p1+'</div><div class="rp-val hl1">'+yen(getArrItem(eff, 0))+'</div></div>'
-    +'<div class="rp"><div class="rp-lbl">'+basicLabels.p2+fmtPct(1)+'</div><div class="rp-val hl2">'+yen(getArrItem(eff, 1))+'</div></div>'
-    +'<div class="rp"><div class="rp-lbl">'+basicLabels.p3+fmtPct(2)+'</div><div class="rp-val hl3">'+yen(getArrItem(eff, 2))+'</div></div>'
-    +'<div class="rp"><div class="rp-lbl">'+basicLabels.p4+fmtPct(3)+'</div><div class="rp-val">'+yen(getArrItem(eff, 3))+'</div></div>'
-    +'<div class="rp"><div class="rp-lbl">'+basicLabels.p5+fmtPct(4)+'</div><div class="rp-val">'+yen(getArrItem(eff, 4))+'</div></div>'
-    +'<div class="rp"><div class="rp-lbl">'+basicLabels.unit+'</div><div class="rp-val hl-unit">'+(unitVal ? '¥'+unitVal : '—')+'</div></div>';
+    '<div class="rp"><div class="rp-lbl">'+l1+'</div><div class="rp-val hl1">'+yen(getArrItem(eff, 0))+'</div></div>'
+    +'<div class="rp"><div class="rp-lbl">'+l2+fmtPct(1)+'</div><div class="rp-val hl2">'+yen(getArrItem(eff, 1))+'</div></div>'
+    +'<div class="rp"><div class="rp-lbl">'+l3+fmtPct(2)+'</div><div class="rp-val hl3">'+yen(getArrItem(eff, 2))+'</div></div>'
+    +'<div class="rp"><div class="rp-lbl">'+l4+fmtPct(3)+'</div><div class="rp-val">'+yen(getArrItem(eff, 3))+'</div></div>'
+    +'<div class="rp"><div class="rp-lbl">'+l5+fmtPct(4)+'</div><div class="rp-val">'+yen(getArrItem(eff, 4))+'</div></div>'
+    +'<div class="rp"><div class="rp-lbl">'+lUnit+'</div><div class="rp-val hl-unit">'+(unitVal ? '¥'+unitVal : '—')+'</div></div>';
 }
 
 // 詳細ボックスの開閉トグル
@@ -806,12 +875,12 @@ var courseEditList = document.getElementById('courseEditList');
 
 function applyBasicSettingsToAll(){
   var curLabels = {
-    p1: document.getElementById('cfgLabelP1').value.trim() || '項目1',
-    p2: document.getElementById('cfgLabelP2').value.trim() || '項目2',
-    p3: document.getElementById('cfgLabelP3').value.trim() || '項目3',
-    p4: document.getElementById('cfgLabelP4').value.trim() || '項目4',
-    p5: document.getElementById('cfgLabelP5').value.trim() || '項目5',
-    unit: document.getElementById('cfgLabelUnit').value.trim() || '単価(分)'
+    p1: document.getElementById('cfgLabelP1').value.trim() || getActiveLabel('p1'),
+    p2: document.getElementById('cfgLabelP2').value.trim() || getActiveLabel('p2'),
+    p3: document.getElementById('cfgLabelP3').value.trim() || getActiveLabel('p3'),
+    p4: document.getElementById('cfgLabelP4').value.trim() || getActiveLabel('p4'),
+    p5: document.getElementById('cfgLabelP5').value.trim() || getActiveLabel('p5'),
+    unit: document.getElementById('cfgLabelUnit').value.trim() || getActiveLabel('unit')
   };
 
   var curPcts = {
@@ -870,12 +939,12 @@ function renderCourseEditItems(list){
   courseEditList.innerHTML = '';
 
   var curLabels = {
-    p1: document.getElementById('cfgLabelP1').value.trim() || basicLabels.p1,
-    p2: document.getElementById('cfgLabelP2').value.trim() || basicLabels.p2,
-    p3: document.getElementById('cfgLabelP3').value.trim() || basicLabels.p3,
-    p4: document.getElementById('cfgLabelP4').value.trim() || basicLabels.p4,
-    p5: document.getElementById('cfgLabelP5').value.trim() || basicLabels.p5,
-    unit: document.getElementById('cfgLabelUnit').value.trim() || basicLabels.unit
+    p1: document.getElementById('cfgLabelP1').value.trim() || getActiveLabel('p1'),
+    p2: document.getElementById('cfgLabelP2').value.trim() || getActiveLabel('p2'),
+    p3: document.getElementById('cfgLabelP3').value.trim() || getActiveLabel('p3'),
+    p4: document.getElementById('cfgLabelP4').value.trim() || getActiveLabel('p4'),
+    p5: document.getElementById('cfgLabelP5').value.trim() || getActiveLabel('p5'),
+    unit: document.getElementById('cfgLabelUnit').value.trim() || getActiveLabel('unit')
   };
 
   list.forEach(function(item, idx){
@@ -1029,12 +1098,12 @@ function getEditCourses(){
 // 歯車ボタン
 document.getElementById('btnOpenSetting').onclick = function(){
   document.getElementById('cfgStoreName').value = storeName;
-  document.getElementById('cfgLabelP1').value = basicLabels.p1;
-  document.getElementById('cfgLabelP2').value = basicLabels.p2;
-  document.getElementById('cfgLabelP3').value = basicLabels.p3;
-  document.getElementById('cfgLabelP4').value = basicLabels.p4;
-  document.getElementById('cfgLabelP5').value = basicLabels.p5;
-  document.getElementById('cfgLabelUnit').value = basicLabels.unit;
+  document.getElementById('cfgLabelP1').value = getActiveLabel('p1');
+  document.getElementById('cfgLabelP2').value = getActiveLabel('p2');
+  document.getElementById('cfgLabelP3').value = getActiveLabel('p3');
+  document.getElementById('cfgLabelP4').value = getActiveLabel('p4');
+  document.getElementById('cfgLabelP5').value = getActiveLabel('p5');
+  document.getElementById('cfgLabelUnit').value = getActiveLabel('unit');
 
   document.getElementById('cfgPctP2').value = (basicPcts.p2 !== null && basicPcts.p2 !== undefined) ? basicPcts.p2 : '';
   document.getElementById('cfgPctP3').value = (basicPcts.p3 !== null && basicPcts.p3 !== undefined) ? basicPcts.p3 : '';
@@ -1078,12 +1147,12 @@ document.getElementById('btnSaveSetting').onclick = function(){
   var updated = getEditCourses();
   var name = document.getElementById('cfgStoreName').value.trim() || 'Thai Topaz';
   var newLabels = {
-    p1: document.getElementById('cfgLabelP1').value.trim() || '基本コース料金',
-    p2: document.getElementById('cfgLabelP2').value.trim() || 'STAFF(A)',
-    p3: document.getElementById('cfgLabelP3').value.trim() || 'STAFF(B)',
-    p4: document.getElementById('cfgLabelP4').value.trim() || 'STAFF(C)',
-    p5: document.getElementById('cfgLabelP5').value.trim() || '任意⑤',
-    unit: document.getElementById('cfgLabelUnit').value.trim() || '時間単価(分)'
+    p1: document.getElementById('cfgLabelP1').value.trim() || getActiveLabel('p1'),
+    p2: document.getElementById('cfgLabelP2').value.trim() || getActiveLabel('p2'),
+    p3: document.getElementById('cfgLabelP3').value.trim() || getActiveLabel('p3'),
+    p4: document.getElementById('cfgLabelP4').value.trim() || getActiveLabel('p4'),
+    p5: document.getElementById('cfgLabelP5').value.trim() || getActiveLabel('p5'),
+    unit: document.getElementById('cfgLabelUnit').value.trim() || getActiveLabel('unit')
   };
   function parseOrNull(id){
     var v = document.getElementById(id).value.trim();
@@ -1109,7 +1178,7 @@ document.getElementById('btnSaveSetting').onclick = function(){
 document.getElementById('btnResetSetting').onclick = function(){
   var t = I18N[currentLang];
   if(confirm(t.resetConfirm)){
-    basicLabels = Object.assign({}, DEFAULT_LABELS);
+    basicLabels = Object.assign({}, I18N[currentLang].defaultLabels);
     basicPcts = Object.assign({}, DEFAULT_BASIC_PCTS);
 
     document.getElementById('cfgLabelP1').value = basicLabels.p1;
@@ -1134,7 +1203,6 @@ document.getElementById('btnResetSetting').onclick = function(){
 loadSettings();
 buildFilters();
 
-// 起動初期は詳細画面を閉じた状態
 isResOpen = false;
 updateResDisplay();
 
