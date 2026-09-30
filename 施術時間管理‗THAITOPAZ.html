@@ -46,7 +46,7 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
 .btn-upd{width:100%;padding:12px;background:#1a6fa8;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent}
 .btn-upd:active{background:#145d8f;transform:scale(.98)}
 
-/* 選択詳細ボックス（開閉対応・初期非表示） */
+/* 選択詳細ボックス（開閉対応） */
 .res{background:#e9f7ee;border:1.5px solid #34c759;border-radius:12px;padding:10px 12px;display:none}
 .res.open{display:block}
 .res-hdr-row{display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;margin-bottom:6px}
@@ -92,10 +92,15 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
 .mgroup-times b{color:#1c1c1e;font-size:13px}
 
 .mgroup-items{display:grid;grid-template-columns:repeat(auto-fit, minmax(115px, 1fr));gap:6px}
-.mitem{background:#fff;border:1px solid #d1d1d6;border-radius:6px;padding:6px 8px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.mitem{background:#fff;border:1.5px solid #d1d1d6;border-radius:8px;padding:6px 8px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s}
 .mitem:active{background:#f0f7ff;border-color:#1a6fa8}
-.mitem.hl{background:#e9f7ee;border-color:#34c759}
-.mitem.active{background:#e3f0fd;border-color:#1a6fa8}
+
+/* 選択されたコースのみに色がつく */
+.mitem.selected{
+  background: #e3f0fd;
+  border-color: #1a6fa8;
+  box-shadow: 0 0 0 1.5px #1a6fa8;
+}
 
 .c-badge{font-size:11px;padding:2px 6px;border-radius:4px;flex-shrink:0;font-weight:600}
 .nm-thai{background:#e3f0fd;color:#1565c0}
@@ -209,7 +214,7 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
 
       <button class="btn-upd" id="btnUpd">⏱ 更新（開始時刻をセット）</button>
 
-      <!-- 選択詳細ボックス（起動初期は非表示・開閉可能） -->
+      <!-- 選択詳細ボックス（開閉対応・初期非表示） -->
       <div class="res" id="res">
         <div class="res-hdr-row" onclick="toggleRes()">
           <div class="res-lbl" id="lblResTitle">✅ 選択コース詳細</div>
@@ -437,25 +442,24 @@ var DEFAULT_COURSES = [
 
 var COURSES = [];
 var storeName = "Thai Topaz";
-var st=null, currentFilter='all', hlKey=null, iv=null, selectedCourseData=null;
+var st=null, currentFilter='all', selectedCourseData=null;
 var isResOpen = false; // 起動初期は閉じた状態
 
-// 安全な配列取得関数
 function getArrItem(arr, idx){
   if(!arr || !Array.isArray(arr) || idx >= arr.length) return null;
   return arr[idx];
 }
 
-// 5分刻みの四捨五入（2捨3入）：MINUTE(A1)-FLOOR(MINUTE(A1),5) < 3 に基づく開始時刻調整
+// 5分刻みの四捨五入（2捨3入）
 function getRoundedStartTime(nowDate){
   var d = new Date(nowDate.getTime());
   d.setSeconds(0, 0);
   var m = d.getMinutes();
   var rem = m % 5;
   if(rem < 3){
-    d.setMinutes(m - rem); // 0, 1, 2分は切り捨て
+    d.setMinutes(m - rem);
   } else {
-    d.setMinutes(m + (5 - rem)); // 3, 4分は切り上げ
+    d.setMinutes(m + (5 - rem));
   }
   return d;
 }
@@ -621,7 +625,7 @@ function getEffectivePrices(c){
   return eff;
 }
 
-// 分数グループ化一覧の描画
+// コース一覧の描画（選択されたコースのみ .selected クラスを付与）
 function render(){
   var t = I18N[currentLang];
   var l = document.getElementById('clist');
@@ -673,11 +677,11 @@ function render(){
         p2Label = p2Pct + '%';
       }
 
+      // ユーザーが選択したコースのみに色をつける
       var isSelected = (selectedCourseData && ckey(selectedCourseData) === ckey(cc));
-      var isHl = (hlKey === ckey(cc));
 
       var itemCard = document.createElement('div');
-      itemCard.className = 'mitem' + (isSelected ? ' active' : '') + (isHl ? ' hl' : '');
+      itemCard.className = 'mitem' + (isSelected ? ' selected' : '');
       
       var subText = (p2 !== null && p2 !== undefined && !isNaN(p2)) ? (p2Label + ':' + yen(p2)) : '';
 
@@ -690,9 +694,9 @@ function render(){
 
       itemCard.onclick = function(){
         showRes(cc, ss, es);
-        isResOpen = true; // コースタップ時は自動展開
+        isResOpen = true; // タップで自動展開
         updateResDisplay();
-        render();
+        render(); // 選択色を即座に更新
       };
 
       itemsWrap.appendChild(itemCard);
@@ -776,12 +780,6 @@ function tick(){
   if(st){
     var diff = Math.floor((now - st) / 60000);
     document.getElementById('elapsed').textContent = diff + ' ' + t.minUnit;
-    var match = null;
-    for(var i=0; i<COURSES.length; i++){
-      if(COURSES[i].m >= diff && (!match || COURSES[i].m < match.m)) match = COURSES[i];
-    }
-    hlKey = match ? ckey(match) : null;
-    render();
   }
 }
 
@@ -791,15 +789,11 @@ document.getElementById('btnUpd').onclick = function(){
   st = getRoundedStartTime(now);
   document.getElementById('startTime').textContent = fmt(st);
   
-  if(!selectedCourseData && COURSES.length > 0){
-    selectedCourseData = COURSES[0];
-  }
   if(selectedCourseData){
     var ss = fmt(st);
     var es = fmt(addM(st, selectedCourseData.m));
     showRes(selectedCourseData, ss, es);
   }
-  hlKey = null;
   render();
   if(iv) clearInterval(iv);
   iv = setInterval(tick, 30000);
@@ -1111,7 +1105,7 @@ document.getElementById('btnSaveSetting').onclick = function(){
   }
 };
 
-// リセット
+// 初期化リセット
 document.getElementById('btnResetSetting').onclick = function(){
   var t = I18N[currentLang];
   if(confirm(t.resetConfirm)){
@@ -1125,8 +1119,8 @@ document.getElementById('btnResetSetting').onclick = function(){
     document.getElementById('cfgLabelP5').value = basicLabels.p5;
     document.getElementById('cfgLabelUnit').value = basicLabels.unit;
 
-    document.getElementById('cfgPctP2').value = basicPcts.p2 !== null ? basicPcts.p2 : '';
-    document.getElementById('cfgPctP3').value = '';
+    document.getElementById('cfgPctP2').value = (basicPcts.p2 !== null) ? basicPcts.p2 : '';
+    document.getElementById('cfgPctP3').value = (basicPcts.p3 !== null) ? basicPcts.p3 : '';
     document.getElementById('cfgPctP4').value = '';
     document.getElementById('cfgPctP5').value = '';
     document.getElementById('cfgStoreName').value = 'Thai Topaz';
