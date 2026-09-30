@@ -250,7 +250,7 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
 <div class="modal-overlay" id="settingModal">
   <div class="modal-content">
     <div class="modal-hdr">
-      <h3 id="lblSettingHdr">⚙️ 設定（基本設定・コース一覧）</h3>
+      <h3 id="lblSettingHdr">⚙️️ 設定（基本設定・コース一覧）</h3>
       <button class="modal-close" id="btnCloseSetting">&times;</button>
     </div>
     <div class="modal-body">
@@ -497,14 +497,12 @@ function getArrItem(arr, idx){
   return arr[idx];
 }
 
-// 言語に応じた適切な項目名を返す関数（デフォルト日本語の場合は各言語の翻訳に自動変換）
 function getActiveLabel(key){
   var jaDef = I18N.ja.defaultLabels;
   var curDef = I18N[currentLang].defaultLabels;
 
   if(currentLang !== 'ja'){
     var curVal = basicLabels[key];
-    // 日本語のデフォルト値のままであれば、選択言語のデフォルト値に差し替える
     if(!curVal || curVal === jaDef[key] || curVal === '基本コース料金' || curVal === 'STAFF' || curVal === 'OWNER' || curVal === 'OWNER割引' || curVal === '時間単価(分)' || curVal === '単価(分)' || curVal === '任意⑤' || curVal === 'STAFF(C)'){
       return curDef[key] || curVal;
     }
@@ -563,11 +561,17 @@ function loadSettings(){
     basicLabels = Object.assign({}, DEFAULT_LABELS);
     basicPcts = Object.assign({}, DEFAULT_BASIC_PCTS);
   }
+
+  // 時間が短い順に初期ソート
+  COURSES.sort(function(a,b){ return a.m - b.m; });
+
   document.getElementById('storeNameText').textContent = storeName;
   updateLangUI();
 }
 
 function saveSettings(coursesList, name, labels, pcts){
+  // 時間が短い順にソートして確定
+  coursesList.sort(function(a,b){ return a.m - b.m; });
   COURSES = coursesList;
   storeName = name;
   basicLabels = labels;
@@ -673,7 +677,6 @@ function buildFilters(){
   });
 }
 
-// 金額計算
 function getEffectivePrices(c){
   var p1 = 0;
   if(c && c.prices && c.prices.length > 0){
@@ -697,7 +700,7 @@ function getEffectivePrices(c){
   return eff;
 }
 
-// コース一覧の描画（選択されたコースのみ .selected クラスを付与）
+// コース一覧の描画（時間が短い順に整列して表示）
 function render(){
   var t = I18N[currentLang];
   var l = document.getElementById('clist');
@@ -716,6 +719,7 @@ function render(){
     groupsByMin[c.m].push(c);
   }
 
+  // 時間が短い順（昇順）にソート
   minOrder.sort(function(a,b){ return a - b; });
 
   for(var g=0; g<minOrder.length; g++){
@@ -768,7 +772,6 @@ function render(){
   }
 }
 
-// 選択詳細ボックスの表示（各言語の項目名で表示）
 function showRes(c, ss, es){
   if(!c) return;
   selectedCourseData = c;
@@ -792,7 +795,6 @@ function showRes(c, ss, es){
     return '';
   }
 
-  // 言語に応じた項目ラベルを取得
   var l1 = getActiveLabel('p1');
   var l2 = getActiveLabel('p2');
   var l3 = getActiveLabel('p3');
@@ -810,7 +812,6 @@ function showRes(c, ss, es){
     +'<div class="rp"><div class="rp-lbl">'+lUnit+'</div><div class="rp-val hl-unit">'+(unitVal ? '¥'+unitVal : '—')+'</div></div>';
 }
 
-// 詳細ボックスの開閉トグル
 function toggleRes(){
   isResOpen = !isResOpen;
   updateResDisplay();
@@ -852,7 +853,6 @@ function tick(){
   }
 }
 
-// 更新ボタン：5分単位の四捨五入（2捨3入）で開始時刻をセット
 document.getElementById('btnUpd').onclick = function(){
   var now = new Date();
   st = getRoundedStartTime(now);
@@ -934,7 +934,16 @@ function applyBasicSettingsToAll(){
   alert(t.applyDone);
 }
 
+// コース時間を変更した際に自動ソートして再描画
+function onCourseTimeChange(){
+  var currentList = getEditCourses(); // getEditCourses内で自動ソートされる
+  renderCourseEditItems(currentList);
+}
+
 function renderCourseEditItems(list){
+  // 時間が短い順にソートして描画
+  list.sort(function(a,b){ return a.m - b.m; });
+
   var t = I18N[currentLang];
   courseEditList.innerHTML = '';
 
@@ -975,7 +984,7 @@ function renderCourseEditItems(list){
         +'<div class="c-field-group">'
           +'<div class="c-field-lbl">'+t.courseTime+'</div>'
           +'<div class="c-m-wrap">'
-            +'<input type="number" class="c-m" value="'+(item.m||0)+'" placeholder="分" oninput="onCourseRowChange(this)">'
+            +'<input type="number" class="c-m" value="'+(item.m||0)+'" placeholder="分" oninput="onCourseRowChange(this)" onchange="onCourseTimeChange()">'
             +'<span style="font-size:12px;color:#8e8e93">'+t.minUnit+'</span>'
           +'</div>'
         +'</div>'
@@ -1091,6 +1100,7 @@ function getEditCourses(){
       percents: percents
     });
   });
+  // 時間が短い順にソート
   list.sort(function(a,b){ return a.m - b.m; });
   return list;
 }
@@ -1118,7 +1128,7 @@ document.getElementById('btnCloseSetting').onclick = function(){
   modal.classList.remove('open');
 };
 
-// コース追加
+// コース追加（追加後も自動ソート）
 document.getElementById('btnAddCourse').onclick = function(){
   var currentList = getEditCourses();
   var bp2 = (basicPcts.p2 !== null && basicPcts.p2 !== undefined) ? basicPcts.p2 : null;
@@ -1138,8 +1148,10 @@ document.getElementById('btnAddCourse').onclick = function(){
     prices: [p1, pr2, pr3, pr4, pr5],
     percents: [null, bp2, bp3, bp4, bp5]
   });
+
+  // 短い順にソートして描画
+  currentList.sort(function(a,b){ return a.m - b.m; });
   renderCourseEditItems(currentList);
-  courseEditList.scrollTop = courseEditList.scrollHeight;
 };
 
 // 保存
