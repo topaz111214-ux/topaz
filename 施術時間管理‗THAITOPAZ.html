@@ -7,182 +7,774 @@
 <meta name="apple-mobile-web-app-title" content="Thai Topaz">
 <title>Thai Topaz｜時間計算・施術タイマー</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino Sans','Noto Sans JP','Segoe UI',sans-serif;color:#1c1c1e}
+/* CSS Reset & Base */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  background: #e8e8ed;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", "Segoe UI", Roboto, sans-serif;
+  color: #1c1c1e;
+}
 
-/* 全体ラッパー */
-.outer{display:flex;justify-content:center;align-items:flex-start;min-height:100%;background:#e8e8ed;padding:0}
-.app{width:100%;max-width:440px;min-height:100vh;background:#f2f2f7;display:flex;flex-direction:column;padding:8px;gap:8px;position:relative}
+/* スピンボタン（上下矢印）非表示 */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; }
+
+/* 全体レイアウト */
+.outer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100%;
+  background: #e8e8ed;
+  padding: 0;
+}
+.app {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  background: #f2f2f7;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 8px;
+  position: relative;
+}
 
 /* ヘッダー */
-.hdr{background:#1a6fa8;border-radius:10px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:6px}
-.hdr-left{display:flex;align-items:center;gap:6px;min-width:0}
-.hdr-t{font-size:16px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-.hdr-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.hdr-c{font-size:14px;color:rgba(255,255,255,.9);font-variant-numeric:tabular-nums}
-
-/* バージョン表示バッジ */
-.ver-badge{font-size:10px;font-weight:700;color:rgba(255,255,255,.8);background:rgba(0,0,0,.2);padding:2px 5px;border-radius:4px;letter-spacing:.3px;white-space:nowrap}
+.hdr {
+  background: #1a6fa8;
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.hdr-left { display: flex; align-items: center; gap: 8px; }
+.hdr-t { font-size: 17px; font-weight: 700; color: #fff; }
+.hdr-right { display: flex; align-items: center; gap: 8px; }
+.hdr-c { font-size: 15px; color: rgba(255,255,255,.9); font-variant-numeric: tabular-nums; }
 
 /* 言語切り替え */
-.lang-switch{display:flex;background:rgba(0,0,0,.15);border-radius:6px;padding:2px;gap:2px}
-.lang-btn{background:none;border:none;color:rgba(255,255,255,.8);font-size:11px;font-weight:600;padding:3px 5px;border-radius:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s}
-.lang-btn.on{background:#fff;color:#1a6fa8}
+.lang-switch {
+  display: flex;
+  background: rgba(0,0,0,.15);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+.lang-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.8);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all .15s;
+}
+.lang-btn.on { background: #fff; color: #1a6fa8; }
 
 /* 歯車ボタン */
-.btn-setting{background:rgba(255,255,255,.15);border:none;cursor:pointer;color:#fff;width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:all .15s ease;flex-shrink:0}
-.btn-setting:active{background:rgba(255,255,255,.3);transform:scale(.95)}
-.btn-setting svg{width:18px;height:18px;fill:currentColor;display:block}
+.btn-setting {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  padding: 5px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .2s;
+}
+.btn-setting:active { background: rgba(255,255,255,.25); }
+.btn-setting svg { width: 18px; height: 18px; stroke: currentColor; }
 
 /* レイアウトグリッド */
-.main-grid{display:flex;flex-direction:column;gap:8px;flex:1}
-.pane-ctrl{display:flex;flex-direction:column;gap:8px}
-.pane-list{display:flex;flex-direction:column;gap:8px;flex:1}
+.main-grid { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.pane-ctrl { display: flex; flex-direction: column; gap: 8px; }
+.pane-list { display: flex; flex-direction: column; gap: 8px; flex: 1; }
 
 /* タイマーエリア */
-.trow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;flex-shrink:0}
-.tc{background:#fff;border-radius:8px;padding:6px 6px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,.06)}
-.tc .lbl{font-size:11px;color:#8e8e93;white-space:nowrap}
-.tc .val{font-size:18px;font-weight:600;color:#1c1c1e;font-variant-numeric:tabular-nums}
-.tc.hl .val{color:#1a6fa8}
-
-.btn-upd{width:100%;padding:12px;background:#1a6fa8;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent}
-.btn-upd:active{background:#145d8f;transform:scale(.98)}
-
-/* 選択詳細ボックス（開閉対応） */
-.res{background:#e9f7ee;border:1.5px solid #34c759;border-radius:12px;padding:10px 12px;display:none}
-.res.open{display:block}
-.res-hdr-row{display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;margin-bottom:6px}
-.res-lbl{font-size:12px;color:#1e7e34;font-weight:600}
-.res-toggle-btn{background:rgba(52,199,89,.15);border:none;color:#1e7e34;font-size:11px;font-weight:600;cursor:pointer;padding:3px 8px;border-radius:12px;-webkit-tap-highlight-color:transparent}
-
-.res-course{font-size:16px;font-weight:700;color:#1c1c1e;text-align:center;margin-bottom:8px}
-.time-boxes{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin-bottom:10px}
-.tbox{background:#fff;border:1.5px solid #1a6fa8;border-radius:10px;padding:8px 6px;text-align:center}
-.tbox.end{border-color:#d32f2f}
-.tbox-lbl{font-size:11px;color:#8e8e93;margin-bottom:2px}
-.tbox-val{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;color:#1a6fa8}
-.tbox.end .tbox-val{color:#d32f2f}
-.arrow{font-size:20px;color:#8e8e93;text-align:center}
-
-/* 5項目＋単価の価格表示 */
-.res-prices{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-@media(max-width:380px){
-  .res-prices{grid-template-columns:repeat(2,1fr)}
+.trow { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; flex-shrink: 0; }
+.tc {
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px 6px;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
 }
-.rp{background:#fff;border-radius:8px;padding:6px 4px;text-align:center}
-.rp-lbl{font-size:10px;color:#8e8e93;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rp-val{font-size:14px;font-weight:700;color:#1c1c1e}
-.rp-val.hl1{color:#1565c0}
-.rp-val.hl2{color:#d32f2f}
-.rp-val.hl3{color:#c07000}
-.rp-val.hl-unit{color:#1e7e34}
-.rp-pct-badge{font-size:10px;color:#666;font-weight:400;margin-left:2px}
+.tc .lbl { font-size: 11px; color: #8e8e93; white-space: nowrap; }
+.tc .val { font-size: 18px; font-weight: 600; color: #1c1c1e; font-variant-numeric: tabular-nums; }
+.tc.hl .val { color: #1a6fa8; }
+
+.btn-upd {
+  width: 100%;
+  padding: 12px;
+  background: #1a6fa8;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-upd:active { background: #145d8f; transform: scale(.98); }
+
+/* 選択詳細ボックス */
+.res {
+  background: #e9f7ee;
+  border: 1.5px solid #34c759;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: none;
+}
+.res.on { display: block; }
+.res-lbl { font-size: 12px; color: #1e7e34; font-weight: 600; margin-bottom: 6px; }
+.res-course { font-size: 16px; font-weight: 700; color: #1c1c1e; text-align: center; margin-bottom: 8px; }
+.time-boxes { display: grid; grid-template-columns: 1fr auto 1fr; gap: 6px; align-items: center; margin-bottom: 10px; }
+.tbox { background: #fff; border: 1.5px solid #1a6fa8; border-radius: 10px; padding: 8px 6px; text-align: center; }
+.tbox.end { border-color: #d32f2f; }
+.tbox-lbl { font-size: 11px; color: #8e8e93; margin-bottom: 2px; }
+.tbox-val { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; color: #1a6fa8; }
+.tbox.end .tbox-val { color: #d32f2f; }
+.arrow { font-size: 20px; color: #8e8e93; text-align: center; }
+
+/* 5項目＋単価の価格表示（STAFF％・円非表示、金額大きく表示） */
+.res-prices { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 7px; }
+@media(max-width:380px){
+  .res-prices { grid-template-columns: repeat(2,1fr); }
+}
+.rp {
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px 4px;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+.rp-lbl {
+  font-size: 10.5px;
+  color: #64748b;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+.rp-val {
+  font-size: 16px; /* 金額を大きく表示 */
+  font-weight: 700;
+  color: #1c1c1e;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+.rp-val.hl1 { color: #1565c0; }
+.rp-val.hl2 { color: #2563eb; }
+.rp-val.hl3 { color: #059669; }
+.rp-val.hl-unit { color: #1e7e34; }
 
 /* フィルター */
-.filter-row{display:flex;gap:5px;overflow-x:auto;flex-shrink:0;padding-bottom:2px}
-.ftab{flex-shrink:0;padding:6px 13px;border:1px solid #d1d1d6;border-radius:20px;background:#fff;font-size:13px;cursor:pointer;color:#8e8e93;-webkit-tap-highlight-color:transparent}
-.ftab.on{border-color:#1a6fa8;background:#e8f2fa;color:#1a6fa8;font-weight:600}
+.filter-row { display: flex; gap: 5px; overflow-x: auto; flex-shrink: 0; padding-bottom: 2px; }
+.ftab {
+  flex-shrink: 0;
+  padding: 6px 13px;
+  border: 1px solid #d1d1d6;
+  border-radius: 20px;
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  color: #8e8e93;
+  -webkit-tap-highlight-color: transparent;
+}
+.ftab.on { border-color: #1a6fa8; background: #e8f2fa; color: #1a6fa8; font-weight: 600; }
 
-/* 分数グループ化リスト */
-.clist{background:#fff;border-radius:10px;overflow-y:auto;flex:1;box-shadow:0 1px 2px rgba(0,0,0,.06);padding:6px}
-.mgroup{background:#fafafa;border:1px solid #e5e5ea;border-radius:8px;margin-bottom:6px;padding:7px 8px;display:flex;flex-direction:column;gap:5px}
-.mgroup:last-child{margin-bottom:0}
-.mgroup-hdr{display:flex;align-items:center;justify-content:space-between;padding-bottom:4px;border-bottom:1px dashed #e0e0e5}
-.mgroup-min{font-size:14px;font-weight:700;color:#1c1c1e}
-.mgroup-min span{font-size:11px;font-weight:400;color:#8e8e93}
-.mgroup-times{font-size:12px;color:#636366}
-.mgroup-times b{color:#1c1c1e;font-size:13px}
-
-.mgroup-items{display:grid;grid-template-columns:repeat(auto-fit, minmax(110px, 1fr));gap:6px}
-.mitem{background:#fff;border:1.5px solid #d1d1d6;border-radius:8px;padding:6px 8px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s}
-.mitem:active{background:#f0f7ff;border-color:#1a6fa8}
-
-/* 選択されたコースのみに色がつく */
-.mitem.selected{
-  background: #e3f0fd;
-  border-color: #1a6fa8;
-  box-shadow: 0 0 0 1.5px #1a6fa8;
+/* ============================================================
+   コース一覧（同一分数の横並び表示・コース名横に大きめ金額・文字欠け防止）
+============================================================ */
+.clist {
+  background: transparent;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
-.c-badge{font-size:11px;padding:2px 6px;border-radius:4px;flex-shrink:0;font-weight:600}
-.nm-thai{background:#e3f0fd;color:#1565c0}
-.nm-oil{background:#fff3e0;color:#b76000}
-.nm-topaz{background:#fde8ec;color:#b71c1c}
-.nm-other{background:#eef1f4;color:#495057}
+/* 分数グループ行 */
+.tg-row {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 5px 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  border: 1px solid #eef2f6;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 
-.mitem-pr{text-align:right}
-.mitem-main{font-size:14px;font-weight:700;color:#1c1c1e}
+/* 左側：分数＆時間情報 */
+.tg-time-col {
+  width: 58px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-right: 1px solid #f1f5f9;
+  padding-right: 4px;
+}
+.tg-min {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: baseline;
+  gap: 1px;
+}
+.tg-unit {
+  font-size: 10px;
+  font-weight: 400;
+  color: #64748b;
+}
+.tg-calc {
+  font-size: 10.5px;
+  color: #0284c7;
+  font-weight: 600;
+  margin-top: 2px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 右側：同じ分数のコース横並びエリア */
+.tg-items-col {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+/* 各コースボタン（コース名の横に金額を大きめに横並び配置） */
+.tg-item-btn {
+  flex: 1 1 0;
+  min-width: 78px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: row; /* 横並び */
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all .15s ease;
+  text-align: center;
+  user-select: none;
+}
+.tg-item-btn:active {
+  transform: scale(0.97);
+  background: #f1f5f9;
+}
+
+/* 選択されたコースのみに適用するスタイル（緑枠＆淡緑背景） */
+.tg-item-btn.selected {
+  background: #e9f7ee !important;
+  border-color: #34c759 !important;
+  box-shadow: 0 0 0 1px #34c759;
+}
+.tg-item-btn.selected .tg-price {
+  color: #166534;
+}
+
+/* コース名バッジ（文字欠け防止＆視認性重視） */
+.c-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1.5px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+  line-height: 1.2;
+  letter-spacing: -0.2px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.nm-thai { background: #e3f0fd; color: #1565c0; }
+.nm-oil { background: #fff3e0; color: #b76000; }
+.nm-topaz { background: #fde8ec; color: #b71c1c; }
+.nm-other { background: #eef1f4; color: #495057; }
+
+/* 金額表示（コース名横に大きめに表示） */
+.tg-price {
+  font-size: 14px; /* 金額大きめ */
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
 
 /* PC・デスクトップ（768px以上）対応 */
 @media(min-width: 768px){
-  .outer{padding:24px 16px;align-items:flex-start}
-  .app{max-width:980px;min-height:auto;border-radius:16px;box-shadow:0 6px 28px rgba(0,0,0,.15);padding:14px;gap:12px}
-  .main-grid{display:grid;grid-template-columns:380px 1fr;gap:14px;align-items:start}
-  .clist{max-height:580px}
+  .outer { padding: 24px 16px; align-items: flex-start; }
+  .app {
+    max-width: 980px;
+    min-height: auto;
+    border-radius: 16px;
+    box-shadow: 0 6px 28px rgba(0,0,0,.15);
+    padding: 14px;
+    gap: 12px;
+  }
+  .main-grid { display: grid; grid-template-columns: 380px 1fr; gap: 14px; align-items: start; }
+  .clist { max-height: 580px; }
 }
 
-/* 設定モーダル */
-.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:999;padding:12px}
-.modal-overlay.open{display:flex}
-.modal-content{background:#fff;border-radius:14px;width:100%;max-width:760px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 8px 30px rgba(0,0,0,.25);overflow:hidden}
-.modal-hdr{background:#f7f7f8;border-bottom:1px solid #e5e5ea;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
-.modal-hdr h3{font-size:16px;font-weight:700;color:#1c1c1e;display:flex;align-items:center;gap:6px}
-.modal-close{background:none;border:none;font-size:24px;color:#8e8e93;cursor:pointer;line-height:1;padding:0 4px}
-.modal-body{padding:14px;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:14px}
-
-.basic-cfg-box{background:#eef6fc;border:1.5px solid #b8daff;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px}
-.basic-cfg-title{font-size:13px;font-weight:700;color:#1a6fa8;display:flex;align-items:center;gap:4px}
-.basic-cfg-desc{font-size:11px;color:#495057;line-height:1.4}
-.basic-cfg-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:8px}
-@media(max-width:540px){
-  .basic-cfg-grid{grid-template-columns:repeat(2, 1fr)}
+/* ============================================================
+   設定モーダル（基本設定・コース一覧）
+============================================================ */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 8px;
 }
-.b-field{display:flex;flex-direction:column;gap:2px}
-.b-label{font-size:11px;font-weight:600;color:#495057}
-.b-input{padding:6px 8px;border:1px solid #ced4da;border-radius:6px;font-size:13px;background:#fff;width:100%}
-.b-input-group{display:flex;align-items:center;gap:4px}
-.b-pct-wrap{display:flex;align-items:center;gap:2px;background:#fff;border:1px solid #ced4da;border-radius:6px;padding:0 4px;width:64px;flex-shrink:0}
-.b-pct-input{width:100%;border:none;outline:none;font-size:12px;text-align:right;padding:6px 0;color:#0056b3;font-weight:700}
+.modal-overlay.open { display: flex; }
 
-.btn-apply-basic{background:#1a6fa8;color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;align-self:flex-end;display:flex;align-items:center;gap:4px;-webkit-tap-highlight-color:transparent;transition:background .2s}
-.btn-apply-basic:active{background:#12527e;transform:scale(.98)}
-
-.cfg-sec{display:flex;flex-direction:column;gap:8px}
-.cfg-sec-title{font-size:13px;font-weight:700;color:#1c1c1e}
-.cfg-item{background:#f9f9fb;border:1px solid #e5e5ea;border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px}
-
-.cfg-item-top{display:flex;align-items:flex-end;gap:8px}
-.c-field-group{display:flex;flex-direction:column;gap:3px}
-.c-field-lbl{font-size:11px;font-weight:600;color:#636366}
-.c-m-wrap{display:flex;align-items:center;gap:4px}
-.c-m{width:64px;font-weight:700;padding:6px;border:1px solid #d1d1d6;border-radius:6px;font-size:13px;text-align:center}
-.c-name-wrap{flex:1;min-width:0}
-.c-name{width:100%;padding:6px 8px;border:1px solid #d1d1d6;border-radius:6px;font-size:13px}
-.btn-del{background:#ff3b30;color:#fff;border:none;border-radius:6px;padding:7px 12px;font-size:12px;cursor:pointer;flex-shrink:0;height:33px}
-
-.cfg-item-fields{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-@media(min-width: 620px){
-  .cfg-item-fields{grid-template-columns:repeat(6,1fr)}
+.modal-content {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 35px rgba(0,0,0,.22);
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #cbd5e1;
 }
-.cfg-field{display:flex;flex-direction:column;gap:2px;min-width:0}
-.cfg-sub-lbl{font-size:10px;font-weight:600;color:#636366;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.pct-input-wrap{display:flex;align-items:center;gap:2px;background:#fff;border:1px solid #d1d1d6;border-radius:4px;padding:1px 4px;margin-bottom:2px}
-.cfg-pct-input{width:100%;border:none;outline:none;font-size:11px;text-align:right;color:#0056b3;font-weight:600}
-.pct-unit{font-size:10px;color:#8e8e93}
-.cfg-sub-input{width:100%;min-width:0;padding:5px 6px;border:1px solid #d1d1d6;border-radius:6px;font-size:12px;text-align:right}
-.cfg-sub-input.is-auto{background:#f0f7ff;color:#0056b3;font-weight:600}
-.cfg-unit-val{background:#e9f7ee;border:1px solid #b7eb8f;color:#1e7e34;font-weight:700;padding:6px;border-radius:6px;font-size:12px;text-align:center;white-space:nowrap;overflow:hidden;height:31px;display:flex;align-items:center;justify-content:center}
+#save-toast {
+  display: none;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #10b981;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: bold;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+}
 
-.btn-add{background:#34c759;color:#fff;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;text-align:center}
-.modal-ftr{border-top:1px solid #e5e5ea;padding:12px 14px;display:flex;gap:8px;background:#f7f7f8;flex-shrink:0}
-.btn-save{flex:1;padding:10px;background:#1a6fa8;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
-.btn-reset{padding:10px 14px;background:#8e8e93;color:#fff;border:none;border-radius:8px;font-size:13px;cursor:pointer;white-space:nowrap}
+/* ヘッダー */
+.modal-hdr {
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 12px 14px 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+.modal-hdr-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.modal-hdr-icon {
+  font-size: 17px;
+  color: #8b5cf6;
+}
+.modal-hdr-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+}
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #94a3b8;
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 6px;
+}
+.modal-close:hover { color: #64748b; }
+
+/* モーダル本文 */
+.modal-body {
+  padding: 10px;
+  overflow-y: auto;
+  max-height: calc(92vh - 110px);
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 1. 基本設定ボックス */
+.basic-cfg-box {
+  background: #f0f7ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 10px 10px 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.basic-cfg-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.basic-cfg-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0284c7;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.pin-icon { font-size: 13px; }
+.basic-cfg-desc {
+  font-size: 11px;
+  color: #0284c7;
+  line-height: 1.35;
+}
+
+.store-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+.store-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+  white-space: nowrap;
+}
+.store-input {
+  flex: 1;
+  height: 28px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 12.5px;
+  outline: none;
+}
+.store-input:focus { border-color: #38bdf8; }
+
+/* 2列グリッド */
+.basic-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 6px;
+  margin-top: 1px;
+}
+
+/* 各セルの白い外枠 */
+.cfg-cell {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  padding: 3px 5px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+}
+
+/* 丸囲み番号記号 ①②③④⑤単 */
+.cfg-badge {
+  color: #0284c7;
+  font-weight: 700;
+  font-size: 12px;
+  width: 14px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* 名称入力欄 */
+.inner-name {
+  flex: 1;
+  min-width: 0;
+  height: 26px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 2px 5px;
+  font-size: 11.5px;
+  background: #ffffff;
+  outline: none;
+}
+.inner-name:focus { border-color: #38bdf8; }
+.full-width { width: 100%; }
+
+/* ％入力欄 */
+.inner-pct {
+  width: 32px;
+  height: 26px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #2563eb;
+  background: #ffffff;
+  outline: none;
+  flex-shrink: 0;
+  padding: 2px 1px;
+}
+.inner-pct:focus { border-color: #38bdf8; }
+
+/* ±円入力欄 */
+.inner-yen {
+  width: 52px;
+  height: 26px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  text-align: right;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #059669;
+  background: #ffffff;
+  outline: none;
+  flex-shrink: 0;
+  padding: 2px 4px;
+}
+.inner-yen:focus { border-color: #38bdf8; }
+
+.unit-lbl {
+  font-size: 11px;
+  color: #475569;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* 一括反映ボタン */
+.btn-apply-all {
+  width: 100%;
+  height: 35px;
+  background: #0080c6;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 3px;
+  transition: background .15s;
+}
+.btn-apply-all:hover { background: #0270ad; }
+
+/* 2. コース一覧セクション */
+.courses-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 2px;
+}
+.section-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.btn-add-course {
+  background: #10b981;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.btn-add-course:hover { background: #059669; }
+
+.course-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.course-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  padding: 6px 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* 1段目: コース時間、メニュー名（最大幅・flex:1）、単価、削除 */
+.card-row-top {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+}
+.time-wrap {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.input-time {
+  width: 52px;
+  height: 28px;
+  text-align: center;
+  font-weight: 700;
+  color: #0f172a;
+  padding: 2px;
+  flex-shrink: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+}
+.time-unit { font-size: 11px; color: #64748b; flex-shrink: 0; }
+.input-course-name {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 28px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 12.5px;
+}
+.unit-badge {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 5px;
+  padding: 1px 5px;
+  text-align: right;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.badge-sub { font-size: 8.5px; color: #059669; display: block; line-height: 1; }
+.badge-main { font-size: 11.5px; font-weight: 700; color: #047857; line-height: 1.2; }
+
+.btn-del {
+  background: #ef4444;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 7px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 2段目: 基本料金 ＆ スタッフ金額 */
+.card-row-bottom {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  padding-top: 4px;
+  border-top: 1px dashed #e2e8f0;
+  -webkit-overflow-scrolling: touch;
+}
+.amt-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 56px;
+}
+.amt-label {
+  font-size: 9.5px;
+  color: #475569;
+  margin-bottom: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.input-amt {
+  width: 100%;
+  height: 28px;
+  padding: 2px 3px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+}
+.input-base { color: #0f172a; border-color: #94a3b8; background: #ffffff; }
+.input-staff { color: #2563eb; background: #eff6ff; border-color: #bfdbfe; }
+.input-opt { color: #64748b; background: #f8fafc; border-color: #cbd5e1; }
+
+.modal-ftr {
+  padding: 8px 14px;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.btn-save-main {
+  flex: 1;
+  height: 38px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-save-main:hover { background: #1d4ed8; }
+.btn-reset-main {
+  height: 38px;
+  padding: 0 14px;
+  background: #64748b;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
 </style>
 </head>
 <body>
+
 <div class="outer">
 <div class="app">
   <!-- ヘッダー -->
@@ -191,8 +783,6 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
       <span class="hdr-t" id="storeNameText">Thai Topaz</span>
     </div>
     <div class="hdr-right">
-      <!-- 画面右上のバージョン表示 -->
-      <span class="ver-badge">Ver 1.28</span>
       <div class="lang-switch">
         <button class="lang-btn on" id="btnLangJa" onclick="setLang('ja')">JP</button>
         <button class="lang-btn" id="btnLangEn" onclick="setLang('en')">EN</button>
@@ -200,8 +790,9 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
       </div>
       <span class="hdr-c" id="liveTime">--:--</span>
       <button class="btn-setting" id="btnOpenSetting" title="設定" aria-label="設定">
-        <svg viewBox="0 0 24 24">
-          <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
       </button>
     </div>
@@ -218,31 +809,26 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
 
       <button class="btn-upd" id="btnUpd">⏱ 更新（開始時刻をセット）</button>
 
-      <!-- 選択詳細ボックス（開閉対応・初期非表示） -->
+      <!-- 選択詳細ボックス -->
       <div class="res" id="res">
-        <div class="res-hdr-row" onclick="toggleRes()">
-          <div class="res-lbl" id="lblResTitle">✅ 選択コース詳細</div>
-          <button type="button" class="res-toggle-btn" id="btnToggleRes">▲ 閉じる</button>
-        </div>
-        <div id="resBody">
-          <div class="res-course" id="rC">--</div>
-          <div class="time-boxes">
-            <div class="tbox">
-              <div class="tbox-lbl" id="lblRStart">開始時刻</div>
-              <div class="tbox-val" id="rStart">--:--</div>
-            </div>
-            <div class="arrow">→</div>
-            <div class="tbox end">
-              <div class="tbox-lbl" id="lblREnd">終了時刻</div>
-              <div class="tbox-val" id="rEnd">--:--</div>
-            </div>
+        <div class="res-lbl" id="lblResTitle">✅ 選択コース詳細</div>
+        <div class="res-course" id="rC"></div>
+        <div class="time-boxes">
+          <div class="tbox">
+            <div class="tbox-lbl" id="lblRStart">開始時刻</div>
+            <div class="tbox-val" id="rStart">--:--</div>
           </div>
-          <div class="res-prices" id="resPrices"></div>
+          <div class="arrow">→</div>
+          <div class="tbox end">
+            <div class="tbox-lbl" id="lblREnd">終了時刻</div>
+            <div class="tbox-val" id="rEnd">--:--</div>
+          </div>
         </div>
+        <!-- 金額5項目＋単価 -->
+        <div class="res-prices" id="resPrices"></div>
       </div>
     </div>
 
-    <!-- 右側：コース一覧（分数グループ化レイアウト） -->
     <div class="pane-list">
       <div class="filter-row" id="filterRow"></div>
       <div class="clist" id="clist"></div>
@@ -251,84 +837,124 @@ html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino San
 </div>
 </div>
 
-<!-- 設定モーダル -->
+<!-- ============================================================
+     設定モーダル（基本設定・コース一覧）
+============================================================ -->
 <div class="modal-overlay" id="settingModal">
   <div class="modal-content">
+    <div id="save-toast">設定を正常に保存しました！</div>
+
+    <!-- モーダルヘッダー -->
     <div class="modal-hdr">
-      <h3 id="lblSettingHdr"><svg style="width:18px;height:18px;fill:currentColor;display:inline-block;vertical-align:-3px;" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg> <span id="lblSettingHdrText">設定（基本設定・コース一覧）</span></h3>
-      <button class="modal-close" id="btnCloseSetting">&times;</button>
+      <div class="modal-hdr-left">
+        <span class="modal-hdr-icon">⚙️</span>
+        <span class="modal-hdr-title" id="lblSettingHdr">設定（基本設定・コース一覧）</span>
+      </div>
+      <button type="button" class="modal-close" id="btnCloseSetting">✕</button>
     </div>
+
+    <!-- モーダル本文 -->
     <div class="modal-body">
-      <!-- 基本設定枠 -->
+
+      <!-- 1. 基本設定 -->
       <div class="basic-cfg-box">
-        <div class="basic-cfg-title">📌 <span id="lblBasicCfgTitle">基本設定（項目名・基本％設定）</span></div>
-        <div class="basic-cfg-desc" id="lblBasicDesc">※基本設定を入力後、「全コースに反映」ボタンを押すと、登録済みの全コースに自動計算で一括反映されます。</div>
-        
-        <div class="b-field">
-          <div class="b-label" id="lblStoreLabel">店舗表示名</div>
-          <input type="text" class="b-input" id="cfgStoreName" value="Thai Topaz">
+        <div class="basic-cfg-header">
+          <div class="basic-cfg-title">
+            <span class="pin-icon">📌</span>
+            <span>基本設定（割合％ ＆ 加減算円 設定）</span>
+          </div>
+          <div class="basic-cfg-desc">※計算式: (基本料金 × %) ＋ 円。数値を変更すると下のコース一覧へ自動計算されます。</div>
         </div>
-        
-        <div style="font-size:11px;font-weight:700;color:#1a6fa8;margin-top:2px;" id="lblBasicItemHeader">金額項目の名称 ＆ 基本％（①の料金に対する割合）</div>
-        <div class="basic-cfg-grid">
-          <div class="b-field">
-            <div class="b-label" id="lblItem1Title">項目1（単価＆％計算元）</div>
-            <input type="text" class="b-input" id="cfgLabelP1" value="基本コース料金">
+
+        <div class="store-name-row">
+          <label class="store-label">店舗表示名:</label>
+          <input type="text" id="setting-store-name" value="Thai Topaz" class="store-input">
+        </div>
+
+        <!-- 2列グリッド -->
+        <div class="basic-grid-2col">
+          <!-- 左列: ① 基本コース料金 -->
+          <div class="cfg-cell">
+            <span class="cfg-badge">①</span>
+            <input type="text" id="cfg-item1-name" value="基本コース料金" class="inner-name full-width" placeholder="基本料金名">
           </div>
-          <div class="b-field">
-            <div class="b-label" id="lblItem2Title">項目2 ［名称 / ％］</div>
-            <div class="b-input-group">
-              <input type="text" class="b-input" id="cfgLabelP2" value="STAFF(A)">
-              <div class="b-pct-wrap"><input type="number" class="b-pct-input" id="cfgPctP2" placeholder="%" step="any"><span>%</span></div>
-            </div>
+
+          <!-- 右列: ④ STAFF(C) -->
+          <div class="cfg-cell">
+            <span class="cfg-badge">④</span>
+            <input type="text" id="cfg-item4-name" value="STAFF(C)" class="inner-name" placeholder="名称" oninput="autoRecalcAll()">
+            <input type="number" id="cfg-item4-pct" value="50" class="inner-pct" placeholder="" oninput="autoRecalcAll()">
+            <span class="unit-lbl">%</span>
+            <input type="number" id="cfg-item4-yen" value="-1000" class="inner-yen" placeholder="±円" oninput="autoRecalcAll()">
+            <span class="unit-lbl">円</span>
           </div>
-          <div class="b-field">
-            <div class="b-label" id="lblItem3Title">項目3 ［名称 / ％］</div>
-            <div class="b-input-group">
-              <input type="text" class="b-input" id="cfgLabelP3" value="STAFF(B)">
-              <div class="b-pct-wrap"><input type="number" class="b-pct-input" id="cfgPctP3" placeholder="%" step="any"><span>%</span></div>
-            </div>
+
+          <!-- 左列: ② STAFF(A) -->
+          <div class="cfg-cell">
+            <span class="cfg-badge">②</span>
+            <input type="text" id="cfg-item2-name" value="STAFF(A)" class="inner-name" placeholder="名称" oninput="autoRecalcAll()">
+            <input type="number" id="cfg-item2-pct" value="50" class="inner-pct" placeholder="" oninput="autoRecalcAll()">
+            <span class="unit-lbl">%</span>
+            <input type="number" id="cfg-item2-yen" value="0" class="inner-yen" placeholder="±円" oninput="autoRecalcAll()">
+            <span class="unit-lbl">円</span>
           </div>
-          <div class="b-field">
-            <div class="b-label" id="lblItem4Title">項目4 ［名称 / ％］</div>
-            <div class="b-input-group">
-              <input type="text" class="b-input" id="cfgLabelP4" value="STAFF(C)">
-              <div class="b-pct-wrap"><input type="number" class="b-pct-input" id="cfgPctP4" placeholder="%" step="any"><span>%</span></div>
-            </div>
+
+          <!-- 右列: ⑤ 任意⑤ -->
+          <div class="cfg-cell">
+            <span class="cfg-badge">⑤</span>
+            <input type="text" id="cfg-item5-name" value="任意⑤" class="inner-name" placeholder="名称" oninput="autoRecalcAll()">
+            <input type="number" id="cfg-item5-pct" value="" class="inner-pct" placeholder="" oninput="autoRecalcAll()">
+            <span class="unit-lbl">%</span>
+            <input type="number" id="cfg-item5-yen" value="" class="inner-yen" placeholder="±円" oninput="autoRecalcAll()">
+            <span class="unit-lbl">円</span>
           </div>
-          <div class="b-field">
-            <div class="b-label" id="lblItem5Title">項目5 ［名称 / ％］</div>
-            <div class="b-input-group">
-              <input type="text" class="b-input" id="cfgLabelP5" value="任意⑤">
-              <div class="b-pct-wrap"><input type="number" class="b-pct-input" id="cfgPctP5" placeholder="%" step="any"><span>%</span></div>
-            </div>
+
+          <!-- 左列: ③ STAFF(B) -->
+          <div class="cfg-cell">
+            <span class="cfg-badge">③</span>
+            <input type="text" id="cfg-item3-name" value="STAFF(B)" class="inner-name" placeholder="名称" oninput="autoRecalcAll()">
+            <input type="number" id="cfg-item3-pct" value="50" class="inner-pct" placeholder="" oninput="autoRecalcAll()">
+            <span class="unit-lbl">%</span>
+            <input type="number" id="cfg-item3-yen" value="1000" class="inner-yen" placeholder="±円" oninput="autoRecalcAll()">
+            <span class="unit-lbl">円</span>
           </div>
-          <div class="b-field">
-            <div class="b-label" id="lblUnitTitle">単価名称（自動計算）</div>
-            <input type="text" class="b-input" id="cfgLabelUnit" value="時間単価(分)">
+
+          <!-- 右列: 単 時間単価(分) -->
+          <div class="cfg-cell">
+            <span class="cfg-badge">単</span>
+            <input type="text" id="cfg-unit-name" value="時間単価(分)" class="inner-name full-width" placeholder="単価名称">
           </div>
         </div>
 
-        <button type="button" class="btn-apply-basic" id="btnApplyBasic" onclick="applyBasicSettingsToAll()">
-          ⚡ <span id="lblApplyBtnText">基本設定を全コースに反映</span>
+        <button type="button" class="btn-apply-all" onclick="applyBasicSettingsToAllCourses(true)">
+          <span style="color:#fbbf24;font-size:14px;">⚡</span>基本設定を全コースに一括反映（% ＋ 円 計算）
         </button>
       </div>
 
-      <!-- コース一覧編集 -->
-      <div class="cfg-sec">
-        <div class="cfg-sec-title" id="lblCourseEditLabel">コース一覧編集</div>
-        <div id="courseEditList" style="display:flex;flex-direction:column;gap:8px"></div>
-        <button class="btn-add" id="btnAddCourse">+ 新しいコースを追加</button>
+      <!-- 2. コース一覧セクション -->
+      <div class="courses-section">
+        <div class="section-bar">
+          <span class="section-title">コース一覧編集</span>
+          <button type="button" class="btn-add-course" onclick="addNewCourse()">＋ コース追加</button>
+        </div>
+
+        <div id="course-cards-container" class="course-card-list"></div>
       </div>
     </div>
+
+    <!-- モーダルフッター -->
     <div class="modal-ftr">
-      <button class="btn-reset" id="btnResetSetting">初期値</button>
-      <button class="btn-save" id="btnSaveSetting">保存して適用</button>
+      <button type="button" class="btn-reset-main" onclick="resetToDefaults()">初期値</button>
+      <button type="button" class="btn-save-main" onclick="saveAllSettings()">設定を保存して閉じる</button>
     </div>
   </div>
 </div>
 
+<!-- ============================================================
+     JavaScript ロジック部
+============================================================ -->
 <script>
+// 多言語辞書
 var I18N = {
   ja: {
     startTime: "開始時刻",
@@ -337,40 +963,14 @@ var I18N = {
     minUnit: "分",
     btnUpd: "⏱ 更新（開始時刻をセット）",
     resTitle: "✅ 選択コース詳細",
-    courseLabel: "分コース ｜ ",
+    courseLabel: "分コース｜",
     endTime: "終了時刻",
     all: "すべて",
     courseTime: "コース時間",
     courseName: "コース名",
-    settingHdrText: "設定（基本設定・コース一覧）",
-    basicCfgTitle: "基本設定（項目名・基本％設定）",
-    basicDesc: "※基本設定を入力後、「全コースに反映」ボタンを押すと、登録済みの全コースに自動計算で一括反映されます。",
-    storeLabel: "店舗表示名",
-    basicItemHeader: "金額項目の名称 ＆ 基本％（①の料金に対する割合）",
-    item1Label: "項目1（単価＆％計算元）",
-    item2Label: "項目2 ［名称 / ％］",
-    item3Label: "項目3 ［名称 / ％］",
-    item4Label: "項目4 ［名称 / ％］",
-    item5Label: "項目5 ［名称 / ％］",
-    unitLabel: "単価名称（自動計算）",
-    courseEditLabel: "コース一覧編集",
-    addCourse: "+ 新しいコースを追加",
-    save: "保存して適用",
-    reset: "初期値",
-    delete: "削除",
-    applyBtn: "基本設定を全コースに反映",
-    applyDone: "基本設定の項目と％を全コースに反映・再計算しました！",
-    resetConfirm: "設定を初期状態（デフォルトコース）に戻しますか？",
-    close: "閉じる",
-    open: "開く",
-    defaultLabels: {
-      p1: '基本コース料金',
-      p2: 'STAFF(A)',
-      p3: 'STAFF(B)',
-      p4: 'STAFF(C)',
-      p5: '任意⑤',
-      unit: '時間単価(分)'
-    }
+    settingHdr: "設定（基本設定・コース一覧）",
+    saveToast: "設定を正常に保存しました！",
+    resetConfirm: "設定を初期状態（デフォルトコース）に戻しますか？"
   },
   en: {
     startTime: "Start Time",
@@ -378,213 +978,109 @@ var I18N = {
     elapsed: "Elapsed",
     minUnit: "min",
     btnUpd: "⏱ Update (Set Start Time)",
-    resTitle: "✅ Selected Course Details",
+    resTitle: "✅ Selected Course",
     courseLabel: "min Course ｜ ",
     endTime: "End Time",
     all: "All",
     courseTime: "Duration",
     courseName: "Course Name",
-    settingHdrText: "Settings (Basic & Courses)",
-    basicCfgTitle: "Basic Settings (Item Names & Default %)",
-    basicDesc: "* After entering basic settings, click 'Apply to All' to recalculate all courses automatically.",
-    storeLabel: "Store Name",
-    basicItemHeader: "Price Item Names & Default % (Ratio of Item 1)",
-    item1Label: "Item 1 (Base & % Source)",
-    item2Label: "Item 2 [Name / %]",
-    item3Label: "Item 3 [Name / %]",
-    item4Label: "Item 4 [Name / %]",
-    item5Label: "Item 5 [Name / %]",
-    unitLabel: "Unit Rate Name (Auto)",
-    courseEditLabel: "Edit Course List",
-    addCourse: "+ Add New Course",
-    save: "Save & Apply",
-    reset: "Reset",
-    delete: "Delete",
-    applyBtn: "Apply to All Courses",
-    applyDone: "Basic settings applied to all courses!",
-    resetConfirm: "Reset all settings to default courses?",
-    close: "Close",
-    open: "Open",
-    defaultLabels: {
-      p1: 'Base Price',
-      p2: 'STAFF(A)',
-      p3: 'STAFF(B)',
-      p4: 'STAFF(C)',
-      p5: 'Option 5',
-      unit: 'Rate (/min)'
-    }
+    settingHdr: "Settings",
+    saveToast: "Settings saved successfully!",
+    resetConfirm: "Reset all settings to default courses?"
   },
   th: {
     startTime: "เวลาเริ่มต้น",
     nowTime: "เวลาปัจจุบัน",
     elapsed: "เวลาที่ใช้ไป",
     minUnit: "นาที",
-    btnUpd: "⏱ อัปเดต (ตั้งเวลาเริ่ม)",
+    btnUpd: "⏱ อัปเดต / ตั้งเวลาเริ่มต้น",
     resTitle: "✅ รายละเอียดคอร์ส",
     courseLabel: " นาที ｜ ",
     endTime: "เวลาสิ้นสุด",
     all: "ทั้งหมด",
     courseTime: "ระยะเวลา",
     courseName: "ชื่อคอร์ส",
-    settingHdrText: "การตั้งค่า (พื้นฐาน & คอร์ส)",
-    basicCfgTitle: "การตั้งค่าพื้นฐาน (ชื่อรายการ & % เริ่มต้น)",
-    basicDesc: "* หลังระบุการตั้งค่าพื้นฐาน กด 'นำไปใช้กับทุกคอร์ส' เพื่อคำนวณอัตโนมัติทั้งหมด",
-    storeLabel: "ชื่อร้านค้า",
-    basicItemHeader: "ชื่อรายการราคา & % เริ่มต้น (สัดส่วนของรายการ 1)",
-    item1Label: "รายการ 1 (ราคาฐาน & คำนวณ %)",
-    item2Label: "รายการ 2 [ชื่อ / %]",
-    item3Label: "รายการ 3 [ชื่อ / %]",
-    item4Label: "รายการ 4 [ชื่อ / %]",
-    item5Label: "รายการ 5 [ชื่อ / %]",
-    unitLabel: "ชื่อราคาต่อนาที (อัตโนมัติ)",
-    courseEditLabel: "แก้ไขรายการคอร์ส",
-    addCourse: "+ เพิ่มคอร์สใหม่",
-    save: "บันทึกและนำไปใช้",
-    reset: "ค่าเริ่มต้น",
-    delete: "ลบ",
-    applyBtn: "นำไปใช้กับทุกคอร์ส",
-    applyDone: "นำการตั้งค่าพื้นฐานไปใช้เรียบร้อยแล้ว!",
-    resetConfirm: "ต้องการรีเซ็ตการตั้งค่ากลับเป็นค่าเริ่มต้นหรือไม่?",
-    close: "ปิด",
-    open: "เปิด",
-    defaultLabels: {
-      p1: 'ราคาคอร์สพื้นฐาน',
-      p2: 'STAFF(A)',
-      p3: 'STAFF(B)',
-      p4: 'STAFF(C)',
-      p5: 'อื่นๆ 5',
-      unit: 'ราคาต่อนาที'
-    }
+    settingHdr: "การตั้งค่า",
+    saveToast: "บันทึกการตั้งค่าเรียบร้อยแล้ว!",
+    resetConfirm: "ต้องการรีเซ็ตการตั้งค่ากลับเป็นค่าเริ่มต้นหรือไม่?"
   }
 };
 
 var currentLang = 'ja';
+var STORAGE_KEY = "CH_MANAGER_SETTINGS_DATA_V4";
 
-var DEFAULT_LABELS = {
-  p1: '基本コース料金',
-  p2: 'STAFF(A)',
-  p3: 'STAFF(B)',
-  p4: 'STAFF(C)',
-  p5: '任意⑤',
-  unit: '時間単価(分)'
+// デフォルト基本設定
+var DEFAULT_BASIC_SETTINGS = {
+  storeName: "Thai Topaz",
+  item1Name: "基本コース料金",
+  item2: { name: "STAFF(A)", pct: "50", yen: "0" },
+  item3: { name: "STAFF(B)", pct: "50", yen: "1000" },
+  item4: { name: "STAFF(C)", pct: "50", yen: "-1000" },
+  item5: { name: "任意⑤", pct: "", yen: "" },
+  unitName: "時間単価(分)"
 };
-var basicLabels = Object.assign({}, DEFAULT_LABELS);
 
-var DEFAULT_BASIC_PCTS = { p2: 50, p3: 40, p4: null, p5: null };
-var basicPcts = Object.assign({}, DEFAULT_BASIC_PCTS);
-
+// デフォルトコース一覧
 var DEFAULT_COURSES = [
-  {m:20,  name:'Topaz', prices:[6000, 3000, 2400, null, null], percents:[null, 50, 40, null, null]},
-  {m:30,  name:'Thai',  prices:[5000, 2500, 2000, null, null], percents:[null, 50, 40, null, null]},
-  {m:40,  name:'Topaz', prices:[8000, 4000, 3200, null, null], percents:[null, 50, 40, null, null]},
-  {m:60,  name:'Thai',  prices:[7000, 3500, 2800, null, null], percents:[null, 50, 40, null, null]},
-  {m:60,  name:'Oil',   prices:[9000, 4500, 3600, null, null], percents:[null, 50, 40, null, null]},
-  {m:70,  name:'Topaz', prices:[11000, 5500, 4400, null, null], percents:[null, 50, 40, null, null]},
-  {m:90,  name:'Thai',  prices:[9000, 4500, 3600, null, null], percents:[null, 50, 40, null, null]},
-  {m:90,  name:'Oil',   prices:[12000, 6000, 4800, null, null], percents:[null, 50, 40, null, null]},
-  {m:100, name:'Topaz', prices:[14000, 7000, 5600, null, null], percents:[null, 50, 40, null, null]},
-  {m:120, name:'Thai',  prices:[12000, 6000, 4800, null, null], percents:[null, 50, 40, null, null]},
-  {m:120, name:'Oil',   prices:[15000, 7500, 6000, null, null], percents:[null, 50, 40, null, null]},
-  {m:120, name:'Topaz', prices:[17000, 8500, 6800, null, null], percents:[null, 50, 40, null, null]},
-  {m:150, name:'Oil',   prices:[18000, 9000, 7200, null, null], percents:[null, 50, 40, null, null]},
-  {m:150, name:'Topaz', prices:[20000, 10000, 9000, null, null], percents:[null, 50, 40, null, null]},
-  {m:180, name:'Oil',   prices:[21000, 10500, 8400, null, null], percents:[null, 50, 40, null, null]},
-  {m:180, name:'Topaz', prices:[23000, 11500, 9200, null, null], percents:[null, 50, 40, null, null]}
+  { m: 20,  name: 'Topaz',          price: 6000,  a: 3000, b: 4000, c: 2000, d: '' },
+  { m: 30,  name: 'Thai',           price: 5000,  a: 2500, b: 3500, c: 1500, d: '' },
+  { m: 40,  name: 'Topaz',          price: 7500,  a: 3800, b: 4800, c: 2800, d: '' },
+  { m: 60,  name: 'Special Course', price: 9000,  a: 4500, b: 5500, c: 3500, d: '' },
+  { m: 60,  name: 'Thai',           price: 7000,  a: 3500, b: 4500, c: 2500, d: '' },
+  { m: 60,  name: 'Oil',            price: 9000,  a: 4500, b: 5500, c: 3500, d: '' },
+  { m: 70,  name: 'Topaz',          price: 11000, a: 5500, b: 6500, c: 4500, d: '' },
+  { m: 90,  name: 'Thai',           price: 9000,  a: 4500, b: 5500, c: 3500, d: '' },
+  { m: 90,  name: 'Oil',            price: 12000, a: 6000, b: 7000, c: 5000, d: '' },
+  { m: 100, name: 'Topaz',          price: 14000, a: 7000, b: 8000, c: 6000, d: '' },
+  { m: 120, name: 'Thai',           price: 12000, a: 6000, b: 7000, c: 5000, d: '' },
+  { m: 120, name: 'Oil',            price: 15000, a: 7500, b: 8500, c: 6500, d: '' },
+  { m: 120, name: 'Topaz',          price: 17000, a: 8500, b: 9500, c: 7500, d: '' },
+  { m: 150, name: 'Oil',            price: 18000, a: 9000, b: 10000, c: 8000, d: '' },
+  { m: 150, name: 'Topaz',          price: 20000, a: 10000, b: 11000, c: 9000, d: '' },
+  { m: 180, name: 'Oil',            price: 21000, a: 10500, b: 11500, c: 9500, d: '' },
+  { m: 180, name: 'Topaz',          price: 23000, a: 11500, b: 12500, c: 10500, d: '' }
 ];
 
-var COURSES = [];
-var storeName = "Thai Topaz";
-var st=null, currentFilter='all', selectedCourseData=null;
-var isResOpen = false;
+var appState = {
+  basicSettings: JSON.parse(JSON.stringify(DEFAULT_BASIC_SETTINGS)),
+  courses: JSON.parse(JSON.stringify(DEFAULT_COURSES))
+};
 
-function getArrItem(arr, idx){
-  if(!arr || !Array.isArray(arr) || idx >= arr.length) return null;
-  return arr[idx];
+// 状態変数：selectedCourseKey で選択中のコースのみを保持
+var st = null, currentFilter = 'all', selectedCourseKey = null, iv = null, selectedCourseData = null;
+
+// ユーティリティ
+function fmt(d){ return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }
+function addM(d,m){ return new Date(d.getTime()+m*60000); }
+function yen(n){ return (n!=null && n!=='') ? '¥'+Number(n).toLocaleString() : '—'; }
+function ckey(c){ return c.m + '_' + c.name + '_' + c.price; }
+function nbadge(n){
+  if(!n) return 'nm-other';
+  if(n.indexOf('Thai') !== -1) return 'nm-thai';
+  if(n.indexOf('Oil') !== -1) return 'nm-oil';
+  if(n.indexOf('Topaz') !== -1) return 'nm-topaz';
+  return 'nm-other';
 }
 
-function getActiveLabel(key){
-  var jaDef = I18N.ja.defaultLabels;
-  var curDef = I18N[currentLang].defaultLabels;
-
-  if(currentLang !== 'ja'){
-    var curVal = basicLabels[key];
-    if(!curVal || curVal === jaDef[key] || curVal === '基本コース料金' || curVal === 'STAFF' || curVal === 'OWNER' || curVal === 'OWNER割引' || curVal === '時間単価(分)' || curVal === '単価(分)' || curVal === '任意⑤' || curVal === 'STAFF(C)'){
-      return curDef[key] || curVal;
-    }
-  }
-  return basicLabels[key] || curDef[key] || '';
-}
-
-// 5分刻みの四捨五入（2捨3入）
-function getRoundedStartTime(nowDate){
-  var d = new Date(nowDate.getTime());
-  d.setSeconds(0, 0);
-  var m = d.getMinutes();
+// ============================================================
+// ★5分単位丸め関数（Excel: =IF(MINUTE(A1)-FLOOR(MINUTE(A1),5) < 3, 切り捨て, 切り上げ) に準拠）
+// 例: 12:00, 12:01, 12:02 -> 12:00
+//     12:03, 12:04, 12:05 -> 12:05
+//     12:06, 12:07 -> 12:05
+//     12:08, 12:09 -> 12:10
+// ============================================================
+function round5min(d) {
+  var dt = new Date(d.getTime());
+  var m = dt.getMinutes();
   var rem = m % 5;
-  if(rem < 3){
-    d.setMinutes(m - rem);
-  } else {
-    d.setMinutes(m + (5 - rem));
-  }
-  return d;
+  var roundedM = (rem < 3) ? (m - rem) : (m + (5 - rem));
+  dt.setMinutes(roundedM, 0, 0); // 秒・ミリ秒も0にリセット
+  return dt;
 }
 
-function loadSettings(){
-  try{
-    var savedLang = localStorage.getItem('thai_topaz_lang');
-    if(savedLang && I18N[savedLang]) currentLang = savedLang;
-    var savedName = localStorage.getItem('thai_topaz_store_name');
-    if(savedName) storeName = savedName;
-    var savedLabels = localStorage.getItem('thai_topaz_basic_labels');
-    if(savedLabels){
-      basicLabels = JSON.parse(savedLabels);
-    }
-    var savedPcts = localStorage.getItem('thai_topaz_basic_pcts');
-    if(savedPcts){
-      basicPcts = JSON.parse(savedPcts);
-    }
-    var savedCourses = localStorage.getItem('thai_topaz_courses');
-    if(savedCourses){
-      var parsed = JSON.parse(savedCourses);
-      COURSES = parsed.map(function(c){
-        var prs = (c.prices && Array.isArray(c.prices)) ? c.prices : [c.staff||0, c.own||0, null, null, null];
-        while(prs.length < 5) prs.push(null);
-        var pcts = (c.percents && Array.isArray(c.percents)) ? c.percents : [null, basicPcts.p2, basicPcts.p3, null, null];
-        while(pcts.length < 5) pcts.push(null);
-        return {
-          m: parseInt(c.m) || 0,
-          name: c.name || 'Thai',
-          prices: prs,
-          percents: pcts
-        };
-      });
-    } else {
-      COURSES = JSON.parse(JSON.stringify(DEFAULT_COURSES));
-    }
-  }catch(e){
-    COURSES = JSON.parse(JSON.stringify(DEFAULT_COURSES));
-    basicLabels = Object.assign({}, DEFAULT_LABELS);
-    basicPcts = Object.assign({}, DEFAULT_BASIC_PCTS);
-  }
-
-  COURSES.sort(function(a,b){ return a.m - b.m; });
-  document.getElementById('storeNameText').textContent = storeName;
-  updateLangUI();
-}
-
-function saveSettings(coursesList, name, labels, pcts){
-  coursesList.sort(function(a,b){ return a.m - b.m; });
-  COURSES = coursesList;
-  storeName = name;
-  basicLabels = labels;
-  basicPcts = pcts;
-  localStorage.setItem('thai_topaz_store_name', storeName);
-  localStorage.setItem('thai_topaz_courses', JSON.stringify(COURSES));
-  localStorage.setItem('thai_topaz_basic_labels', JSON.stringify(basicLabels));
-  localStorage.setItem('thai_topaz_basic_pcts', JSON.stringify(basicPcts));
-  document.getElementById('storeNameText').textContent = storeName;
-  buildFilters();
-  render();
+// 有効な開始時刻（セットされたst、または現在時刻を5分丸めしたもの）を取得
+function getEffectiveStartTime() {
+  return round5min(st || new Date());
 }
 
 function setLang(lang){
@@ -593,11 +1089,12 @@ function setLang(lang){
   localStorage.setItem('thai_topaz_lang', lang);
   updateLangUI();
   buildFilters();
-  render();
+  renderMainList();
   tick();
   if(selectedCourseData){
-    var ss = st ? fmt(st) : '--:--';
-    var es = st ? fmt(addM(st, selectedCourseData.m)) : '--:--';
+    var baseStart = getEffectiveStartTime();
+    var ss = fmt(baseStart);
+    var es = fmt(addM(baseStart, selectedCourseData.m));
     showRes(selectedCourseData, ss, es);
   }
 }
@@ -616,48 +1113,13 @@ function updateLangUI(){
   document.getElementById('lblResTitle').textContent = t.resTitle;
   document.getElementById('lblRStart').textContent = t.startTime;
   document.getElementById('lblREnd').textContent = t.endTime;
-
-  document.getElementById('lblSettingHdrText').textContent = t.settingHdrText;
-  document.getElementById('lblBasicCfgTitle').textContent = t.basicCfgTitle;
-  document.getElementById('lblBasicDesc').textContent = t.basicDesc;
-  document.getElementById('lblStoreLabel').textContent = t.storeLabel;
-  document.getElementById('lblBasicItemHeader').textContent = t.basicItemHeader;
-
-  document.getElementById('lblItem1Title').textContent = t.item1Label;
-  document.getElementById('lblItem2Title').textContent = t.item2Label;
-  document.getElementById('lblItem3Title').textContent = t.item3Label;
-  document.getElementById('lblItem4Title').textContent = t.item4Label;
-  document.getElementById('lblItem5Title').textContent = t.item5Label;
-  document.getElementById('lblUnitTitle').textContent = t.unitLabel;
-
-  document.getElementById('lblCourseEditLabel').textContent = t.courseEditLabel;
-  document.getElementById('btnAddCourse').textContent = t.addCourse;
-  document.getElementById('btnResetSetting').textContent = t.reset;
-  document.getElementById('btnSaveSetting').textContent = t.save;
-  document.getElementById('lblApplyBtnText').textContent = t.applyBtn;
-  updateToggleBtnText();
-}
-
-function fmt(d){return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
-function addM(d,m){return new Date(d.getTime()+m*60000);}
-
-function yen(n){
-  if(n === null || n === undefined || n === '' || isNaN(n)) return '—';
-  return '¥' + Number(n).toLocaleString();
-}
-
-function ckey(c){return c.m+'_'+c.name;}
-function nbadge(n){
-  if(n==='Thai') return 'nm-thai';
-  if(n==='Oil') return 'nm-oil';
-  if(n==='Topaz') return 'nm-topaz';
-  return 'nm-other';
+  document.getElementById('lblSettingHdr').textContent = t.settingHdr;
 }
 
 function buildFilters(){
   var catSet = {};
-  for(var i=0; i<COURSES.length; i++){
-    if(COURSES[i].name) catSet[COURSES[i].name] = true;
+  for(var i=0; i<appState.courses.length; i++){
+    if(appState.courses[i].name) catSet[appState.courses[i].name] = true;
   }
   var cats = Object.keys(catSet);
   var fRow = document.getElementById('filterRow');
@@ -679,169 +1141,133 @@ function buildFilters(){
   });
 }
 
-function getEffectivePrices(c){
-  var p1 = 0;
-  if(c && c.prices && c.prices.length > 0){
-    var raw1 = getArrItem(c.prices, 0);
-    p1 = (raw1 !== null && raw1 !== undefined && raw1 !== '') ? Number(raw1) : 0;
-  }
-  if(isNaN(p1)) p1 = 0;
-  var eff = [p1];
-
-  for(var i=1; i<=4; i++){
-    var pctVal = (c.percents && c.percents.length > i) ? getArrItem(c.percents, i) : null;
-    var pct = (pctVal !== null && pctVal !== undefined && pctVal !== '') ? parseFloat(pctVal) : null;
-    if(pct !== null && !isNaN(pct)){
-      eff.push(Math.round(p1 * (pct / 100)));
-    } else {
-      var rawP = (c.prices && c.prices.length > i) ? getArrItem(c.prices, i) : null;
-      var numP = (rawP !== null && rawP !== undefined && rawP !== '') ? Number(rawP) : null;
-      eff.push((numP !== null && !isNaN(numP)) ? numP : null);
-    }
-  }
-  return eff;
+function sf(cat){
+  currentFilter = cat;
+  buildFilters();
+  renderMainList();
 }
 
-// コース一覧の描画（時間が短い順に整列して表示）
-function render(){
+// ============================================================
+// メイン一覧レンダリング
+// - 同じ分数は横並びグループ化（縦の長さを大幅短縮）
+// - コース名の横に金額を大きめに表示
+// - 選択したコースのみに .selected を付与
+// ============================================================
+function renderMainList(){
   var t = I18N[currentLang];
   var l = document.getElementById('clist');
   l.innerHTML = '';
 
-  var groupsByMin = {};
-  var minOrder = [];
+  // 1. 分数ごとにコースをグループ化
+  var groupsByMinutes = {};
+  var minutesOrder = [];
 
-  for(var i=0; i<COURSES.length; i++){
-    var c = COURSES[i];
+  for(var i=0; i<appState.courses.length; i++){
+    var c = appState.courses[i];
+    // カテゴリフィルター適用
     if(currentFilter !== 'all' && c.name !== currentFilter) continue;
-    if(!groupsByMin[c.m]){
-      groupsByMin[c.m] = [];
-      minOrder.push(c.m);
+
+    var mVal = parseInt(c.m) || 0;
+    if(!groupsByMinutes[mVal]){
+      groupsByMinutes[mVal] = [];
+      minutesOrder.push(mVal);
     }
-    groupsByMin[c.m].push(c);
+    groupsByMinutes[mVal].push(c);
   }
 
-  minOrder.sort(function(a,b){ return a - b; });
+  // 2. 分数順（昇順）に各グループを描画
+  minutesOrder.sort(function(a,b){ return a - b; });
 
-  for(var g=0; g<minOrder.length; g++){
-    var mVal = minOrder[g];
-    var courseList = groupsByMin[mVal];
+  var baseStart = getEffectiveStartTime();
 
-    var ss = st ? fmt(st) : '--:--';
-    var es = st ? fmt(addM(st, mVal)) : '--:--';
+  minutesOrder.forEach(function(mVal){
+    var cList = groupsByMinutes[mVal];
+    if(!cList || cList.length === 0) return;
 
-    var grpBox = document.createElement('div');
-    grpBox.className = 'mgroup';
+    var row = document.createElement('div');
+    row.className = 'tg-row';
 
-    var grpHdr = document.createElement('div');
-    grpHdr.className = 'mgroup-hdr';
-    grpHdr.innerHTML = 
-      '<div class="mgroup-min">'+mVal+'<span> '+t.minUnit+'</span></div>'
-      +'<div class="mgroup-times">'+ss+' → <b>'+es+'</b></div>';
-    grpBox.appendChild(grpHdr);
+    // 終了時刻計算（5分丸め開始時刻基準）
+    var calcTimeText = '→ ' + fmt(addM(baseStart, mVal));
 
-    var itemsWrap = document.createElement('div');
-    itemsWrap.className = 'mgroup-items';
+    var leftCol = document.createElement('div');
+    leftCol.className = 'tg-time-col';
+    leftCol.innerHTML = 
+      '<div class="tg-min">' + mVal + '<span class="tg-unit">' + t.minUnit + '</span></div>'
+      + '<div class="tg-calc">' + calcTimeText + '</div>';
+    row.appendChild(leftCol);
 
-    courseList.forEach(function(cc){
-      var eff = getEffectivePrices(cc);
-      var p1 = getArrItem(eff, 0) || 0;
+    var rightCol = document.createElement('div');
+    rightCol.className = 'tg-items-col';
 
-      var isSelected = (selectedCourseData && ckey(selectedCourseData) === ckey(cc));
+    cList.forEach(function(c){
+      var btn = document.createElement('div');
+      var thisKey = ckey(c);
+      var isSelected = (selectedCourseKey === thisKey);
+      btn.className = 'tg-item-btn' + (isSelected ? ' selected' : '');
 
-      var itemCard = document.createElement('div');
-      itemCard.className = 'mitem' + (isSelected ? ' selected' : '');
-      
-      itemCard.innerHTML = 
-        '<span class="c-badge '+nbadge(cc.name)+'">'+cc.name+'</span>'
-        +'<div class="mitem-pr">'
-          +'<span class="mitem-main">'+yen(p1)+'</span>'
-        +'</div>';
+      var p1 = parseInt(c.price) || 0;
 
-      itemCard.onclick = function(){
-        showRes(cc, ss, es);
-        isResOpen = true;
-        updateResDisplay();
-        render();
+      // コース名の横に金額を大きめに横並び表示
+      btn.innerHTML = 
+        '<span class="c-badge ' + nbadge(c.name) + '">' + c.name + '</span>'
+        + '<span class="tg-price">' + yen(p1) + '</span>';
+
+      btn.onclick = function(){
+        selectCourse(c);
       };
 
-      itemsWrap.appendChild(itemCard);
+      rightCol.appendChild(btn);
     });
 
-    grpBox.appendChild(itemsWrap);
-    l.appendChild(grpBox);
-  }
+    row.appendChild(rightCol);
+    l.appendChild(row);
+  });
 }
 
+// コース選択処理
+function selectCourse(c){
+  selectedCourseData = c;
+  selectedCourseKey = ckey(c);
+
+  // ★5分単位丸め式による開始時間・終了時間を計算
+  var baseStart = getEffectiveStartTime();
+  var ss = fmt(baseStart);
+  var es = fmt(addM(baseStart, c.m));
+
+  showRes(c, ss, es);
+  renderMainList();
+}
+
+// ============================================================
+// 選択詳細ボックスの表示
+// - 開始時間・終了時間は5分丸め式
+// - STAFF(A)〜任意⑤は％や円を表示せず、金額を大きく表示
+// ============================================================
 function showRes(c, ss, es){
-  if(!c) return;
   selectedCourseData = c;
   var t = I18N[currentLang];
   document.getElementById('rC').textContent = c.m + t.courseLabel + c.name;
-  document.getElementById('rStart').textContent = ss || '--:--';
-  document.getElementById('rEnd').textContent = es || '--:--';
+  document.getElementById('rStart').textContent = ss;
+  document.getElementById('rEnd').textContent = es;
 
-  var eff = getEffectivePrices(c);
-  var p1 = getArrItem(eff, 0) || 0;
-  var unitVal = (c.m > 0 && p1 > 0) ? Math.round(p1 / c.m) : 0;
-
-  function fmtPct(idx){
-    if(c.percents && c.percents.length > idx){
-      var pv = getArrItem(c.percents, idx);
-      if(pv !== null && pv !== undefined && pv !== ''){
-        var num = parseFloat(pv);
-        if(!isNaN(num)) return '<span class="rp-pct-badge">('+num+'%)</span>';
-      }
-    }
-    return '';
-  }
-
-  var l1 = getActiveLabel('p1');
-  var l2 = getActiveLabel('p2');
-  var l3 = getActiveLabel('p3');
-  var l4 = getActiveLabel('p4');
-  var l5 = getActiveLabel('p5');
-  var lUnit = getActiveLabel('unit');
+  var p1 = parseInt(c.price) || 0;
+  var unitVal = (c.m > 0 && p1) ? Math.round(p1 / c.m) : 0;
+  var bs = appState.basicSettings;
 
   var rpBox = document.getElementById('resPrices');
   rpBox.innerHTML = 
-    '<div class="rp"><div class="rp-lbl">'+l1+'</div><div class="rp-val hl1">'+yen(getArrItem(eff, 0))+'</div></div>'
-    +'<div class="rp"><div class="rp-lbl">'+l2+fmtPct(1)+'</div><div class="rp-val hl2">'+yen(getArrItem(eff, 1))+'</div></div>'
-    +'<div class="rp"><div class="rp-lbl">'+l3+fmtPct(2)+'</div><div class="rp-val hl3">'+yen(getArrItem(eff, 2))+'</div></div>'
-    +'<div class="rp"><div class="rp-lbl">'+l4+fmtPct(3)+'</div><div class="rp-val">'+yen(getArrItem(eff, 3))+'</div></div>'
-    +'<div class="rp"><div class="rp-lbl">'+l5+fmtPct(4)+'</div><div class="rp-val">'+yen(getArrItem(eff, 4))+'</div></div>'
-    +'<div class="rp"><div class="rp-lbl">'+lUnit+'</div><div class="rp-val hl-unit">'+(unitVal ? '¥'+unitVal : '—')+'</div></div>';
+    '<div class="rp"><div class="rp-lbl">' + (bs.item1Name || '基本料金') + '</div><div class="rp-val hl1">' + yen(p1) + '</div></div>'
+    + '<div class="rp"><div class="rp-lbl">' + (bs.item2.name || 'STAFF(A)') + '</div><div class="rp-val hl2">' + (c.a!==''?yen(c.a):'—') + '</div></div>'
+    + '<div class="rp"><div class="rp-lbl">' + (bs.item3.name || 'STAFF(B)') + '</div><div class="rp-val hl3">' + (c.b!==''?yen(c.b):'—') + '</div></div>'
+    + '<div class="rp"><div class="rp-lbl">' + (bs.item4.name || 'STAFF(C)') + '</div><div class="rp-val">' + (c.c!==''?yen(c.c):'—') + '</div></div>'
+    + '<div class="rp"><div class="rp-lbl">' + (bs.item5.name || '任意⑤') + '</div><div class="rp-val">' + (c.d!==''?yen(c.d):'—') + '</div></div>'
+    + '<div class="rp"><div class="rp-lbl">' + (bs.unitName || '時間単価(分)') + '</div><div class="rp-val hl-unit">' + (unitVal ? '¥' + unitVal : '—') + '</div></div>';
+
+  document.getElementById('res').classList.add('on');
 }
 
-function toggleRes(){
-  isResOpen = !isResOpen;
-  updateResDisplay();
-}
-
-function updateToggleBtnText(){
-  var tBtn = document.getElementById('btnToggleRes');
-  var t = I18N[currentLang];
-  if(tBtn){
-    tBtn.textContent = isResOpen ? ('▲ ' + t.close) : ('▼ ' + t.open);
-  }
-}
-
-function updateResDisplay(){
-  var resBox = document.getElementById('res');
-  if(isResOpen){
-    resBox.classList.add('open');
-  } else {
-    resBox.classList.remove('open');
-  }
-  updateToggleBtnText();
-}
-
-function sf(cat){
-  currentFilter=cat;
-  buildFilters();
-  render();
-}
-
+// 毎分のタイマー更新
 function tick(){
   var t = I18N[currentLang];
   var now = new Date();
@@ -851,274 +1277,35 @@ function tick(){
   if(st){
     var diff = Math.floor((now - st) / 60000);
     document.getElementById('elapsed').textContent = diff + ' ' + t.minUnit;
+    renderMainList();
   }
 }
 
+// 開始ボタン押下時
 document.getElementById('btnUpd').onclick = function(){
-  var now = new Date();
-  st = getRoundedStartTime(now);
+  st = new Date();
   document.getElementById('startTime').textContent = fmt(st);
   
   if(selectedCourseData){
-    var ss = fmt(st);
-    var es = fmt(addM(st, selectedCourseData.m));
+    var baseStart = getEffectiveStartTime();
+    var ss = fmt(baseStart);
+    var es = fmt(addM(baseStart, selectedCourseData.m));
     showRes(selectedCourseData, ss, es);
   }
-  render();
+  
+  renderMainList();
   if(iv) clearInterval(iv);
   iv = setInterval(tick, 30000);
   tick();
 };
 
-/* --- 設定モーダル制御 --- */
+// ============================================================
+// 設定モーダル ロジック
+// ============================================================
 var modal = document.getElementById('settingModal');
-var courseEditList = document.getElementById('courseEditList');
 
-function applyBasicSettingsToAll(){
-  var curLabels = {
-    p1: document.getElementById('cfgLabelP1').value.trim() || getActiveLabel('p1'),
-    p2: document.getElementById('cfgLabelP2').value.trim() || getActiveLabel('p2'),
-    p3: document.getElementById('cfgLabelP3').value.trim() || getActiveLabel('p3'),
-    p4: document.getElementById('cfgLabelP4').value.trim() || getActiveLabel('p4'),
-    p5: document.getElementById('cfgLabelP5').value.trim() || getActiveLabel('p5'),
-    unit: document.getElementById('cfgLabelUnit').value.trim() || getActiveLabel('unit')
-  };
-
-  var curPcts = {
-    p2: document.getElementById('cfgPctP2').value.trim(),
-    p3: document.getElementById('cfgPctP3').value.trim(),
-    p4: document.getElementById('cfgPctP4').value.trim(),
-    p5: document.getElementById('cfgPctP5').value.trim()
-  };
-
-  var items = courseEditList.querySelectorAll('.cfg-item');
-  items.forEach(function(row){
-    var labels = row.querySelectorAll('.cfg-sub-lbl');
-    if(labels.length >= 6){
-      labels[0].textContent = curLabels.p1;
-      labels.textContent = curLabels.p2;
-      labels.textContent = curLabels.p3;
-      labels.textContent = curLabels.p4;
-      labels.textContent = curLabels.p5;
-      labels.textContent = curLabels.unit;
-    }
-
-    var m = parseInt(row.querySelector('.c-m').value) || 0;
-    var p1 = parseInt(row.querySelector('.c-p1').value) || 0;
-
-    var unitBox = row.querySelector('.cfg-unit-val');
-    if(m > 0 && p1 > 0){
-      unitBox.textContent = '¥' + Math.round(p1 / m);
-    } else {
-      unitBox.textContent = '—';
-    }
-
-    for(var i=2; i<=5; i++){
-      var pctInput = row.querySelector('.c-pct' + i);
-      var pInput = row.querySelector('.c-p' + i);
-      var pctVal = curPcts['p' + i];
-
-      pctInput.value = pctVal;
-      if(pctVal !== '' && !isNaN(pctVal)){
-        var calcAmt = Math.round(p1 * (parseFloat(pctVal) / 100));
-        pInput.value = calcAmt;
-        pInput.classList.add('is-auto');
-        pInput.setAttribute('readonly', 'true');
-      } else {
-        pInput.classList.remove('is-auto');
-        pInput.removeAttribute('readonly');
-      }
-    }
-  });
-
-  var t = I18N[currentLang];
-  alert(t.applyDone);
-}
-
-function onCourseTimeChange(){
-  var currentList = getEditCourses();
-  renderCourseEditItems(currentList);
-}
-
-function renderCourseEditItems(list){
-  list.sort(function(a,b){ return a.m - b.m; });
-
-  var t = I18N[currentLang];
-  courseEditList.innerHTML = '';
-
-  var curLabels = {
-    p1: document.getElementById('cfgLabelP1').value.trim() || getActiveLabel('p1'),
-    p2: document.getElementById('cfgLabelP2').value.trim() || getActiveLabel('p2'),
-    p3: document.getElementById('cfgLabelP3').value.trim() || getActiveLabel('p3'),
-    p4: document.getElementById('cfgLabelP4').value.trim() || getActiveLabel('p4'),
-    p5: document.getElementById('cfgLabelP5').value.trim() || getActiveLabel('p5'),
-    unit: document.getElementById('cfgLabelUnit').value.trim() || getActiveLabel('unit')
-  };
-
-  list.forEach(function(item, idx){
-    var p = item.prices || [0,0,null,null,null];
-    var pct = item.percents || [null,null,null,null,null];
-    var p1 = getArrItem(p, 0) || 0;
-    var unitVal = (item.m > 0 && p1) ? Math.round(p1 / item.m) : 0;
-
-    function getValAndClass(i){
-      var pc = getArrItem(pct, i);
-      if(pc !== null && pc !== undefined && pc !== ''){
-        var calc = Math.round(p1 * (parseFloat(pc) / 100));
-        return { val: calc, isAuto: true };
-      }
-      var raw = getArrItem(p, i);
-      return { val: (raw !== null && raw !== undefined ? raw : ''), isAuto: false };
-    }
-
-    var f2 = getValAndClass(1);
-    var f3 = getValAndClass(2);
-    var f4 = getValAndClass(3);
-    var f5 = getValAndClass(4);
-
-    var row = document.createElement('div');
-    row.className = 'cfg-item';
-    row.innerHTML = 
-      '<div class="cfg-item-top">'
-        +'<div class="c-field-group">'
-          +'<div class="c-field-lbl">'+t.courseTime+'</div>'
-          +'<div class="c-m-wrap">'
-            +'<input type="number" class="c-m" value="'+(item.m||0)+'" placeholder="分" oninput="onCourseRowChange(this)" onchange="onCourseTimeChange()">'
-            +'<span style="font-size:12px;color:#8e8e93">'+t.minUnit+'</span>'
-          +'</div>'
-        +'</div>'
-        +'<div class="c-field-group c-name-wrap">'
-          +'<div class="c-field-lbl">'+t.courseName+'</div>'
-          +'<input type="text" class="c-name" value="'+(item.name||'')+'" placeholder="Name">'
-        +'</div>'
-        +'<button type="button" class="btn-del" data-idx="'+idx+'">'+t.delete+'</button>'
-      +'</div>'
-      +'<div class="cfg-item-fields">'
-        +'<div class="cfg-field">'
-          +'<div class="cfg-sub-lbl">'+curLabels.p1+'</div>'
-          +'<div style="height:23px;margin-bottom:2px"></div>'
-          +'<input type="number" class="cfg-sub-input c-p1" value="'+(p1||'')+'" oninput="onCourseRowChange(this)">'
-        +'</div>'
-        +'<div class="cfg-field">'
-          +'<div class="cfg-sub-lbl">'+curLabels.p2+'</div>'
-          +'<div class="pct-input-wrap"><input type="number" class="cfg-pct-input c-pct2" value="'+(getArrItem(pct,1)!==null&&getArrItem(pct,1)!==undefined?getArrItem(pct,1):'')+'" placeholder="%" step="any" oninput="onCourseRowChange(this)"><span class="pct-unit">%</span></div>'
-          +'<input type="number" class="cfg-sub-input c-p2 '+(f2.isAuto?'is-auto':'')+'" value="'+f2.val+'" '+(f2.isAuto?'readonly':'')+'>'
-        +'</div>'
-        +'<div class="cfg-field">'
-          +'<div class="cfg-sub-lbl">'+curLabels.p3+'</div>'
-          +'<div class="pct-input-wrap"><input type="number" class="cfg-pct-input c-pct3" value="'+(getArrItem(pct,2)!==null&&getArrItem(pct,2)!==undefined?getArrItem(pct,2):'')+'" placeholder="%" step="any" oninput="onCourseRowChange(this)"><span class="pct-unit">%</span></div>'
-          +'<input type="number" class="cfg-sub-input c-p3 '+(f3.isAuto?'is-auto':'')+'" value="'+f3.val+'" '+(f3.isAuto?'readonly':'')+'>'
-        +'</div>'
-        +'<div class="cfg-field">'
-          +'<div class="cfg-sub-lbl">'+curLabels.p4+'</div>'
-          +'<div class="pct-input-wrap"><input type="number" class="cfg-pct-input c-pct4" value="'+(getArrItem(pct,3)!==null&&getArrItem(pct,3)!==undefined?getArrItem(pct,3):'')+'" placeholder="%" step="any" oninput="onCourseRowChange(this)"><span class="pct-unit">%</span></div>'
-          +'<input type="number" class="cfg-sub-input c-p4 '+(f4.isAuto?'is-auto':'')+'" value="'+f4.val+'" '+(f4.isAuto?'readonly':'')+'>'
-        +'</div>'
-        +'<div class="cfg-field">'
-          +'<div class="cfg-sub-lbl">'+curLabels.p5+'</div>'
-          +'<div class="pct-input-wrap"><input type="number" class="cfg-pct-input c-pct5" value="'+(getArrItem(pct,4)!==null&&getArrItem(pct,4)!==undefined?getArrItem(pct,4):'')+'" placeholder="%" step="any" oninput="onCourseRowChange(this)"><span class="pct-unit">%</span></div>'
-          +'<input type="number" class="cfg-sub-input c-p5 '+(f5.isAuto?'is-auto':'')+'" value="'+f5.val+'" '+(f5.isAuto?'readonly':'')+'>'
-        +'</div>'
-        +'<div class="cfg-field">'
-          +'<div class="cfg-sub-lbl">'+curLabels.unit+'</div>'
-          +'<div style="height:23px;margin-bottom:2px"></div>'
-          +'<div class="cfg-unit-val">'+(unitVal ? '¥'+unitVal : '—')+'</div>'
-        +'</div>'
-      +'</div>';
-    courseEditList.appendChild(row);
-  });
-
-  var delBtns = courseEditList.querySelectorAll('.btn-del');
-  delBtns.forEach(function(b){
-    b.onclick = function(){
-      var delIdx = parseInt(this.getAttribute('data-idx'));
-      var currentList = getEditCourses();
-      currentList.splice(delIdx, 1);
-      renderCourseEditItems(currentList);
-    };
-  });
-}
-
-function onCourseRowChange(inputElem){
-  var row = inputElem.closest('.cfg-item');
-  var m = parseInt(row.querySelector('.c-m').value) || 0;
-  var p1 = parseInt(row.querySelector('.c-p1').value) || 0;
-
-  var unitBox = row.querySelector('.cfg-unit-val');
-  if(m > 0 && p1 > 0){
-    unitBox.textContent = '¥' + Math.round(p1 / m);
-  } else {
-    unitBox.textContent = '—';
-  }
-
-  for(var i=2; i<=5; i++){
-    var pctInput = row.querySelector('.c-pct' + i);
-    var pInput = row.querySelector('.c-p' + i);
-    var pctVal = pctInput.value.trim();
-
-    if(pctVal !== '' && !isNaN(pctVal)){
-      var calcAmt = Math.round(p1 * (parseFloat(pctVal) / 100));
-      pInput.value = calcAmt;
-      pInput.classList.add('is-auto');
-      pInput.setAttribute('readonly', 'true');
-    } else {
-      pInput.classList.remove('is-auto');
-      pInput.removeAttribute('readonly');
-    }
-  }
-}
-
-function getEditCourses(){
-  var items = courseEditList.querySelectorAll('.cfg-item');
-  var list = [];
-  items.forEach(function(el){
-    var m = parseInt(el.querySelector('.c-m').value) || 0;
-    var name = el.querySelector('.c-name').value.trim() || 'その他';
-    var p1 = parseInt(el.querySelector('.c-p1').value) || 0;
-
-    var prices = [p1];
-    var percents = [null];
-
-    for(var i=2; i<=5; i++){
-      var pctVal = el.querySelector('.c-pct' + i).value.trim();
-      var pVal = el.querySelector('.c-p' + i).value.trim();
-
-      if(pctVal !== '' && !isNaN(pctVal)){
-        percents.push(parseFloat(pctVal));
-        prices.push(Math.round(p1 * (parseFloat(pctVal) / 100)));
-      } else {
-        percents.push(null);
-        prices.push(pVal !== '' ? parseInt(pVal) : null);
-      }
-    }
-
-    list.push({
-      m: m,
-      name: name,
-      prices: prices,
-      percents: percents
-    });
-  });
-  list.sort(function(a,b){ return a.m - b.m; });
-  return list;
-}
-
-// 歯車ボタン
 document.getElementById('btnOpenSetting').onclick = function(){
-  document.getElementById('cfgStoreName').value = storeName;
-  document.getElementById('cfgLabelP1').value = getActiveLabel('p1');
-  document.getElementById('cfgLabelP2').value = getActiveLabel('p2');
-  document.getElementById('cfgLabelP3').value = getActiveLabel('p3');
-  document.getElementById('cfgLabelP4').value = getActiveLabel('p4');
-  document.getElementById('cfgLabelP5').value = getActiveLabel('p5');
-  document.getElementById('cfgLabelUnit').value = getActiveLabel('unit');
-
-  document.getElementById('cfgPctP2').value = (basicPcts.p2 !== null && basicPcts.p2 !== undefined) ? basicPcts.p2 : '';
-  document.getElementById('cfgPctP3').value = (basicPcts.p3 !== null && basicPcts.p3 !== undefined) ? basicPcts.p3 : '';
-  document.getElementById('cfgPctP4').value = (basicPcts.p4 !== null && basicPcts.p4 !== undefined) ? basicPcts.p4 : '';
-  document.getElementById('cfgPctP5').value = (basicPcts.p5 !== null && basicPcts.p5 !== undefined) ? basicPcts.p5 : '';
-
-  renderCourseEditItems(COURSES);
+  populateModalFromState();
   modal.classList.add('open');
 };
 
@@ -1126,98 +1313,430 @@ document.getElementById('btnCloseSetting').onclick = function(){
   modal.classList.remove('open');
 };
 
-// コース追加
-document.getElementById('btnAddCourse').onclick = function(){
-  var currentList = getEditCourses();
-  var bp2 = (basicPcts.p2 !== null && basicPcts.p2 !== undefined) ? basicPcts.p2 : null;
-  var bp3 = (basicPcts.p3 !== null && basicPcts.p3 !== undefined) ? basicPcts.p3 : null;
-  var bp4 = (basicPcts.p4 !== null && basicPcts.p4 !== undefined) ? basicPcts.p4 : null;
-  var bp5 = (basicPcts.p5 !== null && basicPcts.p5 !== undefined) ? basicPcts.p5 : null;
+function formatLabelText(name, pct, yen){
+  var parts = [];
+  if(pct !== "" && pct !== undefined && pct != null) parts.push(pct + "%");
+  if(yen !== "" && yen !== undefined && yen != null && parseFloat(yen) !== 0){
+    var y = parseFloat(yen);
+    parts.push((y > 0 ? "+" : "") + y + "円");
+  }
+  return parts.length > 0 ? `${name} (${parts.join(" ")})` : name;
+}
 
-  var p1 = 7000;
-  var pr2 = bp2 !== null ? Math.round(p1 * (bp2/100)) : 3500;
-  var pr3 = bp3 !== null ? Math.round(p1 * (bp3/100)) : null;
-  var pr4 = bp4 !== null ? Math.round(p1 * (bp4/100)) : null;
-  var pr5 = bp5 !== null ? Math.round(p1 * (bp5/100)) : null;
+// 歩合計算ヘルパー： (基本料金 × % / 100) ＋ ±円 ＋ 100円単位フィルター丸め
+function computeStaffPay(basePrice, pctVal, yenVal) {
+  var p = parseFloat(pctVal);
+  var y = parseFloat(yenVal);
+  var hasPct = !isNaN(p);
+  var hasYen = !isNaN(y);
 
-  currentList.push({
-    m: 60,
-    name: 'Thai',
-    prices: [p1, pr2, pr3, pr4, pr5],
-    percents: [null, bp2, bp3, bp4, bp5]
+  if(!hasPct && !hasYen) return "";
+
+  var result = 0;
+  if(hasPct) result += basePrice * (p / 100.0);
+  if(hasYen) result += y;
+
+  // 100円単位フィルター処理（四捨五入）
+  result = Math.round(result / 100.0) * 100;
+
+  return result;
+}
+
+function autoRecalcAll(){
+  applyBasicSettingsToAllCourses(false);
+}
+
+function recalcCard(element){
+  var card = element.closest(".course-card");
+  if(!card) return;
+
+  var time = parseInt(card.querySelector(".input-time").value) || 0;
+  var price = parseInt(card.querySelector(".input-base").value) || 0;
+
+  var unitElem = card.querySelector(".unit-val");
+  if(unitElem){
+    unitElem.textContent = time > 0 ? "¥" + Math.round(price / time) : "¥0";
+  }
+
+  var pctA = document.getElementById("cfg-item2-pct").value;
+  var yenA = document.getElementById("cfg-item2-yen").value;
+  var pctB = document.getElementById("cfg-item3-pct").value;
+  var yenB = document.getElementById("cfg-item3-yen").value;
+  var pctC = document.getElementById("cfg-item4-pct").value;
+  var yenC = document.getElementById("cfg-item4-yen").value;
+  var pctD = document.getElementById("cfg-item5-pct").value;
+  var yenD = document.getElementById("cfg-item5-yen").value;
+
+  var inputA = card.querySelector(".input-staff-a");
+  var inputB = card.querySelector(".input-staff-b");
+  var inputC = card.querySelector(".input-staff-c");
+  var inputD = card.querySelector(".input-staff-d");
+
+  var valA = computeStaffPay(price, pctA, yenA);
+  if(inputA && valA !== "") inputA.value = valA;
+
+  var valB = computeStaffPay(price, pctB, yenB);
+  if(inputB && valB !== "") inputB.value = valB;
+
+  var valC = computeStaffPay(price, pctC, yenC);
+  if(inputC && valC !== "") inputC.value = valC;
+
+  var valD = computeStaffPay(price, pctD, yenD);
+  if(inputD) inputD.value = valD !== "" ? valD : "";
+}
+
+function applyBasicSettingsToAllCourses(showToastFlag){
+  var nameA = document.getElementById("cfg-item2-name").value || "STAFF(A)";
+  var pctA = document.getElementById("cfg-item2-pct").value;
+  var yenA = document.getElementById("cfg-item2-yen").value;
+
+  var nameB = document.getElementById("cfg-item3-name").value || "STAFF(B)";
+  var pctB = document.getElementById("cfg-item3-pct").value;
+  var yenB = document.getElementById("cfg-item3-yen").value;
+
+  var nameC = document.getElementById("cfg-item4-name").value || "STAFF(C)";
+  var pctC = document.getElementById("cfg-item4-pct").value;
+  var yenC = document.getElementById("cfg-item4-yen").value;
+
+  var nameD = document.getElementById("cfg-item5-name").value || "任意⑤";
+  var pctD = document.getElementById("cfg-item5-pct").value;
+  var yenD = document.getElementById("cfg-item5-yen").value;
+
+  var cards = document.querySelectorAll(".course-card");
+  cards.forEach(function(card){
+    var time = parseInt(card.querySelector(".input-time").value) || 0;
+    var price = parseInt(card.querySelector(".input-base").value) || 0;
+
+    var unitElem = card.querySelector(".unit-val");
+    if(unitElem){
+      unitElem.textContent = time > 0 ? "¥" + Math.round(price / time) : "¥0";
+    }
+
+    var lblA = card.querySelector(".lbl-staff-a");
+    var lblB = card.querySelector(".lbl-staff-b");
+    var lblC = card.querySelector(".lbl-staff-c");
+    var lblD = card.querySelector(".lbl-staff-d");
+
+    if(lblA) lblA.textContent = formatLabelText(nameA, pctA, yenA);
+    if(lblB) lblB.textContent = formatLabelText(nameB, pctB, yenB);
+    if(lblC) lblC.textContent = formatLabelText(nameC, pctC, yenC);
+    if(lblD) lblD.textContent = formatLabelText(nameD, pctD, yenD);
+
+    var inputA = card.querySelector(".input-staff-a");
+    var inputB = card.querySelector(".input-staff-b");
+    var inputC = card.querySelector(".input-staff-c");
+    var inputD = card.querySelector(".input-staff-d");
+
+    var valA = computeStaffPay(price, pctA, yenA);
+    if(inputA && valA !== "") inputA.value = valA;
+
+    var valB = computeStaffPay(price, pctB, yenB);
+    if(inputB && valB !== "") inputB.value = valB;
+
+    var valC = computeStaffPay(price, pctC, yenC);
+    if(inputC && valC !== "") inputC.value = valC;
+
+    var valD = computeStaffPay(price, pctD, yenD);
+    if(inputD) inputD.value = valD !== "" ? valD : "";
   });
 
-  currentList.sort(function(a,b){ return a.m - b.m; });
-  renderCourseEditItems(currentList);
-};
-
-// 保存
-document.getElementById('btnSaveSetting').onclick = function(){
-  var updated = getEditCourses();
-  var name = document.getElementById('cfgStoreName').value.trim() || 'Thai Topaz';
-  var newLabels = {
-    p1: document.getElementById('cfgLabelP1').value.trim() || getActiveLabel('p1'),
-    p2: document.getElementById('cfgLabelP2').value.trim() || getActiveLabel('p2'),
-    p3: document.getElementById('cfgLabelP3').value.trim() || getActiveLabel('p3'),
-    p4: document.getElementById('cfgLabelP4').value.trim() || getActiveLabel('p4'),
-    p5: document.getElementById('cfgLabelP5').value.trim() || getActiveLabel('p5'),
-    unit: document.getElementById('cfgLabelUnit').value.trim() || getActiveLabel('unit')
-  };
-  function parseOrNull(id){
-    var v = document.getElementById(id).value.trim();
-    return (v !== '' && !isNaN(v)) ? parseFloat(v) : null;
+  if(showToastFlag){
+    showToast("⚡ 全コースに基本設定を一括反映しました！");
   }
-  var newPcts = {
-    p2: parseOrNull('cfgPctP2'),
-    p3: parseOrNull('cfgPctP3'),
-    p4: parseOrNull('cfgPctP4'),
-    p5: parseOrNull('cfgPctP5')
-  };
+}
 
-  saveSettings(updated, name, newLabels, newPcts);
-  modal.classList.remove('open');
-  if(selectedCourseData){
-    var ss = st ? fmt(st) : '--:--';
-    var es = st ? fmt(addM(st, selectedCourseData.m)) : '--:--';
-    showRes(selectedCourseData, ss, es);
+function showToast(msg){
+  var toast = document.getElementById("save-toast");
+  if(toast){
+    toast.textContent = msg;
+    toast.style.display = "block";
+    setTimeout(function(){ toast.style.display = "none"; }, 2500);
   }
-};
+}
 
-// 初期化リセット
-document.getElementById('btnResetSetting').onclick = function(){
+function deleteCard(btn){
+  var card = btn.closest(".course-card");
+  if(card && confirm("このコースを削除しますか？")){
+    card.remove();
+  }
+}
+
+function addNewCourse(){
+  var container = document.getElementById("course-cards-container");
+  var base = 6000;
+  var time = 30;
+
+  var nameA = document.getElementById("cfg-item2-name").value || "STAFF(A)";
+  var pctA = document.getElementById("cfg-item2-pct").value;
+  var yenA = document.getElementById("cfg-item2-yen").value;
+
+  var nameB = document.getElementById("cfg-item3-name").value || "STAFF(B)";
+  var pctB = document.getElementById("cfg-item3-pct").value;
+  var yenB = document.getElementById("cfg-item3-yen").value;
+
+  var nameC = document.getElementById("cfg-item4-name").value || "STAFF(C)";
+  var pctC = document.getElementById("cfg-item4-pct").value;
+  var yenC = document.getElementById("cfg-item4-yen").value;
+
+  var nameD = document.getElementById("cfg-item5-name").value || "任意⑤";
+  var pctD = document.getElementById("cfg-item5-pct").value;
+  var yenD = document.getElementById("cfg-item5-yen").value;
+
+  var valA = computeStaffPay(base, pctA, yenA);
+  var valB = computeStaffPay(base, pctB, yenB);
+  var valC = computeStaffPay(base, pctC, yenC);
+  var valD = computeStaffPay(base, pctD, yenD);
+
+  var newCard = document.createElement("div");
+  newCard.className = "course-card";
+  newCard.innerHTML = `
+    <div class="card-row-top">
+      <div class="time-wrap">
+        <input type="number" class="input-time" value="${time}" oninput="recalcCard(this)">
+        <span class="time-unit">分</span>
+      </div>
+      <input type="text" class="input-course-name" value="新規コース" placeholder="コース名">
+      <div class="unit-badge">
+        <span class="badge-sub">単価(分)</span>
+        <span class="badge-main unit-val">¥${Math.round(base / time)}</span>
+      </div>
+      <button type="button" class="btn-del" onclick="deleteCard(this)">削除</button>
+    </div>
+    <div class="card-row-bottom">
+      <div class="amt-col">
+        <span class="amt-label lbl-base">基本料金</span>
+        <input type="number" class="input-amt input-base" value="${base}" oninput="recalcCard(this)">
+      </div>
+      <div class="amt-col">
+        <span class="amt-label lbl-staff-a">${formatLabelText(nameA, pctA, yenA)}</span>
+        <input type="number" class="input-amt input-staff input-staff-a" value="${valA}">
+      </div>
+      <div class="amt-col">
+        <span class="amt-label lbl-staff-b">${formatLabelText(nameB, pctB, yenB)}</span>
+        <input type="number" class="input-amt input-staff input-staff-b" value="${valB}">
+      </div>
+      <div class="amt-col">
+        <span class="amt-label lbl-staff-c">${formatLabelText(nameC, pctC, yenC)}</span>
+        <input type="number" class="input-amt input-staff input-staff-c" value="${valC}">
+      </div>
+      <div class="amt-col">
+        <span class="amt-label lbl-staff-d">${formatLabelText(nameD, pctD, yenD)}</span>
+        <input type="number" class="input-amt input-opt input-staff-d" value="${valD}" placeholder="-">
+      </div>
+    </div>
+  `;
+  container.appendChild(newCard);
+  newCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function populateModalFromState(){
+  var bs = appState.basicSettings;
+  document.getElementById("setting-store-name").value = bs.storeName || "Thai Topaz";
+  document.getElementById("cfg-item1-name").value = bs.item1Name || "基本コース料金";
+
+  document.getElementById("cfg-item2-name").value = bs.item2.name || "STAFF(A)";
+  document.getElementById("cfg-item2-pct").value = bs.item2.pct != null ? bs.item2.pct : "50";
+  document.getElementById("cfg-item2-yen").value = bs.item2.yen != null ? bs.item2.yen : "";
+
+  document.getElementById("cfg-item3-name").value = bs.item3.name || "STAFF(B)";
+  document.getElementById("cfg-item3-pct").value = bs.item3.pct != null ? bs.item3.pct : "50";
+  document.getElementById("cfg-item3-yen").value = bs.item3.yen != null ? bs.item3.yen : "";
+
+  document.getElementById("cfg-item4-name").value = bs.item4.name || "STAFF(C)";
+  document.getElementById("cfg-item4-pct").value = bs.item4.pct != null ? bs.item4.pct : "50";
+  document.getElementById("cfg-item4-yen").value = bs.item4.yen != null ? bs.item4.yen : "";
+
+  document.getElementById("cfg-item5-name").value = bs.item5.name || "任意⑤";
+  document.getElementById("cfg-item5-pct").value = bs.item5.pct != null ? bs.item5.pct : "";
+  document.getElementById("cfg-item5-yen").value = bs.item5.yen != null ? bs.item5.yen : "";
+
+  document.getElementById("cfg-unit-name").value = bs.unitName || "時間単価(分)";
+
+  var container = document.getElementById("course-cards-container");
+  container.innerHTML = "";
+
+  var nameA = bs.item2.name || "STAFF(A)";
+  var pctA = bs.item2.pct;
+  var yenA = bs.item2.yen;
+
+  var nameB = bs.item3.name || "STAFF(B)";
+  var pctB = bs.item3.pct;
+  var yenB = bs.item3.yen;
+
+  var nameC = bs.item4.name || "STAFF(C)";
+  var pctC = bs.item4.pct;
+  var yenC = bs.item4.yen;
+
+  var nameD = bs.item5.name || "任意⑤";
+  var pctD = bs.item5.pct;
+  var yenD = bs.item5.yen;
+
+  appState.courses.forEach(function(c){
+    var time = parseInt(c.m) || 0;
+    var price = parseInt(c.price) || 0;
+    var unitPrice = time > 0 ? Math.round(price / time) : 0;
+
+    var card = document.createElement("div");
+    card.className = "course-card";
+    card.innerHTML = `
+      <div class="card-row-top">
+        <div class="time-wrap">
+          <input type="number" class="input-time" value="${time}" oninput="recalcCard(this)">
+          <span class="time-unit">分</span>
+        </div>
+        <input type="text" class="input-course-name" value="${c.name || ''}" placeholder="コース名">
+        <div class="unit-badge">
+          <span class="badge-sub">単価(分)</span>
+          <span class="badge-main unit-val">¥${unitPrice}</span>
+        </div>
+        <button type="button" class="btn-del" onclick="deleteCard(this)">削除</button>
+      </div>
+      <div class="card-row-bottom">
+        <div class="amt-col">
+          <span class="amt-label lbl-base">基本料金</span>
+          <input type="number" class="input-amt input-base" value="${price}" oninput="recalcCard(this)">
+        </div>
+        <div class="amt-col">
+          <span class="amt-label lbl-staff-a">${formatLabelText(nameA, pctA, yenA)}</span>
+          <input type="number" class="input-amt input-staff input-staff-a" value="${c.a != null ? c.a : ''}">
+        </div>
+        <div class="amt-col">
+          <span class="amt-label lbl-staff-b">${formatLabelText(nameB, pctB, yenB)}</span>
+          <input type="number" class="input-amt input-staff input-staff-b" value="${c.b != null ? c.b : ''}">
+        </div>
+        <div class="amt-col">
+          <span class="amt-label lbl-staff-c">${formatLabelText(nameC, pctC, yenC)}</span>
+          <input type="number" class="input-amt input-staff input-staff-c" value="${c.c != null ? c.c : ''}">
+        </div>
+        <div class="amt-col">
+          <span class="amt-label lbl-staff-d">${formatLabelText(nameD, pctD, yenD)}</span>
+          <input type="number" class="input-amt input-opt input-staff-d" value="${c.d != null ? c.d : ''}" placeholder="-">
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function saveAllSettings(){
+  try {
+    var basicSettings = {
+      storeName: document.getElementById("setting-store-name").value.trim() || "Thai Topaz",
+      item1Name: document.getElementById("cfg-item1-name").value.trim() || "基本コース料金",
+      item2: {
+        name: document.getElementById("cfg-item2-name").value.trim() || "STAFF(A)",
+        pct: document.getElementById("cfg-item2-pct").value.trim(),
+        yen: document.getElementById("cfg-item2-yen").value.trim()
+      },
+      item3: {
+        name: document.getElementById("cfg-item3-name").value.trim() || "STAFF(B)",
+        pct: document.getElementById("cfg-item3-pct").value.trim(),
+        yen: document.getElementById("cfg-item3-yen").value.trim()
+      },
+      item4: {
+        name: document.getElementById("cfg-item4-name").value.trim() || "STAFF(C)",
+        pct: document.getElementById("cfg-item4-pct").value.trim(),
+        yen: document.getElementById("cfg-item4-yen").value.trim()
+      },
+      item5: {
+        name: document.getElementById("cfg-item5-name").value.trim() || "任意⑤",
+        pct: document.getElementById("cfg-item5-pct").value.trim(),
+        yen: document.getElementById("cfg-item5-yen").value.trim()
+      },
+      unitName: document.getElementById("cfg-unit-name").value.trim() || "時間単価(分)"
+    };
+
+    var courses = [];
+    var cards = document.querySelectorAll(".course-card");
+    cards.forEach(function(card){
+      courses.push({
+        m: parseInt(card.querySelector(".input-time").value) || 0,
+        name: card.querySelector(".input-course-name").value.trim() || "その他",
+        price: parseInt(card.querySelector(".input-base").value) || 0,
+        a: card.querySelector(".input-staff-a").value.trim(),
+        b: card.querySelector(".input-staff-b").value.trim(),
+        c: card.querySelector(".input-staff-c").value.trim(),
+        d: card.querySelector(".input-staff-d").value.trim()
+      });
+    });
+
+    courses.sort(function(a,b){ return a.m - b.m; });
+
+    appState.basicSettings = basicSettings;
+    appState.courses = courses;
+
+    var payload = {
+      basicSettings: basicSettings,
+      courses: courses,
+      savedAt: new Date().toISOString()
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    localStorage.setItem("CH_SETTINGS", JSON.stringify(payload));
+
+    document.getElementById("storeNameText").textContent = basicSettings.storeName;
+    buildFilters();
+    renderMainList();
+
+    if(selectedCourseData){
+      var baseStart = getEffectiveStartTime();
+      var ss = fmt(baseStart);
+      var es = fmt(addM(baseStart, selectedCourseData.m));
+      showRes(selectedCourseData, ss, es);
+    }
+
+    modal.classList.remove('open');
+    showToast("✅ 設定を保存しました！");
+  } catch(err){
+    console.error("Save error:", err);
+    alert("保存中にエラーが発生しました: " + err.message);
+  }
+}
+
+function resetToDefaults(){
   var t = I18N[currentLang];
   if(confirm(t.resetConfirm)){
-    basicLabels = Object.assign({}, I18N[currentLang].defaultLabels);
-    basicPcts = Object.assign({}, DEFAULT_BASIC_PCTS);
-
-    document.getElementById('cfgLabelP1').value = basicLabels.p1;
-    document.getElementById('cfgLabelP2').value = basicLabels.p2;
-    document.getElementById('cfgLabelP3').value = basicLabels.p3;
-    document.getElementById('cfgLabelP4').value = basicLabels.p4;
-    document.getElementById('cfgLabelP5').value = basicLabels.p5;
-    document.getElementById('cfgLabelUnit').value = basicLabels.unit;
-
-    document.getElementById('cfgPctP2').value = (basicPcts.p2 !== null) ? basicPcts.p2 : '';
-    document.getElementById('cfgPctP3').value = (basicPcts.p3 !== null) ? basicPcts.p3 : '';
-    document.getElementById('cfgPctP4').value = '';
-    document.getElementById('cfgPctP5').value = '';
-    document.getElementById('cfgStoreName').value = 'Thai Topaz';
-
-    saveSettings(JSON.parse(JSON.stringify(DEFAULT_COURSES)), 'Thai Topaz', basicLabels, basicPcts);
-    renderCourseEditItems(COURSES);
+    appState.basicSettings = JSON.parse(JSON.stringify(DEFAULT_BASIC_SETTINGS));
+    appState.courses = JSON.parse(JSON.stringify(DEFAULT_COURSES));
+    populateModalFromState();
   }
-};
+}
 
-// 初期化実行
-loadSettings();
-buildFilters();
+function loadSavedSettings(){
+  try {
+    var savedLang = localStorage.getItem('thai_topaz_lang');
+    if(savedLang && I18N[savedLang]) currentLang = savedLang;
 
-isResOpen = false;
-updateResDisplay();
+    var raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("CH_SETTINGS");
+    if(raw){
+      var parsed = JSON.parse(raw);
+      if(parsed.basicSettings) appState.basicSettings = parsed.basicSettings;
+      if(parsed.courses && Array.isArray(parsed.courses) && parsed.courses.length > 0){
+        appState.courses = parsed.courses;
+      }
+    }
+  } catch(e){
+    console.warn("Load error, using defaults:", e);
+  }
 
-render();
-tick();
-setInterval(function(){if(!st){var f=fmt(new Date());document.getElementById('liveTime').textContent=f;document.getElementById('nowTime').textContent=f;}},10000);
+  document.getElementById("storeNameText").textContent = appState.basicSettings.storeName || "Thai Topaz";
+  updateLangUI();
+  buildFilters();
+  renderMainList();
+}
+
+// 起動初期化
+window.addEventListener("DOMContentLoaded", function(){
+  loadSavedSettings();
+  tick();
+  setInterval(function(){
+    if(!st){
+      var f = fmt(new Date());
+      document.getElementById('liveTime').textContent = f;
+      document.getElementById('nowTime').textContent = f;
+    }
+  }, 10000);
+});
 </script>
 </body>
 </html>
