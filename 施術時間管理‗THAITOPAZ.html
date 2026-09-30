@@ -1,658 +1,1152 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thai Topaz - 施術時間管理</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Thai Topaz">
+<title>Thai Topaz｜時間計算・施術タイマー</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#e8e8ed;font-family:-apple-system,'Hiragino Sans','Noto Sans JP','Segoe UI',sans-serif;color:#1c1c1e}
 
-    body {
-      background-color: #f5f7fa;
-      display: flex;
-      justify-content: center;
-      padding: 20px 10px;
-    }
+/* 全体ラッパー */
+.outer{display:flex;justify-content:center;align-items:flex-start;min-height:100%;background:#e8e8ed;padding:0}
+.app{width:100%;max-width:440px;min-height:100vh;background:#f2f2f7;display:flex;flex-direction:column;padding:8px;gap:8px;position:relative}
 
-    .app-container {
-      width: 100%;
-      max-width: 480px;
-      background-color: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      overflow: hidden;
-      padding-bottom: 20px;
-    }
+/* ヘッダー */
+.hdr{background:#1a6fa8;border-radius:10px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hdr-left{display:flex;align-items:center;gap:8px}
+.hdr-t{font-size:17px;font-weight:700;color:#fff}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.hdr-c{font-size:15px;color:rgba(255,255,255,.9);font-variant-numeric:tabular-nums}
 
-    /* ヘッダー */
-    .header {
-      background-color: #1a6fa5;
-      color: #ffffff;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: bold;
-    }
-    .header .title {
-      font-size: 20px;
-    }
-    .header .time {
-      font-size: 16px;
-    }
+/* 言語切り替え */
+.lang-switch{display:flex;background:rgba(0,0,0,.15);border-radius:6px;padding:2px;gap:2px}
+.lang-btn{background:none;border:none;color:rgba(255,255,255,.8);font-size:11px;font-weight:600;padding:3px 6px;border-radius:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.lang-btn.on{background:#fff;color:#1a6fa8}
 
-    /* 時刻表示エリア */
-    .status-container {
-      display: flex;
-      justify-content: space-between;
-      padding: 12px;
-      gap: 8px;
-    }
-    .status-card {
-      flex: 1;
-      background-color: #fdfdfd;
-      border: 1px solid #eef1f6;
-      border-radius: 8px;
-      padding: 8px;
-      text-align: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-    }
-    .status-label {
-      font-size: 11px;
-      color: #999999;
-      margin-bottom: 4px;
-    }
-    .status-value {
-      font-size: 18px;
-      font-weight: bold;
-      color: #333333;
-    }
-    .status-value.blue {
-      color: #1a6fa5;
-    }
+/* 歯車ボタン */
+.btn-setting{background:none;border:none;cursor:pointer;color:#fff;padding:5px;border-radius:6px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:background .2s}
+.btn-setting:active{background:rgba(255,255,255,.25)}
+.btn-setting svg{width:18px;height:18px;stroke:currentColor}
 
-    /* 更新ボタン */
-    .btn-update {
-      background-color: #1a6fa5;
-      color: #ffffff;
-      border: none;
-      width: calc(100% - 24px);
-      margin: 0 12px 12px 12px;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-    }
-    .btn-update:active {
-      background-color: #114f77;
-    }
+/* レイアウトグリッド */
+.main-grid{display:flex;flex-direction:column;gap:8px;flex:1}
+.pane-ctrl{display:flex;flex-direction:column;gap:8px}
+.pane-list{display:flex;flex-direction:column;gap:8px;flex:1}
 
-    /* 選択コース詳細エリア */
-    .course-detail-container {
-      border: 1px solid #52c41a;
-      background-color: #f6ffed;
-      border-radius: 8px;
-      margin: 0 12px 12px 12px;
-      padding: 14px 12px;
-      position: relative;
-    }
-    .course-detail-title {
-      color: #237804;
-      font-size: 14px;
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-    .course-name {
-      text-align: center;
-      font-size: 20px;
-      font-weight: bold;
-      color: #333333;
-      margin-bottom: 12px;
-    }
+/* タイマーエリア */
+.trow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;flex-shrink:0}
+.tc{background:#fff;border-radius:8px;padding:6px 6px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.tc .lbl{font-size:11px;color:#8e8e93;white-space:nowrap}
+.tc .val{font-size:18px;font-weight:600;color:#1c1c1e;font-variant-numeric:tabular-nums}
+.tc.hl .val{color:#1a6fa8}
 
-    /* 詳細の時間表示 */
-    .time-display-box {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-    .time-card {
-      flex: 1;
-      background-color: #ffffff;
-      border: 1px solid #1a6fa5;
-      border-radius: 6px;
-      padding: 10px 6px;
-      text-align: center;
-    }
-    .time-card.end-time {
-      border-color: #ff4d4f;
-    }
-    .time-card .time-label {
-      font-size: 13px;
-      color: #666666;
-      margin-bottom: 4px;
-      font-weight: bold;
-    }
-    .time-card .time-value {
-      font-size: 26px;
-      font-weight: bold;
-      color: #1a6fa5;
-    }
-    .time-card.end-time .time-value {
-      color: #ff4d4f;
-    }
-    .arrow {
-      color: #888888;
-      font-weight: bold;
-      font-size: 20px;
-    }
+.btn-upd{width:100%;padding:12px;background:#1a6fa8;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.btn-upd:active{background:#145d8f;transform:scale(.98)}
 
-    /* 4項目料金エリア */
-    .price-cards-container {
-      display: flex;
-      justify-content: space-between;
-      gap: 5px;
-      margin-bottom: 4px;
-    }
-    .price-card {
-      flex: 1;
-      background-color: #ffffff;
-      border: 1px solid #ccd5db;
-      border-radius: 6px;
-      padding: 12px 2px;
-      text-align: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      min-height: 70px;
-    }
-    .price-label {
-      font-size: 12px;
-      font-weight: bold;
-      color: #444444;
-      margin-bottom: 6px;
-      height: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .price-value {
-      font-size: 17px;
-      font-weight: bold;
-      color: #111111;
-      margin-top: auto;
-    }
-    .price-value-discount {
-      font-size: 17px;
-      font-weight: bold;
-      color: #d4380d;
-      margin-top: auto;
-    }
-    
-    /* 単価ラベル */
-    .rate-label {
-      text-align: right;
-      font-size: 15px;
-      font-weight: bold;
-      color: #333333;
-      margin-top: 10px;
-      padding-right: 4px;
-    }
+/* 選択詳細ボックス（開閉対応・初期非表示） */
+.res{background:#e9f7ee;border:1.5px solid #34c759;border-radius:12px;padding:10px 12px;display:none}
+.res.open{display:block}
+.res-hdr-row{display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;margin-bottom:6px}
+.res-lbl{font-size:12px;color:#1e7e34;font-weight:600}
+.res-toggle-btn{background:rgba(52,199,89,.15);border:none;color:#1e7e34;font-size:11px;font-weight:600;cursor:pointer;padding:3px 8px;border-radius:12px;-webkit-tap-highlight-color:transparent}
 
-    /* タブ切り替え */
-    .tab-container {
-      display: flex;
-      padding: 0 12px;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    .tab {
-      flex: 1;
-      text-align: center;
-      padding: 8px 0;
-      border-radius: 16px;
-      border: 1px solid #c0c0c0;
-      background-color: #ffffff;
-      font-size: 15px;
-      font-weight: bold;
-      color: #555555;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .tab.active {
-      background-color: #1a6fa5;
-      border-color: #1a6fa5;
-      color: #ffffff;
-    }
+.res-course{font-size:16px;font-weight:700;color:#1c1c1e;text-align:center;margin-bottom:8px}
+.time-boxes{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin-bottom:10px}
+.tbox{background:#fff;border:1.5px solid #1a6fa8;border-radius:10px;padding:8px 6px;text-align:center}
+.tbox.end{border-color:#d32f2f}
+.tbox-lbl{font-size:11px;color:#8e8e93;margin-bottom:2px}
+.tbox-val{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;color:#1a6fa8}
+.tbox.end .tbox-val{color:#d32f2f}
+.arrow{font-size:20px;color:#8e8e93;text-align:center}
 
-    /* コース一覧リスト */
-    .course-list {
-      padding: 0 12px;
-      max-height: 400px;
-      overflow-y: auto;
-    }
-    .course-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 8px;
-      border-bottom: 1px solid #f0f0f0;
-      cursor: pointer;
-    }
-    .course-item:hover {
-      background-color: #fafafa;
-    }
-    
-    .course-item.hidden {
-      display: none !important;
-    }
+/* 5項目＋単価の価格表示 */
+.res-prices{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+@media(max-width:380px){
+  .res-prices{grid-template-columns:repeat(2,1fr)}
+}
+.rp{background:#fff;border-radius:8px;padding:6px 4px;text-align:center}
+.rp-lbl{font-size:10px;color:#8e8e93;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rp-val{font-size:14px;font-weight:700;color:#1c1c1e}
+.rp-val.hl1{color:#1565c0}
+.rp-val.hl2{color:#d32f2f}
+.rp-val.hl3{color:#c07000}
+.rp-val.hl-unit{color:#1e7e34}
+.rp-pct-badge{font-size:10px;color:#666;font-weight:400;margin-left:2px}
 
-    .course-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    
-    .course-duration {
-      font-weight: bold;
-      font-size: 18px;
-      color: #222222;
-      width: 55px;
-    }
-    .course-duration span {
-      font-size: 13px;
-      font-weight: normal;
-      color: #555555;
-    }
-    
-    .badge {
-      font-size: 14px;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-weight: bold;
-      width: 65px;
-      text-align: center;
-    }
-    .badge.thai { background-color: #e6f7ff; color: #1a6fa5; }
-    .badge.topaz { background-color: #fff1f0; color: #ff4d4f; }
-    .badge.oil { background-color: #fffbe6; color: #d4b106; }
-    
-    .course-right {
-      text-align: right;
-    }
-    
-    .course-main-price {
-      font-weight: bold;
-      font-size: 18px;
-      color: #111111;
-    }
-  </style>
+/* フィルター */
+.filter-row{display:flex;gap:5px;overflow-x:auto;flex-shrink:0;padding-bottom:2px}
+.ftab{flex-shrink:0;padding:6px 13px;border:1px solid #d1d1d6;border-radius:20px;background:#fff;font-size:13px;cursor:pointer;color:#8e8e93;-webkit-tap-highlight-color:transparent}
+.ftab.on{border-color:#1a6fa8;background:#e8f2fa;color:#1a6fa8;font-weight:600}
+
+/* 分数グループ化リスト */
+.clist{background:#fff;border-radius:10px;overflow-y:auto;flex:1;box-shadow:0 1px 2px rgba(0,0,0,.06);padding:6px}
+.mgroup{background:#fafafa;border:1px solid #e5e5ea;border-radius:8px;margin-bottom:6px;padding:7px 8px;display:flex;flex-direction:column;gap:5px}
+.mgroup:last-child{margin-bottom:0}
+.mgroup-hdr{display:flex;align-items:center;justify-content:space-between;padding-bottom:4px;border-bottom:1px dashed #e0e0e5}
+.mgroup-min{font-size:14px;font-weight:700;color:#1c1c1e}
+.mgroup-min span{font-size:11px;font-weight:400;color:#8e8e93}
+.mgroup-times{font-size:12px;color:#636366}
+.mgroup-times b{color:#1c1c1e;font-size:13px}
+
+.mgroup-items{display:grid;grid-template-columns:repeat(auto-fit, minmax(115px, 1fr));gap:6px}
+.mitem{background:#fff;border:1px solid #d1d1d6;border-radius:6px;padding:6px 8px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.mitem:active{background:#f0f7ff;border-color:#1a6fa8}
+.mitem.hl{background:#e9f7ee;border-color:#34c759}
+.mitem.active{background:#e3f0fd;border-color:#1a6fa8}
+
+.c-badge{font-size:11px;padding:2px 6px;border-radius:4px;flex-shrink:0;font-weight:600}
+.nm-thai{background:#e3f0fd;color:#1565c0}
+.nm-oil{background:#fff3e0;color:#b76000}
+.nm-topaz{background:#fde8ec;color:#b71c1c}
+.nm-other{background:#eef1f4;color:#495057}
+
+.mitem-pr{text-align:right}
+.mitem-main{font-size:13px;font-weight:700;color:#1c1c1e;display:block}
+.mitem-sub{font-size:10px;color:#8e8e93;display:block}
+
+/* PC・デスクトップ（768px以上）対応 */
+@media(min-width: 768px){
+  .outer{padding:24px 16px;align-items:flex-start}
+  .app{max-width:980px;min-height:auto;border-radius:16px;box-shadow:0 6px 28px rgba(0,0,0,.15);padding:14px;gap:12px}
+  .main-grid{display:grid;grid-template-columns:380px 1fr;gap:14px;align-items:start}
+  .clist{max-height:580px}
+}
+
+/* 設定モーダル */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:999;padding:12px}
+.modal-overlay.open{display:flex}
+.modal-content{background:#fff;border-radius:14px;width:100%;max-width:760px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 8px 30px rgba(0,0,0,.25);overflow:hidden}
+.modal-hdr{background:#f7f7f8;border-bottom:1px solid #e5e5ea;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.modal-hdr h3{font-size:16px;font-weight:700;color:#1c1c1e}
+.modal-close{background:none;border:none;font-size:24px;color:#8e8e93;cursor:pointer;line-height:1;padding:0 4px}
+.modal-body{padding:14px;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:14px}
+
+.basic-cfg-box{background:#eef6fc;border:1.5px solid #b8daff;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.basic-cfg-title{font-size:13px;font-weight:700;color:#1a6fa8;display:flex;align-items:center;gap:4px}
+.basic-cfg-desc{font-size:11px;color:#495057;line-height:1.4}
+.basic-cfg-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:8px}
+@media(max-width:540px){
+  .basic-cfg-grid{grid-template-columns:repeat(2, 1fr)}
+}
+.b-field{display:flex;flex-direction:column;gap:2px}
+.b-label{font-size:11px;font-weight:600;color:#495057}
+.b-input{padding:6px 8px;border:1px solid #ced4da;border-radius:6px;font-size:13px;background:#fff;width:100%}
+.b-input-group{display:flex;align-items:center;gap:4px}
+.b-pct-wrap{display:flex;align-items:center;gap:2px;background:#fff;border:1px solid #ced4da;border-radius:6px;padding:0 4px;width:64px;flex-shrink:0}
+.b-pct-input{width:100%;border:none;outline:none;font-size:12px;text-align:right;padding:6px 0;color:#0056b3;font-weight:700}
+
+.btn-apply-basic{background:#1a6fa8;color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;align-self:flex-end;display:flex;align-items:center;gap:4px;-webkit-tap-highlight-color:transparent;transition:background .2s}
+.btn-apply-basic:active{background:#12527e;transform:scale(.98)}
+
+.cfg-sec{display:flex;flex-direction:column;gap:8px}
+.cfg-sec-title{font-size:13px;font-weight:700;color:#1c1c1e}
+.cfg-item{background:#f9f9fb;border:1px solid #e5e5ea;border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px}
+
+.cfg-item-top{display:flex;align-items:flex-end;gap:8px}
+.c-field-group{display:flex;flex-direction:column;gap:3px}
+.c-field-lbl{font-size:11px;font-weight:600;color:#636366}
+.c-m-wrap{display:flex;align-items:center;gap:4px}
+.c-m{width:64px;font-weight:700;padding:6px;border:1px solid #d1d1d6;border-radius:6px;font-size:13px;text-align:center}
+.c-name-wrap{flex:1;min-width:0}
+.c-name{width:100%;padding:6px 8px;border:1px solid #d1d1d6;border-radius:6px;font-size:13px}
+.btn-del{background:#ff3b30;color:#fff;border:none;border-radius:6px;padding:7px 12px;font-size:12px;cursor:pointer;flex-shrink:0;height:33px}
+
+.cfg-item-fields{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+@media(min-width: 620px){
+  .cfg-item-fields{grid-template-columns:repeat(6,1fr)}
+}
+.cfg-field{display:flex;flex-direction:column;gap:2px;min-width:0}
+.cfg-sub-lbl{font-size:10px;font-weight:600;color:#636366;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.pct-input-wrap{display:flex;align-items:center;gap:2px;background:#fff;border:1px solid #d1d1d6;border-radius:4px;padding:1px 4px;margin-bottom:2px}
+.cfg-pct-input{width:100%;border:none;outline:none;font-size:11px;text-align:right;color:#0056b3;font-weight:600}
+.pct-unit{font-size:10px;color:#8e8e93}
+.cfg-sub-input{width:100%;min-width:0;padding:5px 6px;border:1px solid #d1d1d6;border-radius:6px;font-size:12px;text-align:right}
+.cfg-sub-input.is-auto{background:#f0f7ff;color:#0056b3;font-weight:600}
+.cfg-unit-val{background:#e9f7ee;border:1px solid #b7eb8f;color:#1e7e34;font-weight:700;padding:6px;border-radius:6px;font-size:12px;text-align:center;white-space:nowrap;overflow:hidden;height:31px;display:flex;align-items:center;justify-content:center}
+
+.btn-add{background:#34c759;color:#fff;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;text-align:center}
+.modal-ftr{border-top:1px solid #e5e5ea;padding:12px 14px;display:flex;gap:8px;background:#f7f7f8;flex-shrink:0}
+.btn-save{flex:1;padding:10px;background:#1a6fa8;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
+.btn-reset{padding:10px 14px;background:#8e8e93;color:#fff;border:none;border-radius:8px;font-size:13px;cursor:pointer;white-space:nowrap}
+</style>
 </head>
 <body>
-
-<div class="app-container">
+<div class="outer">
+<div class="app">
   <!-- ヘッダー -->
-  <div class="header">
-    <div class="title">Thai Topaz</div>
-    <div id="header-current-time" class="time">--:--</div>
+  <div class="hdr">
+    <div class="hdr-left">
+      <span class="hdr-t" id="storeNameText">Thai Topaz</span>
+    </div>
+    <div class="hdr-right">
+      <div class="lang-switch">
+        <button class="lang-btn on" id="btnLangJa" onclick="setLang('ja')">JP</button>
+        <button class="lang-btn" id="btnLangEn" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" id="btnLangTh" onclick="setLang('th')">TH</button>
+      </div>
+      <span class="hdr-c" id="liveTime">--:--</span>
+      <button class="btn-setting" id="btnOpenSetting" title="設定" aria-label="設定">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
   </div>
 
-  <!-- 上部ステータス表示（上の開始時刻ボックス） -->
-  <div class="status-container">
-    <div class="status-card">
-      <div class="status-label">開始時刻</div>
-      <div id="status-start-time" class="status-value">--:--</div>
+  <!-- メインエリア -->
+  <div class="main-grid">
+    <div class="pane-ctrl">
+      <div class="trow">
+        <div class="tc"><div class="lbl" id="lblStartTime">開始時刻</div><div class="val" id="startTime">--:--</div></div>
+        <div class="tc hl"><div class="lbl" id="lblNowTime">現在時刻</div><div class="val" id="nowTime">--:--</div></div>
+        <div class="tc"><div class="lbl" id="lblElapsed">経過時間</div><div class="val" id="elapsed">--分</div></div>
+      </div>
+
+      <button class="btn-upd" id="btnUpd">⏱ 更新（開始時刻をセット）</button>
+
+      <!-- 選択詳細ボックス（起動初期は非表示・開閉可能） -->
+      <div class="res" id="res">
+        <div class="res-hdr-row" onclick="toggleRes()">
+          <div class="res-lbl" id="lblResTitle">✅ 選択コース詳細</div>
+          <button type="button" class="res-toggle-btn" id="btnToggleRes">▲ 閉じる</button>
+        </div>
+        <div id="resBody">
+          <div class="res-course" id="rC">--</div>
+          <div class="time-boxes">
+            <div class="tbox">
+              <div class="tbox-lbl" id="lblRStart">開始時刻</div>
+              <div class="tbox-val" id="rStart">--:--</div>
+            </div>
+            <div class="arrow">→</div>
+            <div class="tbox end">
+              <div class="tbox-lbl" id="lblREnd">終了時刻</div>
+              <div class="tbox-val" id="rEnd">--:--</div>
+            </div>
+          </div>
+          <div class="res-prices" id="resPrices"></div>
+        </div>
+      </div>
     </div>
-    <div class="status-card">
-      <div class="status-label">現在時刻</div>
-      <div id="status-current-time" class="status-value blue">--:--</div>
-    </div>
-    <div class="status-card">
-      <div class="status-label">経過時間</div>
-      <div id="status-elapsed-time" class="status-value">--分</div>
+
+    <!-- 右側：コース一覧（分数グループ化レイアウト） -->
+    <div class="pane-list">
+      <div class="filter-row" id="filterRow"></div>
+      <div class="clist" id="clist"></div>
     </div>
   </div>
+</div>
+</div>
 
-  <!-- 更新ボタン -->
-  <button id="btn-update-time" class="btn-update">⏱ 更新（開始時刻をセット）</button>
+<!-- 設定モーダル -->
+<div class="modal-overlay" id="settingModal">
+  <div class="modal-content">
+    <div class="modal-hdr">
+      <h3 id="lblSettingHdr">⚙️ 設定（基本設定・コース一覧）</h3>
+      <button class="modal-close" id="btnCloseSetting">&times;</button>
+    </div>
+    <div class="modal-body">
+      <!-- 基本設定枠 -->
+      <div class="basic-cfg-box">
+        <div class="basic-cfg-title">📌 基本設定（項目名・基本％設定）</div>
+        <div class="basic-cfg-desc" id="lblBasicDesc">※基本設定を入力後、「全コースに反映」ボタンを押すと、登録済みの全コースに自動計算で一括反映されます。</div>
+        
+        <div class="b-field">
+          <div class="b-label" id="lblStoreLabel">店舗表示名</div>
+          <input type="text" class="b-input" id="cfgStoreName" value="Thai Topaz">
+        </div>
+        
+        <div style="font-size:11px;font-weight:700;color:#1a6fa8;margin-top:2px;">金額項目の名称 ＆ 基本％（①の料金に対する割合）</div>
+        <div class="basic-cfg-grid">
+          <div class="b-field">
+            <div class="b-label">項目1（単価＆％計算元）</div>
+            <input type="text" class="b-input" id="cfgLabelP1" value="基本コース料金">
+          </div>
+          <div class="b-field">
+            <div class="b-label">項目2 ［名称 / ％］</div>
+            <div class="b-input-group">
+              <input type="text" class="b-input" id="cfgLabelP2" value="STAFF(A)">
+              <div class="b-pct-wrap"><input type="number" class="b-pct-input" id="cfgPctP2" placeholder="%" step="any"><span>%</span></div>
+            </div>
+          </div>
+          <div class="b-field">
+            <div class="b-label">項目3 ［名称 / ％］</div>
+            <div class="b-input-group">
+              <input type="text" class="b-input" id="cfgLabelP3" value="STAFF(B)">
+              <div class="b-pct-wrap"><input type="number" class="b-pct-input" id="cfgPctP3" placeholder="%" step="any"><span>%</span></div>
+            </div>
+          </div>
+          <div class="b-field">
+            <div class="b-label">項目4 ［名称 / ％］</div>
+            <div class="b-input-group">
+              <input type="text" class="b-input" id="cfgLabelP4" value="STAFF(C)">
+              <div class="b-pct-wrap"><input type="number" class="b-pct-input" id="cfgPctP4" placeholder="%" step="any"><span>%</span></div>
+            </div>
+          </div>
+          <div class="b-field">
+            <div class="b-label">項目5 ［名称 / ％］</div>
+            <div class="b-input-group">
+              <input type="text" class="b-input" id="cfgLabelP5" value="任意⑤">
+              <div class="b-pct-wrap"><input type="number" class="b-pct-input" id="cfgPctP5" placeholder="%" step="any"><span>%</span></div>
+            </div>
+          </div>
+          <div class="b-field">
+            <div class="b-label">単価名称（自動計算）</div>
+            <input type="text" class="b-input" id="cfgLabelUnit" value="時間単価(分)">
+          </div>
+        </div>
 
-  <!-- 選択コース詳細エリア -->
-  <div class="course-detail-container">
-    <div class="course-detail-title">✅ 選択コース詳細</div>
-    <div id="detail-course-name" class="course-name">コースを選択してください</div>
-    
-    <div class="time-display-box">
-      <!-- 真ん中の開始時刻ボックス -->
-      <div class="time-card">
-        <div class="time-label">開始時刻</div>
-        <div id="detail-start-time" class="time-value">--:--</div>
+        <button type="button" class="btn-apply-basic" id="btnApplyBasic" onclick="applyBasicSettingsToAll()">
+          ⚡ <span id="lblApplyBtnText">基本設定を全コースに反映</span>
+        </button>
       </div>
-      <div class="arrow">→</div>
-      <div class="time-card end-time">
-        <div class="time-label">終了時刻</div>
-        <div id="detail-end-time" class="time-value">--:--</div>
-      </div>
-    </div>
-    
-    <!-- 4つの項目ボックス -->
-    <div class="price-cards-container">
-      <div class="price-card">
-        <div class="price-label">コース料金</div>
-        <div id="val-course-price" class="price-value">—</div>
-      </div>
-      <div class="price-card">
-        <div class="price-label">STAFF</div>
-        <div id="val-staff-price" class="price-value">—</div>
-      </div>
-      <div class="price-card">
-        <div class="price-label">OWNER</div>
-        <div id="val-owner-price" class="price-value">—</div>
-      </div>
-      <div class="price-card">
-        <div class="price-label">OWNER割引</div>
-        <div id="val-discount" class="price-value-discount">—</div>
-      </div>
-    </div>
-    
-    <!-- 時間単価表示エリア -->
-    <div id="val-rate" class="rate-label">時間単価：¥0/分</div>
-  </div>
 
-  <!-- カテゴリタブ -->
-  <div class="tab-container">
-    <div class="tab active" onclick="filterCategory('すべて', this)">すべて</div>
-    <div class="tab" onclick="filterCategory('Thai', this)">Thai</div>
-    <div class="tab" onclick="filterCategory('Oil', this)">Oil</div>
-    <div class="tab" onclick="filterCategory('Topaz', this)">Topaz</div>
-  </div>
-
-  <!-- コース一覧リスト -->
-  <div class="course-list" id="course-list-container">
-    <div class="course-item" data-type="Topaz" onclick="selectCourse('20分コース | Topaz', 20, 6000, 3000, 3000, 0, 300)">
-      <div class="course-left">
-        <div class="course-duration">20<span>分</span></div>
-        <span class="badge topaz">Topaz</span>
-      </div>
-      <div class="course-right">
-        <div class="course-main-price">¥6,000</div>
+      <!-- コース一覧編集 -->
+      <div class="cfg-sec">
+        <div class="cfg-sec-title" id="lblCourseEditLabel">コース一覧編集</div>
+        <div id="courseEditList" style="display:flex;flex-direction:column;gap:8px"></div>
+        <button class="btn-add" id="btnAddCourse">+ 新しいコースを追加</button>
       </div>
     </div>
-
-    <div class="course-item" data-type="Thai" onclick="selectCourse('30分コース | Thai', 30, 5000, 2500, 2500, 0, 167)">
-      <div class="course-left">
-        <div class="course-duration">30<span>分</span></div>
-        <span class="badge thai">Thai</span>
-      </div>
-      <div class="course-right">
-        <div class="course-main-price">¥5,000</div>
-      </div>
-    </div>
-
-    <div class="course-item" data-type="Topaz" onclick="selectCourse('40分コース | Topaz', 40, 8000, 4000, 4000, 0, 200)">
-      <div class="course-left">
-        <div class="course-duration">40<span>分</span></div>
-        <span class="badge topaz">Topaz</span>
-      </div>
-      <div class="course-right">
-        <div class="course-main-price">¥8,000</div>
-      </div>
-    </div>
-
-    <div class="course-item" data-type="Thai" onclick="selectCourse('60分コース | Thai', 60, 7000, 3500, 3500, 0, 117)">
-      <div class="course-left">
-        <div class="course-duration">60<span>分</span></div>
-        <span class="badge thai">Thai</span>
-      </div>
-      <div class="course-right">
-        <div class="course-main-price">¥7,000</div>
-      </div>
-    </div>
-    <div class="course-item" data-type="Oil" onclick="selectCourse('60分コース | Oil', 60, 9000, 4500, 4500, 0, 150)">
-      <div class="course-left">
-        <div class="course-duration">60<span>分</span></div>
-        <span class="badge oil">Oil</span>
-      </div>
-      <div class="course-right">
-        <div class="course-main-price">¥9,000</div>
-      </div>
-    </div>
-
-    <div class="course-item" data-type="Topaz" onclick="selectCourse('70分コース | Topaz', 70, 11000, 5500, 5500, 4500, 157)">
-      <div class="course-left">
-        <div class="course-duration">70<span>分</span></div>
-        <span class="badge topaz">Topaz</span>
-      </div>
-      <div class="course-right">
-        <div class="course-main-price">¥11,000</div>
-      </div>
-    </div>
-
-    <div class="course-item" data-type="Thai" onclick="selectCourse('90分コース | Thai', 90, 9000, 4500, 4500, 0, 100)">
-      <div class="course-left">
-        <div class="course-duration">90<span>分</span></div>
-        <span class="badge thai">Thai</span>
-      </div>
-      <div class="course-right">
-        <div class="course-main-price">¥9,000</div>
-      </div>
-    </div>
-    <div class="course-item" data-type="Oil" onclick="selectCourse('90分コース | Oil', 90, 12000, 6000, 6000, 5000, 133)">
-      <div class="course-left">
-        <div class="course-duration">90<span>分</span></div>
-        <span class="badge oil">Oil</span>
-      </div>
-      <div class="course-right">
-        <div class="course-main-price">¥12,000</div>
-      </div>
-    </div>
-
-    <div class="course-item" data-type="Topaz" onclick="selectCourse('100分コース | Topaz', 100, 14000, 7000, 7000, 6000, 140)">
-      <div class="course-left">
-        <div class="course-duration">100<span>分</span></div>
-        <span class="badge topaz">Topaz</span>
-      </div>
-      <div class="course-right">
-        <div class="course-main-price">¥14,000</div>
-      </div>
-    </div>
-
-    <div class="course-item" data-type="Thai" onclick="selectCourse('120分コース | Thai', 120, 12000, 6000, 6000, 5000, 100)">
-      <div class="course-left">
-        <div class="course-duration">120<span>分</span></div>
-        <span class="badge thai">Thai</span>
-      </div>
-      <div class="course-right">
-        <div class="course-main-price">¥12,000</div>
-      </div>
-    </div>
-    <div class="course-item" data-type="Oil" onclick="selectCourse('120分コース | Oil', 120, 15000, 7500, 7500, 6500, 125)">
-      <div class="course-left">
-        <div class="course-duration">120<span>分</span></div>
-        <span class="badge oil">Oil</span>
-      </div>
-      <div class="course-right">
-        <div class="course-main-price">¥15,000</div>
-      </div>
-    </div>
-    <div class="course-item" data-type="Topaz" onclick="selectCourse('120分コース | Topaz', 120, 17000, 8500, 8500, 7500, 142)">
-      <div class="course-left">
-        <div class="course-duration">120<span>分</span></div>
-        <span class="badge topaz">Topaz</span>
-      </div>
-      <div class="course-right">
-        <div class="course-main-price">¥17,000</div>
-      </div>
-    </div>
-
-    <div class="course-item" data-type="Oil" onclick="selectCourse('150分コース | Oil', 150, 18000, 9000, 9000, 8000, 120)">
-      <div class="course-left">
-        <div class="course-duration">150<span>分</span></div>
-        <span class="badge oil">Oil</span>
-      </div>
-      <div class="course-right">
-        <div class="course-main-price">¥18,000</div>
-      </div>
-    </div>
-    <div class="course-item" data-type="Topaz" onclick="selectCourse('150分コース | Topaz', 150, 20000, 10000, 10000, 9000, 133)">
-      <div class="course-left">
-        <div class="course-duration">150<span>分</span></div>
-        <span class="badge topaz">Topaz</span>
-      </div>
-      <div class="course-right">
-        <div class="course-main-price">¥20,000</div>
-      </div>
-    </div>
-
-    <div class="course-item" data-type="Oil" onclick="selectCourse('180分コース | Oil', 180, 21000, 10500, 10500, 9500, 117)">
-      <div class="course-left">
-        <div class="course-duration">180<span>分</span></div>
-        <span class="badge oil">Oil</span>
-      </div>
-      <div class="course-right">
-        <div class="course-main-price">¥21,000</div>
-      </div>
-    </div>
-    <div class="course-item" data-type="Topaz" onclick="selectCourse('180分コース | Topaz', 180, 23000, 11500, 11500, 10500, 128)">
-      <div class="course-left">
-        <div class="course-duration">180<span>分</span></div>
-        <span class="badge topaz">Topaz</span>
-      </div>
-      <div class="course-right">
-        <div class="course-main-price">¥23,000</div>
-      </div>
+    <div class="modal-ftr">
+      <button class="btn-reset" id="btnResetSetting">初期値</button>
+      <button class="btn-save" id="btnSaveSetting">保存して適用</button>
     </div>
   </div>
 </div>
 
-<!-- 動作プログラム（JavaScript） -->
 <script>
-  let actualStartTime = null; // 更新したそのままの時間（上部用）
-  let roundedStartTime = null; // 5分単位に計算した時間（真ん中・終了時刻用）
-  let selectedDuration = 0;
-
-  // 1. リアルタイム時計更新
-  function updateClock() {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const timeString = `${hours}:${minutes}`;
-    
-    document.getElementById('header-current-time').innerText = timeString;
-    document.getElementById('status-current-time').innerText = timeString;
-
-    // 経過時間は「実際の現在時刻」と「更新したそのままの時間」の差分でリアルタイム計算
-    if (actualStartTime) {
-      const elapsedMs = now - actualStartTime;
-      const elapsedMins = Math.floor(elapsedMs / 1000 / 60);
-      document.getElementById('status-elapsed-time').innerText = `${elapsedMins < 0 ? 0 : elapsedMins}分`;
-    }
+var I18N = {
+  ja: {
+    startTime: "開始時刻",
+    nowTime: "現在時刻",
+    elapsed: "経過時間",
+    minUnit: "分",
+    btnUpd: "⏱ 更新（開始時刻をセット）",
+    resTitle: "✅ 選択コース詳細",
+    courseLabel: "分コース ｜ ",
+    endTime: "終了時刻",
+    all: "すべて",
+    courseTime: "コース時間",
+    courseName: "コース名",
+    settingHdr: "⚙️ 設定（基本設定・コース一覧）",
+    basicDesc: "※基本設定を入力後、「全コースに反映」ボタンを押すと、登録済みの全コースに自動計算で一括反映されます。",
+    storeLabel: "店舗表示名",
+    courseEditLabel: "コース一覧編集",
+    addCourse: "+ 新しいコースを追加",
+    save: "保存して適用",
+    reset: "初期値",
+    delete: "削除",
+    applyBtn: "基本設定を全コースに反映",
+    applyDone: "基本設定の項目と％を全コースに反映・再計算しました！",
+    resetConfirm: "設定を初期状態（デフォルトコース）に戻しますか？",
+    close: "閉じる",
+    open: "開く"
+  },
+  en: {
+    startTime: "Start Time",
+    nowTime: "Current Time",
+    elapsed: "Elapsed",
+    minUnit: "min",
+    btnUpd: "⏱ Update (Set Start Time)",
+    resTitle: "✅ Selected Course",
+    courseLabel: "min Course ｜ ",
+    endTime: "End Time",
+    all: "All",
+    courseTime: "Duration",
+    courseName: "Course Name",
+    settingHdr: "⚙️ Settings",
+    basicDesc: "* After entering basic settings, click 'Apply to All' to recalculate all courses automatically.",
+    storeLabel: "Store Name",
+    courseEditLabel: "Edit Course List",
+    addCourse: "+ Add New Course",
+    save: "Save & Apply",
+    reset: "Reset",
+    delete: "Delete",
+    applyBtn: "Apply to All Courses",
+    applyDone: "Basic settings and % applied to all courses!",
+    resetConfirm: "Reset all settings to default courses?",
+    close: "Close",
+    open: "Open"
+  },
+  th: {
+    startTime: "เวลาเริ่มต้น",
+    nowTime: "เวลาปัจจุบัน",
+    elapsed: "เวลาที่ใช้ไป",
+    minUnit: "นาที",
+    btnUpd: "⏱ อัปเดต / ตั้งเวลาเริ่มต้น",
+    resTitle: "✅ รายละเอียดคอร์ส",
+    courseLabel: " นาที ｜ ",
+    endTime: "เวลาสิ้นสุด",
+    all: "ทั้งหมด",
+    courseTime: "ระยะเวลา",
+    courseName: "ชื่อคอร์ส",
+    settingHdr: "⚙️ การตั้งค่า",
+    basicDesc: "* หลังจากป้อนการตั้งค่าพื้นฐานแล้ว กดปุ่ม 'นำไปใช้กับทุกคอร์ส' เพื่อคำนวณอัตโนมัติทั้งหมด",
+    storeLabel: "ชื่อร้านค้า",
+    courseEditLabel: "แก้ไขรายการคอร์ส",
+    addCourse: "+ เพิ่มคอร์สใหม่",
+    save: "บันทึกและนำไปใช้",
+    reset: "ค่าเริ่มต้น",
+    delete: "ลบ",
+    applyBtn: "นำไปใช้กับทุกคอร์ส",
+    applyDone: "นำการตั้งค่าพื้นฐานไปใช้กับทุกคอร์สเรียบร้อยแล้ว!",
+    resetConfirm: "ต้องการรีเซ็ตการตั้งค่ากลับเป็นค่าเริ่มต้นหรือไม่?",
+    close: "ปิด",
+    open: "เปิด"
   }
+};
 
-  setInterval(updateClock, 1000);
-  updateClock();
+var currentLang = 'ja';
 
-  // 2. 5分刻みの丸め処理関数
-  function getRoundedTime(date) {
-    const rounded = new Date(date.getTime());
-    const mins = rounded.getMinutes();
-    const remainder = mins % 5;
+var DEFAULT_LABELS = {
+  p1: '基本コース料金',
+  p2: 'STAFF(A)',
+  p3: 'STAFF(B)',
+  p4: 'STAFF(C)',
+  p5: '任意⑤',
+  unit: '時間単価(分)'
+};
+var basicLabels = Object.assign({}, DEFAULT_LABELS);
 
-    if (remainder < 3) {
-      rounded.setMinutes(mins - remainder);
+var DEFAULT_BASIC_PCTS = { p2: 50, p3: 40, p4: null, p5: null };
+var basicPcts = Object.assign({}, DEFAULT_BASIC_PCTS);
+
+var DEFAULT_COURSES = [
+  {m:20,  name:'Topaz', prices:[6000, 3000, 2400, null, null], percents:[null, 50, 40, null, null]},
+  {m:30,  name:'Thai',  prices:[5000, 2500, 2000, null, null], percents:[null, 50, 40, null, null]},
+  {m:40,  name:'Topaz', prices:[8000, 4000, 3200, null, null], percents:[null, 50, 40, null, null]},
+  {m:60,  name:'Thai',  prices:[7000, 3500, 2800, null, null], percents:[null, 50, 40, null, null]},
+  {m:60,  name:'Oil',   prices:[9000, 4500, 3600, null, null], percents:[null, 50, 40, null, null]},
+  {m:70,  name:'Topaz', prices:[11000, 5500, 4400, null, null], percents:[null, 50, 40, null, null]},
+  {m:90,  name:'Thai',  prices:[9000, 4500, 3600, null, null], percents:[null, 50, 40, null, null]},
+  {m:90,  name:'Oil',   prices:[12000, 6000, 4800, null, null], percents:[null, 50, 40, null, null]},
+  {m:100, name:'Topaz', prices:[14000, 7000, 5600, null, null], percents:[null, 50, 40, null, null]},
+  {m:120, name:'Thai',  prices:[12000, 6000, 4800, null, null], percents:[null, 50, 40, null, null]},
+  {m:120, name:'Oil',   prices:[15000, 7500, 6000, null, null], percents:[null, 50, 40, null, null]},
+  {m:120, name:'Topaz', prices:[17000, 8500, 6800, null, null], percents:[null, 50, 40, null, null]},
+  {m:150, name:'Oil',   prices:[18000, 9000, 7200, null, null], percents:[null, 50, 40, null, null]},
+  {m:150, name:'Topaz', prices:[20000, 10000, 8000, null, null], percents:[null, 50, 40, null, null]},
+  {m:180, name:'Oil',   prices:[21000, 10500, 8400, null, null], percents:[null, 50, 40, null, null]},
+  {m:180, name:'Topaz', prices:[23000, 11500, 9200, null, null], percents:[null, 50, 40, null, null]}
+];
+
+var COURSES = [];
+var storeName = "Thai Topaz";
+var st=null, currentFilter='all', hlKey=null, iv=null, selectedCourseData=null;
+var isResOpen = false; // 起動初期は閉じた状態
+
+// 安全な配列取得関数
+function getArrItem(arr, idx){
+  if(!arr || !Array.isArray(arr) || idx >= arr.length) return null;
+  return arr[idx];
+}
+
+// 5分刻みの四捨五入（2捨3入）：MINUTE(A1)-FLOOR(MINUTE(A1),5) < 3 に基づく開始時刻調整
+function getRoundedStartTime(nowDate){
+  var d = new Date(nowDate.getTime());
+  d.setSeconds(0, 0);
+  var m = d.getMinutes();
+  var rem = m % 5;
+  if(rem < 3){
+    d.setMinutes(m - rem); // 0, 1, 2分は切り捨て
+  } else {
+    d.setMinutes(m + (5 - rem)); // 3, 4分は切り上げ
+  }
+  return d;
+}
+
+function loadSettings(){
+  try{
+    var savedLang = localStorage.getItem('thai_topaz_lang');
+    if(savedLang && I18N[savedLang]) currentLang = savedLang;
+    var savedName = localStorage.getItem('thai_topaz_store_name');
+    if(savedName) storeName = savedName;
+    var savedLabels = localStorage.getItem('thai_topaz_basic_labels');
+    if(savedLabels){
+      basicLabels = JSON.parse(savedLabels);
+    }
+    var savedPcts = localStorage.getItem('thai_topaz_basic_pcts');
+    if(savedPcts){
+      basicPcts = JSON.parse(savedPcts);
+    }
+    var savedCourses = localStorage.getItem('thai_topaz_courses');
+    if(savedCourses){
+      var parsed = JSON.parse(savedCourses);
+      COURSES = parsed.map(function(c){
+        var prs = (c.prices && Array.isArray(c.prices)) ? c.prices : [c.staff||0, c.own||0, null, null, null];
+        while(prs.length < 5) prs.push(null);
+        var pcts = (c.percents && Array.isArray(c.percents)) ? c.percents : [null, basicPcts.p2, basicPcts.p3, null, null];
+        while(pcts.length < 5) pcts.push(null);
+        return {
+          m: parseInt(c.m) || 0,
+          name: c.name || 'Thai',
+          prices: prs,
+          percents: pcts
+        };
+      });
     } else {
-      rounded.setMinutes(mins + (5 - remainder));
+      COURSES = JSON.parse(JSON.stringify(DEFAULT_COURSES));
     }
-    rounded.setSeconds(0);
-    return rounded;
+  }catch(e){
+    COURSES = JSON.parse(JSON.stringify(DEFAULT_COURSES));
+    basicLabels = Object.assign({}, DEFAULT_LABELS);
+    basicPcts = Object.assign({}, DEFAULT_BASIC_PCTS);
+  }
+  document.getElementById('storeNameText').textContent = storeName;
+  updateLangUI();
+}
+
+function saveSettings(coursesList, name, labels, pcts){
+  COURSES = coursesList;
+  storeName = name;
+  basicLabels = labels;
+  basicPcts = pcts;
+  localStorage.setItem('thai_topaz_store_name', storeName);
+  localStorage.setItem('thai_topaz_courses', JSON.stringify(COURSES));
+  localStorage.setItem('thai_topaz_basic_labels', JSON.stringify(basicLabels));
+  localStorage.setItem('thai_topaz_basic_pcts', JSON.stringify(basicPcts));
+  document.getElementById('storeNameText').textContent = storeName;
+  buildFilters();
+  render();
+}
+
+function setLang(lang){
+  if(!I18N[lang]) return;
+  currentLang = lang;
+  localStorage.setItem('thai_topaz_lang', lang);
+  updateLangUI();
+  buildFilters();
+  render();
+  tick();
+  if(selectedCourseData){
+    var ss = st ? fmt(st) : '--:--';
+    var es = st ? fmt(addM(st, selectedCourseData.m)) : '--:--';
+    showRes(selectedCourseData, ss, es);
+  }
+}
+
+function updateLangUI(){
+  var t = I18N[currentLang];
+  document.getElementById('btnLangJa').className = 'lang-btn' + (currentLang==='ja'?' on':'');
+  document.getElementById('btnLangEn').className = 'lang-btn' + (currentLang==='en'?' on':'');
+  document.getElementById('btnLangTh').className = 'lang-btn' + (currentLang==='th'?' on':'');
+
+  document.getElementById('lblStartTime').textContent = t.startTime;
+  document.getElementById('lblNowTime').textContent = t.nowTime;
+  document.getElementById('lblElapsed').textContent = t.elapsed;
+  document.getElementById('btnUpd').textContent = t.btnUpd;
+
+  document.getElementById('lblResTitle').textContent = t.resTitle;
+  document.getElementById('lblRStart').textContent = t.startTime;
+  document.getElementById('lblREnd').textContent = t.endTime;
+
+  document.getElementById('lblSettingHdr').textContent = t.settingHdr;
+  document.getElementById('lblBasicDesc').textContent = t.basicDesc;
+  document.getElementById('lblStoreLabel').textContent = t.storeLabel;
+  document.getElementById('lblCourseEditLabel').textContent = t.courseEditLabel;
+  document.getElementById('btnAddCourse').textContent = t.addCourse;
+  document.getElementById('btnResetSetting').textContent = t.reset;
+  document.getElementById('btnSaveSetting').textContent = t.save;
+  document.getElementById('lblApplyBtnText').textContent = t.applyBtn;
+  updateToggleBtnText();
+}
+
+function fmt(d){return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
+function addM(d,m){return new Date(d.getTime()+m*60000);}
+
+function yen(n){
+  if(n === null || n === undefined || n === '' || isNaN(n)) return '—';
+  return '¥' + Number(n).toLocaleString();
+}
+
+function ckey(c){return c.m+'_'+c.name;}
+function nbadge(n){
+  if(n==='Thai') return 'nm-thai';
+  if(n==='Oil') return 'nm-oil';
+  if(n==='Topaz') return 'nm-topaz';
+  return 'nm-other';
+}
+
+function buildFilters(){
+  var catSet = {};
+  for(var i=0; i<COURSES.length; i++){
+    if(COURSES[i].name) catSet[COURSES[i].name] = true;
+  }
+  var cats = Object.keys(catSet);
+  var fRow = document.getElementById('filterRow');
+  fRow.innerHTML = '';
+  
+  var t = I18N[currentLang];
+  var allTab = document.createElement('div');
+  allTab.className = 'ftab' + (currentFilter==='all'?' on':'');
+  allTab.textContent = t.all;
+  allTab.onclick = function(){ sf('all'); };
+  fRow.appendChild(allTab);
+
+  cats.forEach(function(cName){
+    var tab = document.createElement('div');
+    tab.className = 'ftab' + (currentFilter===cName?' on':'');
+    tab.textContent = cName;
+    tab.onclick = function(){ sf(cName); };
+    fRow.appendChild(tab);
+  });
+}
+
+// 金額計算
+function getEffectivePrices(c){
+  var p1 = 0;
+  if(c && c.prices && c.prices.length > 0){
+    var raw1 = getArrItem(c.prices, 0);
+    p1 = (raw1 !== null && raw1 !== undefined && raw1 !== '') ? Number(raw1) : 0;
+  }
+  if(isNaN(p1)) p1 = 0;
+  var eff = [p1];
+
+  for(var i=1; i<=4; i++){
+    var pctVal = (c.percents && c.percents.length > i) ? getArrItem(c.percents, i) : null;
+    var pct = (pctVal !== null && pctVal !== undefined && pctVal !== '') ? parseFloat(pctVal) : null;
+    if(pct !== null && !isNaN(pct)){
+      eff.push(Math.round(p1 * (pct / 100)));
+    } else {
+      var rawP = (c.prices && c.prices.length > i) ? getArrItem(c.prices, i) : null;
+      var numP = (rawP !== null && rawP !== undefined && rawP !== '') ? Number(rawP) : null;
+      eff.push((numP !== null && !isNaN(numP)) ? numP : null);
+    }
+  }
+  return eff;
+}
+
+// 分数グループ化一覧の描画
+function render(){
+  var t = I18N[currentLang];
+  var l = document.getElementById('clist');
+  l.innerHTML = '';
+
+  var groupsByMin = {};
+  var minOrder = [];
+
+  for(var i=0; i<COURSES.length; i++){
+    var c = COURSES[i];
+    if(currentFilter !== 'all' && c.name !== currentFilter) continue;
+    if(!groupsByMin[c.m]){
+      groupsByMin[c.m] = [];
+      minOrder.push(c.m);
+    }
+    groupsByMin[c.m].push(c);
   }
 
-  // 時間を「HH:MM」の文字列にする便利関数
-  function formatTime(date) {
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
+  minOrder.sort(function(a,b){ return a - b; });
+
+  for(var g=0; g<minOrder.length; g++){
+    var mVal = minOrder[g];
+    var courseList = groupsByMin[mVal];
+
+    var ss = st ? fmt(st) : '--:--';
+    var es = st ? fmt(addM(st, mVal)) : '--:--';
+
+    var grpBox = document.createElement('div');
+    grpBox.className = 'mgroup';
+
+    var grpHdr = document.createElement('div');
+    grpHdr.className = 'mgroup-hdr';
+    grpHdr.innerHTML = 
+      '<div class="mgroup-min">'+mVal+'<span> '+t.minUnit+'</span></div>'
+      +'<div class="mgroup-times">'+ss+' → <b>'+es+'</b></div>';
+    grpBox.appendChild(grpHdr);
+
+    var itemsWrap = document.createElement('div');
+    itemsWrap.className = 'mgroup-items';
+
+    courseList.forEach(function(cc){
+      var eff = getEffectivePrices(cc);
+      var p1 = getArrItem(eff, 0) || 0;
+      var p2 = getArrItem(eff, 1);
+
+      var p2Label = basicLabels.p2;
+      var p2Pct = (cc.percents && cc.percents.length > 1) ? getArrItem(cc.percents, 1) : null;
+      if(p2Pct !== null && p2Pct !== undefined && p2Pct !== '' && !isNaN(p2Pct)){
+        p2Label = p2Pct + '%';
+      }
+
+      var isSelected = (selectedCourseData && ckey(selectedCourseData) === ckey(cc));
+      var isHl = (hlKey === ckey(cc));
+
+      var itemCard = document.createElement('div');
+      itemCard.className = 'mitem' + (isSelected ? ' active' : '') + (isHl ? ' hl' : '');
+      
+      var subText = (p2 !== null && p2 !== undefined && !isNaN(p2)) ? (p2Label + ':' + yen(p2)) : '';
+
+      itemCard.innerHTML = 
+        '<span class="c-badge '+nbadge(cc.name)+'">'+cc.name+'</span>'
+        +'<div class="mitem-pr">'
+          +'<span class="mitem-main">'+yen(p1)+'</span>'
+          +(subText ? '<span class="mitem-sub">'+subText+'</span>' : '')
+        +'</div>';
+
+      itemCard.onclick = function(){
+        showRes(cc, ss, es);
+        isResOpen = true; // コースタップ時は自動展開
+        updateResDisplay();
+        render();
+      };
+
+      itemsWrap.appendChild(itemCard);
+    });
+
+    grpBox.appendChild(itemsWrap);
+    l.appendChild(grpBox);
+  }
+}
+
+// 選択詳細ボックスの表示
+function showRes(c, ss, es){
+  if(!c) return;
+  selectedCourseData = c;
+  var t = I18N[currentLang];
+  document.getElementById('rC').textContent = c.m + t.courseLabel + c.name;
+  document.getElementById('rStart').textContent = ss || '--:--';
+  document.getElementById('rEnd').textContent = es || '--:--';
+
+  var eff = getEffectivePrices(c);
+  var p1 = getArrItem(eff, 0) || 0;
+  var unitVal = (c.m > 0 && p1 > 0) ? Math.round(p1 / c.m) : 0;
+
+  function fmtPct(idx){
+    if(c.percents && c.percents.length > idx){
+      var pv = getArrItem(c.percents, idx);
+      if(pv !== null && pv !== undefined && pv !== ''){
+        var num = parseFloat(pv);
+        if(!isNaN(num)) return '<span class="rp-pct-badge">('+num+'%)</span>';
+      }
+    }
+    return '';
   }
 
-  // 3. 「更新」ボタン処理
-  document.getElementById('btn-update-time').addEventListener('click', () => {
-    // A. 更新ボタンを押したそのままの時間
-    actualStartTime = new Date();
-    document.getElementById('status-start-time').innerText = formatTime(actualStartTime);
+  var rpBox = document.getElementById('resPrices');
+  rpBox.innerHTML = 
+    '<div class="rp"><div class="rp-lbl">'+basicLabels.p1+'</div><div class="rp-val hl1">'+yen(getArrItem(eff, 0))+'</div></div>'
+    +'<div class="rp"><div class="rp-lbl">'+basicLabels.p2+fmtPct(1)+'</div><div class="rp-val hl2">'+yen(getArrItem(eff, 1))+'</div></div>'
+    +'<div class="rp"><div class="rp-lbl">'+basicLabels.p3+fmtPct(2)+'</div><div class="rp-val hl3">'+yen(getArrItem(eff, 2))+'</div></div>'
+    +'<div class="rp"><div class="rp-lbl">'+basicLabels.p4+fmtPct(3)+'</div><div class="rp-val">'+yen(getArrItem(eff, 3))+'</div></div>'
+    +'<div class="rp"><div class="rp-lbl">'+basicLabels.p5+fmtPct(4)+'</div><div class="rp-val">'+yen(getArrItem(eff, 4))+'</div></div>'
+    +'<div class="rp"><div class="rp-lbl">'+basicLabels.unit+'</div><div class="rp-val hl-unit">'+(unitVal ? '¥'+unitVal : '—')+'</div></div>';
+}
 
-    // B. 計算式が反映した5分単位の時間
-    roundedStartTime = getRoundedTime(actualStartTime);
-    document.getElementById('detail-start-time').innerText = formatTime(roundedStartTime);
+// 詳細ボックスの開閉トグル
+function toggleRes(){
+  isResOpen = !isResOpen;
+  updateResDisplay();
+}
 
-    document.getElementById('status-elapsed-time').innerText = "0分";
+function updateToggleBtnText(){
+  var tBtn = document.getElementById('btnToggleRes');
+  var t = I18N[currentLang];
+  if(tBtn){
+    tBtn.textContent = isResOpen ? ('▲ ' + t.close) : ('▼ ' + t.open);
+  }
+}
 
-    if (selectedDuration > 0) {
-      calculateEndTime();
+function updateResDisplay(){
+  var resBox = document.getElementById('res');
+  if(isResOpen){
+    resBox.classList.add('open');
+  } else {
+    resBox.classList.remove('open');
+  }
+  updateToggleBtnText();
+}
+
+function sf(cat){
+  currentFilter=cat;
+  buildFilters();
+  render();
+}
+
+function tick(){
+  var t = I18N[currentLang];
+  var now = new Date();
+  var f = fmt(now);
+  document.getElementById('liveTime').textContent = f;
+  document.getElementById('nowTime').textContent = f;
+  if(st){
+    var diff = Math.floor((now - st) / 60000);
+    document.getElementById('elapsed').textContent = diff + ' ' + t.minUnit;
+    var match = null;
+    for(var i=0; i<COURSES.length; i++){
+      if(COURSES[i].m >= diff && (!match || COURSES[i].m < match.m)) match = COURSES[i];
+    }
+    hlKey = match ? ckey(match) : null;
+    render();
+  }
+}
+
+// 更新ボタン：5分単位の四捨五入（2捨3入）で開始時刻をセット
+document.getElementById('btnUpd').onclick = function(){
+  var now = new Date();
+  st = getRoundedStartTime(now);
+  document.getElementById('startTime').textContent = fmt(st);
+  
+  if(!selectedCourseData && COURSES.length > 0){
+    selectedCourseData = COURSES[0];
+  }
+  if(selectedCourseData){
+    var ss = fmt(st);
+    var es = fmt(addM(st, selectedCourseData.m));
+    showRes(selectedCourseData, ss, es);
+  }
+  hlKey = null;
+  render();
+  if(iv) clearInterval(iv);
+  iv = setInterval(tick, 30000);
+  tick();
+};
+
+/* --- 設定モーダル制御 --- */
+var modal = document.getElementById('settingModal');
+var courseEditList = document.getElementById('courseEditList');
+
+function applyBasicSettingsToAll(){
+  var curLabels = {
+    p1: document.getElementById('cfgLabelP1').value.trim() || '項目1',
+    p2: document.getElementById('cfgLabelP2').value.trim() || '項目2',
+    p3: document.getElementById('cfgLabelP3').value.trim() || '項目3',
+    p4: document.getElementById('cfgLabelP4').value.trim() || '項目4',
+    p5: document.getElementById('cfgLabelP5').value.trim() || '項目5',
+    unit: document.getElementById('cfgLabelUnit').value.trim() || '単価(分)'
+  };
+
+  var curPcts = {
+    p2: document.getElementById('cfgPctP2').value.trim(),
+    p3: document.getElementById('cfgPctP3').value.trim(),
+    p4: document.getElementById('cfgPctP4').value.trim(),
+    p5: document.getElementById('cfgPctP5').value.trim()
+  };
+
+  var items = courseEditList.querySelectorAll('.cfg-item');
+  items.forEach(function(row){
+    var labels = row.querySelectorAll('.cfg-sub-lbl');
+    if(labels.length >= 6){
+      labels[0].textContent = curLabels.p1;
+      labels.textContent = curLabels.p2;
+      labels.textContent = curLabels.p3;
+      labels.textContent = curLabels.p4;
+      labels.textContent = curLabels.p5;
+      labels[5].textContent = curLabels.unit;
+    }
+
+    var m = parseInt(row.querySelector('.c-m').value) || 0;
+    var p1 = parseInt(row.querySelector('.c-p1').value) || 0;
+
+    var unitBox = row.querySelector('.cfg-unit-val');
+    if(m > 0 && p1 > 0){
+      unitBox.textContent = '¥' + Math.round(p1 / m);
+    } else {
+      unitBox.textContent = '—';
+    }
+
+    for(var i=2; i<=5; i++){
+      var pctInput = row.querySelector('.c-pct' + i);
+      var pInput = row.querySelector('.c-p' + i);
+      var pctVal = curPcts['p' + i];
+
+      pctInput.value = pctVal;
+      if(pctVal !== '' && !isNaN(pctVal)){
+        var calcAmt = Math.round(p1 * (parseFloat(pctVal) / 100));
+        pInput.value = calcAmt;
+        pInput.classList.add('is-auto');
+        pInput.setAttribute('readonly', 'true');
+      } else {
+        pInput.classList.remove('is-auto');
+        pInput.removeAttribute('readonly');
+      }
     }
   });
 
-  // 4. コース選択処理
-  function selectCourse(courseName, duration, price, staffPrice, ownerPrice, discountPrice, rate) {
-    selectedDuration = duration;
-    
-    document.getElementById('detail-course-name').innerText = courseName;
-    document.getElementById('val-course-price').innerText = `¥${price.toLocaleString()}`;
-    document.getElementById('val-staff-price').innerText = `¥${staffPrice.toLocaleString()}`;
-    document.getElementById('val-owner-price').innerText = `¥${ownerPrice.toLocaleString()}`;
-    
-    if(discountPrice === 0) {
-      document.getElementById('val-discount').innerText = '—';
-    } else {
-      document.getElementById('val-discount').innerText = `¥${discountPrice.toLocaleString()}`;
-    }
-    
-    document.getElementById('val-rate').innerText = `時間単価：¥${rate}/分`;
+  var t = I18N[currentLang];
+  alert(t.applyDone);
+}
 
-    if (roundedStartTime) {
-      calculateEndTime();
-    }
-  }
+function renderCourseEditItems(list){
+  var t = I18N[currentLang];
+  courseEditList.innerHTML = '';
 
-  // 5. 終了時刻計算（丸められた真ん中の開始時刻をもとに計算）
-  function calculateEndTime() {
-    if (!roundedStartTime || selectedDuration === 0) return;
+  var curLabels = {
+    p1: document.getElementById('cfgLabelP1').value.trim() || basicLabels.p1,
+    p2: document.getElementById('cfgLabelP2').value.trim() || basicLabels.p2,
+    p3: document.getElementById('cfgLabelP3').value.trim() || basicLabels.p3,
+    p4: document.getElementById('cfgLabelP4').value.trim() || basicLabels.p4,
+    p5: document.getElementById('cfgLabelP5').value.trim() || basicLabels.p5,
+    unit: document.getElementById('cfgLabelUnit').value.trim() || basicLabels.unit
+  };
 
-    const endTime = new Date(roundedStartTime.getTime() + selectedDuration * 60000);
-    document.getElementById('detail-end-time').innerText = formatTime(endTime);
-  }
+  list.forEach(function(item, idx){
+    var p = item.prices || [0,0,null,null,null];
+    var pct = item.percents || [null,null,null,null,null];
+    var p1 = getArrItem(p, 0) || 0;
+    var unitVal = (item.m > 0 && p1) ? Math.round(p1 / item.m) : 0;
 
-  // 6. カテゴリフィルター処理
-  function filterCategory(category, tabElement) {
-    const tabs = document.querySelectorAll('.tab');
-    tabs.forEach(t => t.classList.remove('active'));
-    tabElement.classList.add('active');
-
-    const items = document.querySelectorAll('.course-item');
-    
-    items.forEach(item => {
-      const itemType = item.getAttribute('data-type');
-      
-      if (category === 'すべて' || itemType === category) {
-        item.classList.remove('hidden');
-      } else {
-        item.classList.add('hidden');
+    function getValAndClass(i){
+      var pc = getArrItem(pct, i);
+      if(pc !== null && pc !== undefined && pc !== ''){
+        var calc = Math.round(p1 * (parseFloat(pc) / 100));
+        return { val: calc, isAuto: true };
       }
-    });
-  }
-</script>
+      var raw = getArrItem(p, i);
+      return { val: (raw !== null && raw !== undefined ? raw : ''), isAuto: false };
+    }
 
+    var f2 = getValAndClass(1);
+    var f3 = getValAndClass(2);
+    var f4 = getValAndClass(3);
+    var f5 = getValAndClass(4);
+
+    var row = document.createElement('div');
+    row.className = 'cfg-item';
+    row.innerHTML = 
+      '<div class="cfg-item-top">'
+        +'<div class="c-field-group">'
+          +'<div class="c-field-lbl">'+t.courseTime+'</div>'
+          +'<div class="c-m-wrap">'
+            +'<input type="number" class="c-m" value="'+(item.m||0)+'" placeholder="分" oninput="onCourseRowChange(this)">'
+            +'<span style="font-size:12px;color:#8e8e93">'+t.minUnit+'</span>'
+          +'</div>'
+        +'</div>'
+        +'<div class="c-field-group c-name-wrap">'
+          +'<div class="c-field-lbl">'+t.courseName+'</div>'
+          +'<input type="text" class="c-name" value="'+(item.name||'')+'" placeholder="Name">'
+        +'</div>'
+        +'<button type="button" class="btn-del" data-idx="'+idx+'">'+t.delete+'</button>'
+      +'</div>'
+      +'<div class="cfg-item-fields">'
+        +'<div class="cfg-field">'
+          +'<div class="cfg-sub-lbl">'+curLabels.p1+'</div>'
+          +'<div style="height:23px;margin-bottom:2px"></div>'
+          +'<input type="number" class="cfg-sub-input c-p1" value="'+(p1||'')+'" oninput="onCourseRowChange(this)">'
+        +'</div>'
+        +'<div class="cfg-field">'
+          +'<div class="cfg-sub-lbl">'+curLabels.p2+'</div>'
+          +'<div class="pct-input-wrap"><input type="number" class="cfg-pct-input c-pct2" value="'+(getArrItem(pct,1)!==null&&getArrItem(pct,1)!==undefined?getArrItem(pct,1):'')+'" placeholder="%" step="any" oninput="onCourseRowChange(this)"><span class="pct-unit">%</span></div>'
+          +'<input type="number" class="cfg-sub-input c-p2 '+(f2.isAuto?'is-auto':'')+'" value="'+f2.val+'" '+(f2.isAuto?'readonly':'')+'>'
+        +'</div>'
+        +'<div class="cfg-field">'
+          +'<div class="cfg-sub-lbl">'+curLabels.p3+'</div>'
+          +'<div class="pct-input-wrap"><input type="number" class="cfg-pct-input c-pct3" value="'+(getArrItem(pct,2)!==null&&getArrItem(pct,2)!==undefined?getArrItem(pct,2):'')+'" placeholder="%" step="any" oninput="onCourseRowChange(this)"><span class="pct-unit">%</span></div>'
+          +'<input type="number" class="cfg-sub-input c-p3 '+(f3.isAuto?'is-auto':'')+'" value="'+f3.val+'" '+(f3.isAuto?'readonly':'')+'>'
+        +'</div>'
+        +'<div class="cfg-field">'
+          +'<div class="cfg-sub-lbl">'+curLabels.p4+'</div>'
+          +'<div class="pct-input-wrap"><input type="number" class="cfg-pct-input c-pct4" value="'+(getArrItem(pct,3)!==null&&getArrItem(pct,3)!==undefined?getArrItem(pct,3):'')+'" placeholder="%" step="any" oninput="onCourseRowChange(this)"><span class="pct-unit">%</span></div>'
+          +'<input type="number" class="cfg-sub-input c-p4 '+(f4.isAuto?'is-auto':'')+'" value="'+f4.val+'" '+(f4.isAuto?'readonly':'')+'>'
+        +'</div>'
+        +'<div class="cfg-field">'
+          +'<div class="cfg-sub-lbl">'+curLabels.p5+'</div>'
+          +'<div class="pct-input-wrap"><input type="number" class="cfg-pct-input c-pct5" value="'+(getArrItem(pct,4)!==null&&getArrItem(pct,4)!==undefined?getArrItem(pct,4):'')+'" placeholder="%" step="any" oninput="onCourseRowChange(this)"><span class="pct-unit">%</span></div>'
+          +'<input type="number" class="cfg-sub-input c-p5 '+(f5.isAuto?'is-auto':'')+'" value="'+f5.val+'" '+(f5.isAuto?'readonly':'')+'>'
+        +'</div>'
+        +'<div class="cfg-field">'
+          +'<div class="cfg-sub-lbl">'+curLabels.unit+'</div>'
+          +'<div style="height:23px;margin-bottom:2px"></div>'
+          +'<div class="cfg-unit-val">'+(unitVal ? '¥'+unitVal : '—')+'</div>'
+        +'</div>'
+      +'</div>';
+    courseEditList.appendChild(row);
+  });
+
+  var delBtns = courseEditList.querySelectorAll('.btn-del');
+  delBtns.forEach(function(b){
+    b.onclick = function(){
+      var delIdx = parseInt(this.getAttribute('data-idx'));
+      var currentList = getEditCourses();
+      currentList.splice(delIdx, 1);
+      renderCourseEditItems(currentList);
+    };
+  });
+}
+
+function onCourseRowChange(inputElem){
+  var row = inputElem.closest('.cfg-item');
+  var m = parseInt(row.querySelector('.c-m').value) || 0;
+  var p1 = parseInt(row.querySelector('.c-p1').value) || 0;
+
+  var unitBox = row.querySelector('.cfg-unit-val');
+  if(m > 0 && p1 > 0){
+    unitBox.textContent = '¥' + Math.round(p1 / m);
+  } else {
+    unitBox.textContent = '—';
+  }
+
+  for(var i=2; i<=5; i++){
+    var pctInput = row.querySelector('.c-pct' + i);
+    var pInput = row.querySelector('.c-p' + i);
+    var pctVal = pctInput.value.trim();
+
+    if(pctVal !== '' && !isNaN(pctVal)){
+      var calcAmt = Math.round(p1 * (parseFloat(pctVal) / 100));
+      pInput.value = calcAmt;
+      pInput.classList.add('is-auto');
+      pInput.setAttribute('readonly', 'true');
+    } else {
+      pInput.classList.remove('is-auto');
+      pInput.removeAttribute('readonly');
+    }
+  }
+}
+
+function getEditCourses(){
+  var items = courseEditList.querySelectorAll('.cfg-item');
+  var list = [];
+  items.forEach(function(el){
+    var m = parseInt(el.querySelector('.c-m').value) || 0;
+    var name = el.querySelector('.c-name').value.trim() || 'その他';
+    var p1 = parseInt(el.querySelector('.c-p1').value) || 0;
+
+    var prices = [p1];
+    var percents = [null];
+
+    for(var i=2; i<=5; i++){
+      var pctVal = el.querySelector('.c-pct' + i).value.trim();
+      var pVal = el.querySelector('.c-p' + i).value.trim();
+
+      if(pctVal !== '' && !isNaN(pctVal)){
+        percents.push(parseFloat(pctVal));
+        prices.push(Math.round(p1 * (parseFloat(pctVal) / 100)));
+      } else {
+        percents.push(null);
+        prices.push(pVal !== '' ? parseInt(pVal) : null);
+      }
+    }
+
+    list.push({
+      m: m,
+      name: name,
+      prices: prices,
+      percents: percents
+    });
+  });
+  list.sort(function(a,b){ return a.m - b.m; });
+  return list;
+}
+
+// 歯車ボタン
+document.getElementById('btnOpenSetting').onclick = function(){
+  document.getElementById('cfgStoreName').value = storeName;
+  document.getElementById('cfgLabelP1').value = basicLabels.p1;
+  document.getElementById('cfgLabelP2').value = basicLabels.p2;
+  document.getElementById('cfgLabelP3').value = basicLabels.p3;
+  document.getElementById('cfgLabelP4').value = basicLabels.p4;
+  document.getElementById('cfgLabelP5').value = basicLabels.p5;
+  document.getElementById('cfgLabelUnit').value = basicLabels.unit;
+
+  document.getElementById('cfgPctP2').value = (basicPcts.p2 !== null && basicPcts.p2 !== undefined) ? basicPcts.p2 : '';
+  document.getElementById('cfgPctP3').value = (basicPcts.p3 !== null && basicPcts.p3 !== undefined) ? basicPcts.p3 : '';
+  document.getElementById('cfgPctP4').value = (basicPcts.p4 !== null && basicPcts.p4 !== undefined) ? basicPcts.p4 : '';
+  document.getElementById('cfgPctP5').value = (basicPcts.p5 !== null && basicPcts.p5 !== undefined) ? basicPcts.p5 : '';
+
+  renderCourseEditItems(COURSES);
+  modal.classList.add('open');
+};
+
+document.getElementById('btnCloseSetting').onclick = function(){
+  modal.classList.remove('open');
+};
+
+// コース追加
+document.getElementById('btnAddCourse').onclick = function(){
+  var currentList = getEditCourses();
+  var bp2 = (basicPcts.p2 !== null && basicPcts.p2 !== undefined) ? basicPcts.p2 : null;
+  var bp3 = (basicPcts.p3 !== null && basicPcts.p3 !== undefined) ? basicPcts.p3 : null;
+  var bp4 = (basicPcts.p4 !== null && basicPcts.p4 !== undefined) ? basicPcts.p4 : null;
+  var bp5 = (basicPcts.p5 !== null && basicPcts.p5 !== undefined) ? basicPcts.p5 : null;
+
+  var p1 = 7000;
+  var pr2 = bp2 !== null ? Math.round(p1 * (bp2/100)) : 3500;
+  var pr3 = bp3 !== null ? Math.round(p1 * (bp3/100)) : null;
+  var pr4 = bp4 !== null ? Math.round(p1 * (bp4/100)) : null;
+  var pr5 = bp5 !== null ? Math.round(p1 * (bp5/100)) : null;
+
+  currentList.push({
+    m: 60,
+    name: 'Thai',
+    prices: [p1, pr2, pr3, pr4, pr5],
+    percents: [null, bp2, bp3, bp4, bp5]
+  });
+  renderCourseEditItems(currentList);
+  courseEditList.scrollTop = courseEditList.scrollHeight;
+};
+
+// 保存
+document.getElementById('btnSaveSetting').onclick = function(){
+  var updated = getEditCourses();
+  var name = document.getElementById('cfgStoreName').value.trim() || 'Thai Topaz';
+  var newLabels = {
+    p1: document.getElementById('cfgLabelP1').value.trim() || '基本コース料金',
+    p2: document.getElementById('cfgLabelP2').value.trim() || 'STAFF(A)',
+    p3: document.getElementById('cfgLabelP3').value.trim() || 'STAFF(B)',
+    p4: document.getElementById('cfgLabelP4').value.trim() || 'STAFF(C)',
+    p5: document.getElementById('cfgLabelP5').value.trim() || '任意⑤',
+    unit: document.getElementById('cfgLabelUnit').value.trim() || '時間単価(分)'
+  };
+  function parseOrNull(id){
+    var v = document.getElementById(id).value.trim();
+    return (v !== '' && !isNaN(v)) ? parseFloat(v) : null;
+  }
+  var newPcts = {
+    p2: parseOrNull('cfgPctP2'),
+    p3: parseOrNull('cfgPctP3'),
+    p4: parseOrNull('cfgPctP4'),
+    p5: parseOrNull('cfgPctP5')
+  };
+
+  saveSettings(updated, name, newLabels, newPcts);
+  modal.classList.remove('open');
+  if(selectedCourseData){
+    var ss = st ? fmt(st) : '--:--';
+    var es = st ? fmt(addM(st, selectedCourseData.m)) : '--:--';
+    showRes(selectedCourseData, ss, es);
+  }
+};
+
+// リセット
+document.getElementById('btnResetSetting').onclick = function(){
+  var t = I18N[currentLang];
+  if(confirm(t.resetConfirm)){
+    basicLabels = Object.assign({}, DEFAULT_LABELS);
+    basicPcts = Object.assign({}, DEFAULT_BASIC_PCTS);
+
+    document.getElementById('cfgLabelP1').value = basicLabels.p1;
+    document.getElementById('cfgLabelP2').value = basicLabels.p2;
+    document.getElementById('cfgLabelP3').value = basicLabels.p3;
+    document.getElementById('cfgLabelP4').value = basicLabels.p4;
+    document.getElementById('cfgLabelP5').value = basicLabels.p5;
+    document.getElementById('cfgLabelUnit').value = basicLabels.unit;
+
+    document.getElementById('cfgPctP2').value = basicPcts.p2 !== null ? basicPcts.p2 : '';
+    document.getElementById('cfgPctP3').value = '';
+    document.getElementById('cfgPctP4').value = '';
+    document.getElementById('cfgPctP5').value = '';
+    document.getElementById('cfgStoreName').value = 'Thai Topaz';
+
+    saveSettings(JSON.parse(JSON.stringify(DEFAULT_COURSES)), 'Thai Topaz', basicLabels, basicPcts);
+    renderCourseEditItems(COURSES);
+  }
+};
+
+// 初期化実行
+loadSettings();
+buildFilters();
+
+// 起動初期は詳細画面を閉じた状態
+isResOpen = false;
+updateResDisplay();
+
+render();
+tick();
+setInterval(function(){if(!st){var f=fmt(new Date());document.getElementById('liveTime').textContent=f;document.getElementById('nowTime').textContent=f;}},10000);
+</script>
 </body>
 </html>
