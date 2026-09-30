@@ -45,6 +45,29 @@ input[type="number"] { -moz-appearance: textfield; }
   position: relative;
 }
 
+/* バージョンバッジスタイル */
+.modal-hdr-ver {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 1.5px 7px;
+  border-radius: 10px;
+  letter-spacing: 0.3px;
+  margin-left: 6px;
+  display: inline-flex;
+  align-items: center;
+}
+.modal-ftr-ver {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  padding-right: 4px;
+}
+
 /* ヘッダー */
 .hdr {
   background: #1a6fa8;
@@ -151,7 +174,7 @@ input[type="number"] { -moz-appearance: textfield; }
 .tbox.end .tbox-val { color: #d32f2f; }
 .arrow { font-size: 20px; color: #8e8e93; text-align: center; }
 
-/* 5項目＋単価の価格表示（スタッフごとのテーマカラー連動） */
+/* 5項目＋単価の価格表示 */
 .res-prices { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 7px; }
 @media(max-width:380px){
   .res-prices { grid-template-columns: repeat(2,1fr); }
@@ -734,9 +757,7 @@ input[type="number"] { -moz-appearance: textfield; }
   border: 1px solid #cbd5e1;
 }
 
-/* ============================================================
-   ★スタッフ金額入力欄＆ラベルのテーマカラー別色分け（A〜D）
-============================================================ */
+/* スタッフ金額入力欄＆ラベルのテーマカラー別色分け（A〜D） */
 .input-base {
   color: #0f172a;
   border-color: #cbd5e1;
@@ -792,7 +813,8 @@ input[type="number"] { -moz-appearance: textfield; }
   background: #ffffff;
   border-top: 1px solid #e2e8f0;
   display: flex;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
   flex-shrink: 0;
 }
 .btn-save-main {
@@ -885,17 +907,18 @@ input[type="number"] { -moz-appearance: textfield; }
 </div>
 
 <!-- ============================================================
-     設定モーダル（多言語完全対応 ＆ 新配置レイアウト）
+     設定モーダル（v1.34）
 ============================================================ -->
 <div class="modal-overlay" id="settingModal">
   <div class="modal-content">
     <div id="save-toast">設定を正常に保存しました！</div>
 
-    <!-- モーダルヘッダー -->
+    <!-- モーダルヘッダー（v1.34バッジ付き） -->
     <div class="modal-hdr">
       <div class="modal-hdr-left">
         <span class="modal-hdr-icon">⚙️</span>
         <span class="modal-hdr-title" id="lblSettingHdr">設定（基本設定・コース一覧）</span>
+        <span class="modal-hdr-ver" id="appVersionBadge">v1.34</span>
       </div>
       <button type="button" class="modal-close" id="btnCloseSetting">✕</button>
     </div>
@@ -918,7 +941,7 @@ input[type="number"] { -moz-appearance: textfield; }
           <input type="text" id="setting-store-name" value="Thai Topaz" class="store-input">
         </div>
 
-        <!-- ★新配置レイアウト（iPhoneでも入力欄が一切隠れない横幅確保・行数削減） -->
+        <!-- 新配置レイアウト -->
         <div class="basic-cfg-layout">
           <!-- 1行目: ① 基本コース料金 ＆ ② 時間単価(分) （2列横並び） -->
           <div class="cfg-row-2col">
@@ -989,8 +1012,9 @@ input[type="number"] { -moz-appearance: textfield; }
       </div>
     </div>
 
-    <!-- モーダルフッター -->
+    <!-- モーダルフッター（Ver 1.34 表示付き） -->
     <div class="modal-ftr">
+      <span class="modal-ftr-ver" id="appVersionFooter">Ver 1.34</span>
       <button type="button" class="btn-reset-main" id="btnResetMain" onclick="resetToDefaults()">初期値</button>
       <button type="button" class="btn-save-main" id="btnSaveMain" onclick="saveAllSettings()">設定を保存して閉じる</button>
     </div>
@@ -998,9 +1022,13 @@ input[type="number"] { -moz-appearance: textfield; }
 </div>
 
 <!-- ============================================================
-     JavaScript ロジック部（完全多言語対応 ＆ 新配置・カラー連動）
+     JavaScript ロジック部（v1.34）
 ============================================================ -->
 <script>
+var APP_VERSION = "1.34";
+var currentLang = 'ja';
+var STORAGE_KEY = "CH_MANAGER_SETTINGS_DATA_V4";
+
 // 多言語辞書
 var I18N = {
   ja: {
@@ -1161,9 +1189,6 @@ var I18N = {
   }
 };
 
-var currentLang = 'ja';
-var STORAGE_KEY = "CH_MANAGER_SETTINGS_DATA_V4";
-
 var DEFAULT_BASIC_SETTINGS = {
   storeName: "Thai Topaz",
   item1Name: "基本コース料金",
@@ -1294,9 +1319,11 @@ function updateLangUI(){
   var elSaveMain = document.getElementById('btnSaveMain');
   if(elSaveMain) elSaveMain.textContent = t.btnSave;
 
+  // 単位表記
   var yenLabels = document.querySelectorAll('.unit-yen-lbl');
   yenLabels.forEach(function(el){ el.textContent = t.yenUnit; });
 
+  // プレースホルダー更新
   var item1Input = document.getElementById('cfg-item1-name');
   if(item1Input) item1Input.placeholder = t.cfgItem1Placeholder;
   var unitInput = document.getElementById('cfg-unit-name');
